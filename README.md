@@ -1,2 +1,2 @@
 # otg-grpc
-GRPC interface to configure and run ixia-c  traffic generator
+GRPC interface to configure and run ixia-c traffic generator
