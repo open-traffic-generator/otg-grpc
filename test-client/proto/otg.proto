@@ -1,0 +1,1581 @@
+syntax = "proto3";
+
+package openapi;
+
+//import "google/api/annotations.proto";
+
+//import "google/protobuf/descriptor.proto";
+
+import "google/protobuf/empty.proto";
+
+message Config {
+  repeated Port ports = 1;
+
+  repeated Lag lags = 2;
+
+  repeated Layer1 layer1 = 3;
+
+  repeated Capture captures = 4;
+
+  repeated Device devices = 5;
+
+  repeated Flow flows = 6;
+
+  ConfigOptions options = 7;
+}
+
+message ConfigOptions {
+  PortOptions port_options = 1;
+}
+
+message Port {
+  string location = 1;
+
+  string name = 2;
+}
+
+message PortOptions {
+  bool location_preemption = 1;
+}
+
+message Lag {
+  repeated string port_names = 1;
+
+  LagProtocol protocol = 2;
+
+  DeviceEthernet ethernet = 3;
+
+  string name = 4;
+}
+
+message LagProtocol {
+  Choice choice = 1;
+
+  LagLacp lacp = 2;
+
+  LagStatic static = 3;
+
+  enum Choice {
+    LACP = 0;
+
+    STATIC = 1;
+  }
+}
+
+message LagStatic {
+  DevicePattern lag_id = 1;
+}
+
+message LagLacp {
+  DevicePattern actor_key = 1;
+
+  DevicePattern actor_port_number = 2;
+
+  DevicePattern actor_port_priority = 3;
+
+  DevicePattern actor_system_id = 4;
+
+  DevicePattern actor_system_priority = 5;
+}
+
+message DeviceEthernet {
+  DevicePattern mac = 1;
+
+  DevicePattern mtu = 2;
+
+  repeated DeviceVlan vlans = 3;
+
+  DeviceIpv4 ipv4 = 4;
+
+  DeviceIpv6 ipv6 = 5;
+
+  string name = 6;
+}
+
+message DevicePattern {
+  Choice choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  DeviceCounter increment = 4;
+
+  DeviceCounter decrement = 5;
+
+  enum Choice {
+    VALUE = 0;
+
+    VALUES = 1;
+
+    INCREMENT = 2;
+
+    DECREMENT = 3;
+  }
+}
+
+message DeviceCounter {
+  string start = 1;
+
+  string step = 2;
+}
+
+message DeviceVlan {
+  DevicePattern tpid = 1;
+
+  DevicePattern priority = 2;
+
+  DevicePattern id = 3;
+
+  string name = 4;
+}
+
+message DeviceIpv4 {
+  DevicePattern address = 1;
+
+  DevicePattern gateway = 2;
+
+  DevicePattern prefix = 3;
+
+  DeviceBgpv4 bgpv4 = 4;
+
+  string name = 5;
+}
+
+message DeviceIpv4Loopback {
+  DevicePattern address = 1;
+
+  DeviceBgpv4 bgpv4 = 2;
+
+  string name = 3;
+}
+
+message DeviceBgpv4 {
+  DevicePattern router_id = 1;
+
+  DevicePattern as_number = 2;
+
+  As_type as_type = 3;
+
+  DevicePattern hold_time_interval = 4;
+
+  DevicePattern keep_alive_interval = 5;
+
+  DevicePattern dut_ipv4_address = 6;
+
+  DevicePattern dut_as_number = 7;
+
+  repeated DeviceBgpv4RouteRange bgpv4_route_ranges = 8;
+
+  repeated DeviceBgpv6RouteRange bgpv6_route_ranges = 9;
+
+  string name = 10;
+
+  enum As_type {
+    IBGP = 0;
+
+    EBGP = 1;
+  }
+}
+
+message DeviceBgpv4RouteRange {
+  int64 range_count = 1;
+
+  int64 address_count = 2;
+
+  DevicePattern address = 3;
+
+  DevicePattern address_step = 4;
+
+  DevicePattern prefix = 5;
+
+  DevicePattern next_hop_address = 6;
+
+  repeated DeviceBgpCommunity community = 7;
+
+  DeviceBgpAsPath as_path = 8;
+
+  string name = 9;
+}
+
+message DeviceBgpCommunity {
+  Community_type community_type = 1;
+
+  DevicePattern as_number = 2;
+
+  DevicePattern as_custom = 3;
+
+  enum Community_type {
+    MANUAL_AS_NUMBER = 0;
+
+    NO_EXPORT = 1;
+
+    NO_ADVERTISED = 2;
+
+    NO_EXPORT_SUBCONFED = 3;
+
+    LLGR_STALE = 4;
+
+    NO_LLGR = 5;
+  }
+}
+
+message DeviceBgpAsPath {
+  DevicePattern override_peer_as_set_mode = 1;
+
+  As_set_mode as_set_mode = 2;
+
+  repeated DeviceBgpAsPathSegment as_path_segments = 3;
+
+  enum As_set_mode {
+    DO_NOT_INCLUDE_LOCAL_AS = 0;
+
+    INCLUDE_AS_SEQ = 1;
+
+    INCLUDE_AS_SET = 2;
+
+    INCLUDE_AS_CONFED_SEQ = 3;
+
+    INCLUDE_AS_CONFED_SET = 4;
+
+    PREPEND_TO_FIRST_SEGMENT = 5;
+  }
+}
+
+message DeviceBgpAsPathSegment {
+  Segment_type segment_type = 1;
+
+  repeated int64 as_numbers = 2;
+
+  enum Segment_type {
+    AS_SEQ = 0;
+
+    AS_SET = 1;
+
+    AS_CONFED_SEQ = 2;
+
+    AS_CONFED_SET = 3;
+  }
+}
+
+message DeviceBgpv6RouteRange {
+  int64 range_count = 1;
+
+  int64 address_count = 2;
+
+  DevicePattern address = 3;
+
+  DevicePattern address_step = 4;
+
+  DevicePattern prefix = 5;
+
+  DevicePattern next_hop_address = 6;
+
+  repeated DeviceBgpCommunity community = 7;
+
+  DeviceBgpAsPath as_path = 8;
+
+  string name = 9;
+}
+
+message DeviceIpv6 {
+  DevicePattern address = 1;
+
+  DevicePattern gateway = 2;
+
+  DevicePattern prefix = 3;
+
+  DeviceBgpv6 bgpv6 = 4;
+
+  string name = 5;
+}
+
+message DeviceIpv6Loopback {
+  DevicePattern address = 1;
+
+  DeviceBgpv6 bgpv6 = 2;
+
+  string name = 3;
+}
+
+message DeviceBgpv6 {
+  DevicePattern router_id = 1;
+
+  DevicePattern as_number = 2;
+
+  As_type as_type = 3;
+
+  DevicePattern hold_time_interval = 4;
+
+  DevicePattern keep_alive_interval = 5;
+
+  DevicePattern dut_ipv6_address = 6;
+
+  DevicePattern dut_as_number = 7;
+
+  repeated DeviceBgpv4RouteRange bgpv4_route_ranges = 8;
+
+  repeated DeviceBgpv6RouteRange bgpv6_route_ranges = 9;
+
+  string name = 10;
+
+  enum As_type {
+    IBGP = 0;
+
+    EBGP = 1;
+  }
+}
+
+message Layer1 {
+  repeated string port_names = 1;
+
+  Speed speed = 2;
+
+  Media media = 3;
+
+  bool promiscuous = 4;
+
+  int64 mtu = 5;
+
+  bool ieee_media_defaults = 6;
+
+  bool auto_negotiate = 7;
+
+  Layer1AutoNegotiation auto_negotiation = 8;
+
+  Layer1FlowControl flow_control = 9;
+
+  string name = 10;
+
+  enum Speed {
+    SPEED_10_FD_MBPS = 0;
+
+    SPEED_10_HD_MBPS = 1;
+
+    SPEED_100_FD_MBPS = 2;
+
+    SPEED_100_HD_MBPS = 3;
+
+    SPEED_1_GBPS = 4;
+
+    SPEED_10_GBPS = 5;
+
+    SPEED_25_GBPS = 6;
+
+    SPEED_40_GBPS = 7;
+
+    SPEED_100_GBPS = 8;
+
+    SPEED_200_GBPS = 9;
+
+    SPEED_400_GBPS = 10;
+  }
+
+  enum Media {
+    COPPER = 0;
+
+    FIBER = 1;
+
+    SGMII = 2;
+  }
+}
+
+message Layer1AutoNegotiation {
+  bool advertise_1000_mbps = 1;
+
+  bool advertise_100_fd_mbps = 2;
+
+  bool advertise_100_hd_mbps = 3;
+
+  bool advertise_10_fd_mbps = 4;
+
+  bool advertise_10_hd_mbps = 5;
+
+  bool link_training = 6;
+
+  bool rs_fec = 7;
+}
+
+message Layer1FlowControl {
+  string directed_address = 1;
+
+  Choice choice = 2;
+
+  Layer1Ieee8021qbb ieee_802_1qbb = 3;
+
+  Layer1Ieee8023x ieee_802_3x = 4;
+
+  enum Choice {
+    IEEE_802_1QBB = 0;
+
+    IEEE_802_3X = 1;
+  }
+}
+
+message Layer1Ieee8023x {
+}
+
+message Layer1Ieee8021qbb {
+  int64 pfc_delay = 1;
+
+  int64 pfc_class_0 = 2;
+
+  int64 pfc_class_1 = 3;
+
+  int64 pfc_class_2 = 4;
+
+  int64 pfc_class_3 = 5;
+
+  int64 pfc_class_4 = 6;
+
+  int64 pfc_class_5 = 7;
+
+  int64 pfc_class_6 = 8;
+
+  int64 pfc_class_7 = 9;
+}
+
+message Capture {
+  repeated string port_names = 1;
+
+  repeated CaptureFilter filters = 2;
+
+  bool overwrite = 3;
+
+  int64 packet_size = 4;
+
+  Format format = 5;
+
+  string name = 6;
+
+  enum Format {
+    PCAP = 0;
+
+    PCAPNG = 1;
+  }
+}
+
+message CaptureFilter {
+  Choice choice = 1;
+
+  CaptureCustom custom = 2;
+
+  CaptureEthernet ethernet = 3;
+
+  CaptureVlan vlan = 4;
+
+  CaptureIpv4 ipv4 = 5;
+
+  enum Choice {
+    CUSTOM = 0;
+
+    ETHERNET = 1;
+
+    VLAN = 2;
+
+    IPV4 = 3;
+  }
+}
+
+message CaptureCustom {
+  int64 offset = 1;
+
+  string value = 2;
+
+  string mask = 3;
+
+  bool negate = 4;
+}
+
+message CaptureField {
+  string value = 1;
+
+  string mask = 2;
+
+  bool negate = 3;
+}
+
+message CaptureEthernet {
+  CaptureField src = 1;
+
+  CaptureField dst = 2;
+
+  CaptureField ether_type = 3;
+
+  CaptureField pfc_queue = 4;
+}
+
+message CaptureVlan {
+  CaptureField priority = 1;
+
+  CaptureField cfi = 2;
+
+  CaptureField id = 3;
+
+  CaptureField protocol = 4;
+}
+
+message CaptureIpv4 {
+  CaptureField version = 1;
+
+  CaptureField headeer_length = 2;
+
+  CaptureField priority = 3;
+
+  CaptureField total_length = 4;
+
+  CaptureField identification = 5;
+
+  CaptureField reserved = 6;
+
+  CaptureField dont_fragment = 7;
+
+  CaptureField more_fragments = 8;
+
+  CaptureField fragment_offset = 9;
+
+  CaptureField time_to_live = 10;
+
+  CaptureField protocol = 11;
+
+  CaptureField header_checksum = 12;
+
+  CaptureField src = 13;
+
+  CaptureField dst = 14;
+}
+
+message Device {
+  string container_name = 1;
+
+  int64 device_count = 2;
+
+  DeviceEthernet ethernet = 3;
+
+  DeviceIpv4Loopback ipv4_loopback = 4;
+
+  DeviceIpv6Loopback ipv6_loopback = 5;
+
+  string name = 6;
+}
+
+message Flow {
+  FlowTxRx tx_rx = 1;
+
+  repeated FlowHeader packet = 2;
+
+  FlowSize size = 3;
+
+  FlowRate rate = 4;
+
+  FlowDuration duration = 5;
+
+  string name = 6;
+}
+
+message FlowTxRx {
+  Choice choice = 1;
+
+  FlowPort port = 2;
+
+  FlowDevice device = 3;
+
+  enum Choice {
+    PORT = 0;
+
+    DEVICE = 1;
+  }
+}
+
+message FlowPort {
+  string tx_name = 1;
+
+  string rx_name = 2;
+}
+
+message FlowDevice {
+  repeated string tx_names = 1;
+
+  repeated string rx_names = 2;
+}
+
+message FlowHeader {
+  Choice choice = 1;
+
+  FlowCustom custom = 2;
+
+  FlowEthernet ethernet = 3;
+
+  FlowVlan vlan = 4;
+
+  FlowVxlan vxlan = 5;
+
+  FlowIpv4 ipv4 = 6;
+
+  FlowIpv6 ipv6 = 7;
+
+  FlowPfcPause pfcpause = 8;
+
+  FlowEthernetPause ethernetpause = 9;
+
+  FlowTcp tcp = 10;
+
+  FlowUdp udp = 11;
+
+  FlowGre gre = 12;
+
+  FlowGtpv1 gtpv1 = 13;
+
+  FlowGtpv2 gtpv2 = 14;
+
+  FlowArp arp = 15;
+
+  enum Choice {
+    CUSTOM = 0;
+
+    ETHERNET = 1;
+
+    VLAN = 2;
+
+    VXLAN = 3;
+
+    IPV4 = 4;
+
+    IPV6 = 5;
+
+    PFCPAUSE = 6;
+
+    ETHERNETPAUSE = 7;
+
+    TCP = 8;
+
+    UDP = 9;
+
+    GRE = 10;
+
+    GTPV1 = 11;
+
+    GTPV2 = 12;
+
+    ARP = 13;
+  }
+}
+
+message FlowCustom {
+  string bytes = 1;
+
+  repeated FlowBitPattern patterns = 2;
+}
+
+message FlowBitPattern {
+  Choice choice = 1;
+
+  FlowBitList bitlist = 2;
+
+  FlowBitCounter bitcounter = 3;
+
+  enum Choice {
+    BITLIST = 0;
+
+    BITCOUNTER = 1;
+  }
+}
+
+message FlowBitList {
+  int64 offset = 1;
+
+  int64 length = 2;
+
+  int64 count = 3;
+
+  repeated string values = 4;
+}
+
+message FlowBitCounter {
+  int64 offset = 1;
+
+  int64 length = 2;
+
+  int64 count = 3;
+
+  string start = 4;
+
+  string step = 5;
+}
+
+message FlowEthernet {
+  FlowPattern dst = 1;
+
+  FlowPattern src = 2;
+
+  FlowPattern ether_type = 3;
+
+  FlowPattern pfc_queue = 4;
+}
+
+message FlowPattern {
+  Choice choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  FlowCounter increment = 4;
+
+  FlowCounter decrement = 5;
+
+  string metric_group = 6;
+
+  enum Choice {
+    VALUE = 0;
+
+    VALUES = 1;
+
+    INCREMENT = 2;
+
+    DECREMENT = 3;
+  }
+}
+
+message FlowCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int64 count = 3;
+}
+
+message FlowVlan {
+  FlowPattern priority = 1;
+
+  FlowPattern cfi = 2;
+
+  FlowPattern id = 3;
+
+  FlowPattern protocol = 4;
+}
+
+message FlowVxlan {
+  FlowPattern flags = 1;
+
+  FlowPattern reserved0 = 2;
+
+  FlowPattern vni = 3;
+
+  FlowPattern reserved1 = 4;
+}
+
+message FlowIpv4 {
+  FlowPattern version = 1;
+
+  FlowPattern header_length = 2;
+
+  FlowIpv4Priority priority = 3;
+
+  FlowPattern total_length = 4;
+
+  FlowPattern identification = 5;
+
+  FlowPattern reserved = 6;
+
+  FlowPattern dont_fragment = 7;
+
+  FlowPattern more_fragments = 8;
+
+  FlowPattern fragment_offset = 9;
+
+  FlowPattern time_to_live = 10;
+
+  FlowPattern protocol = 11;
+
+  FlowPattern header_checksum = 12;
+
+  FlowPattern src = 13;
+
+  FlowPattern dst = 14;
+}
+
+message FlowIpv4Priority {
+  Choice choice = 1;
+
+  FlowPattern raw = 2;
+
+  FlowIpv4Tos tos = 3;
+
+  FlowIpv4Dscp dscp = 4;
+
+  enum Choice {
+    RAW = 0;
+
+    TOS = 1;
+
+    DSCP = 2;
+  }
+}
+
+message FlowIpv4Dscp {
+  FlowPattern phb = 1;
+
+  FlowPattern ecn = 2;
+}
+
+message FlowIpv4Tos {
+  FlowPattern precedence = 1;
+
+  FlowPattern delay = 2;
+
+  FlowPattern throughput = 3;
+
+  FlowPattern reliability = 4;
+
+  FlowPattern monetary = 5;
+
+  FlowPattern unused = 6;
+}
+
+message FlowIpv6 {
+  FlowPattern version = 1;
+
+  FlowPattern traffic_class = 2;
+
+  FlowPattern flow_label = 3;
+
+  FlowPattern payload_length = 4;
+
+  FlowPattern next_header = 5;
+
+  FlowPattern hop_limit = 6;
+
+  FlowPattern src = 7;
+
+  FlowPattern dst = 8;
+}
+
+message FlowPfcPause {
+  FlowPattern dst = 1;
+
+  FlowPattern src = 2;
+
+  FlowPattern ether_type = 3;
+
+  FlowPattern control_op_code = 4;
+
+  FlowPattern class_enable_vector = 5;
+
+  FlowPattern pause_class_0 = 6;
+
+  FlowPattern pause_class_1 = 7;
+
+  FlowPattern pause_class_2 = 8;
+
+  FlowPattern pause_class_3 = 9;
+
+  FlowPattern pause_class_4 = 10;
+
+  FlowPattern pause_class_5 = 11;
+
+  FlowPattern pause_class_6 = 12;
+
+  FlowPattern pause_class_7 = 13;
+}
+
+message FlowEthernetPause {
+  FlowPattern dst = 1;
+
+  FlowPattern src = 2;
+
+  FlowPattern ether_type = 3;
+
+  FlowPattern control_op_code = 4;
+
+  FlowPattern time = 5;
+}
+
+message FlowTcp {
+  FlowPattern src_port = 1;
+
+  FlowPattern dst_port = 2;
+
+  FlowPattern seq_num = 3;
+
+  FlowPattern ack_num = 4;
+
+  FlowPattern data_offset = 5;
+
+  FlowPattern ecn_ns = 6;
+
+  FlowPattern ecn_cwr = 7;
+
+  FlowPattern ecn_echo = 8;
+
+  FlowPattern ctl_urg = 9;
+
+  FlowPattern ctl_ack = 10;
+
+  FlowPattern ctl_psh = 11;
+
+  FlowPattern ctl_rst = 12;
+
+  FlowPattern ctl_syn = 13;
+
+  FlowPattern ctl_fin = 14;
+
+  FlowPattern window = 15;
+}
+
+message FlowUdp {
+  FlowPattern src_port = 1;
+
+  FlowPattern dst_port = 2;
+
+  FlowPattern length = 3;
+
+  FlowPattern checksum = 4;
+}
+
+message FlowGre {
+  FlowPattern checksum_present = 1;
+
+  FlowPattern key_present = 2;
+
+  FlowPattern seq_number_present = 3;
+
+  FlowPattern reserved0 = 4;
+
+  FlowPattern version = 5;
+
+  FlowPattern protocol = 6;
+
+  FlowPattern checksum = 7;
+
+  FlowPattern reserved1 = 8;
+
+  FlowPattern key = 9;
+
+  FlowPattern sequence_number = 10;
+}
+
+message FlowGtpv1 {
+  FlowPattern version = 1;
+
+  FlowPattern protocol_type = 2;
+
+  FlowPattern reserved = 3;
+
+  FlowPattern e_flag = 4;
+
+  FlowPattern s_flag = 5;
+
+  FlowPattern pn_flag = 6;
+
+  FlowPattern message_type = 7;
+
+  FlowPattern message_length = 8;
+
+  FlowPattern teid = 9;
+
+  FlowPattern squence_number = 10;
+
+  FlowPattern n_pdu_number = 11;
+
+  FlowPattern next_extension_header_type = 12;
+
+  repeated FlowGtpExtension extension_headers = 13;
+}
+
+message FlowGtpExtension {
+  FlowPattern extension_length = 1;
+
+  FlowPattern contents = 2;
+
+  FlowPattern next_extension_header = 3;
+}
+
+message FlowGtpv2 {
+  FlowPattern version = 1;
+
+  FlowPattern piggybacking_flag = 2;
+
+  FlowPattern teid_flag = 3;
+
+  FlowPattern spare1 = 4;
+
+  FlowPattern message_type = 5;
+
+  FlowPattern message_length = 6;
+
+  FlowPattern teid = 7;
+
+  FlowPattern sequence_number = 8;
+
+  FlowPattern spare2 = 9;
+}
+
+message FlowArp {
+  FlowPattern hardware_type = 1;
+
+  FlowPattern protocol_type = 2;
+
+  FlowPattern hardware_length = 3;
+
+  FlowPattern protocol_length = 4;
+
+  FlowPattern operation = 5;
+
+  FlowPattern sender_hardware_addr = 6;
+
+  FlowPattern sender_protocol_addr = 7;
+
+  FlowPattern target_hardware_addr = 8;
+
+  FlowPattern target_protocol_addr = 9;
+}
+
+message FlowSize {
+  Choice choice = 1;
+
+  int64 fixed = 2;
+
+  FlowSizeIncrement increment = 3;
+
+  FlowSizeRandom random = 4;
+
+  enum Choice {
+    FIXED = 0;
+
+    INCREMENT = 1;
+
+    RANDOM = 2;
+  }
+}
+
+message FlowSizeIncrement {
+  int64 start = 1;
+
+  int64 end = 2;
+
+  int64 step = 3;
+}
+
+message FlowSizeRandom {
+  int64 min = 1;
+
+  int64 max = 2;
+}
+
+message FlowRate {
+  Choice choice = 1;
+
+  int64 pps = 2;
+
+  int64 bps = 3;
+
+  int64 kbps = 4;
+
+  int64 mbps = 5;
+
+  int64 gbps = 6;
+
+  float percentage = 7;
+
+  enum Choice {
+    PPS = 0;
+
+    BPS = 1;
+
+    KBPS = 2;
+
+    MBPS = 3;
+
+    GBPS = 4;
+
+    PERCENTAGE = 5;
+  }
+}
+
+message FlowDuration {
+  Choice choice = 1;
+
+  FlowFixedPackets fixed_packets = 2;
+
+  FlowFixedSeconds fixed_seconds = 3;
+
+  FlowBurst burst = 4;
+
+  FlowContinuous continuous = 5;
+
+  enum Choice {
+    FIXED_PACKETS = 0;
+
+    FIXED_SECONDS = 1;
+
+    BURST = 2;
+
+    CONTINUOUS = 3;
+  }
+}
+
+message FlowContinuous {
+  int64 gap = 1;
+
+  int64 delay = 2;
+
+  Delay_unit delay_unit = 3;
+
+  enum Delay_unit {
+    BYTES = 0;
+
+    NANOSECONDS = 1;
+  }
+}
+
+message FlowFixedPackets {
+  int64 packets = 1;
+
+  int64 gap = 2;
+
+  int64 delay = 3;
+
+  Delay_unit delay_unit = 4;
+
+  enum Delay_unit {
+    BYTES = 0;
+
+    NANOSECONDS = 1;
+  }
+}
+
+message FlowFixedSeconds {
+  float seconds = 1;
+
+  int64 gap = 2;
+
+  int64 delay = 3;
+
+  Delay_unit delay_unit = 4;
+
+  enum Delay_unit {
+    BYTES = 0;
+
+    NANOSECONDS = 1;
+  }
+}
+
+message FlowBurst {
+  int64 packets = 1;
+
+  int64 gap = 2;
+
+  int64 inter_burst_gap = 3;
+
+  Inter_burst_gap_unit inter_burst_gap_unit = 4;
+
+  enum Inter_burst_gap_unit {
+    BYTES = 0;
+
+    NANOSECONDS = 1;
+  }
+}
+
+message PendingDetail {
+  State state = 1;
+
+  string url = 2;
+
+  enum State {
+    PENDING = 0;
+
+    SUCCESS = 1;
+  }
+}
+
+message Details {
+  repeated string errors = 1;
+
+  repeated string warnings = 2;
+}
+
+message LinkState {
+  repeated string port_names = 1;
+
+  State state = 2;
+
+  enum State {
+    UP = 0;
+
+    DOWN = 1;
+  }
+}
+
+message TransmitState {
+  repeated string flow_names = 1;
+
+  State state = 2;
+
+  enum State {
+    START = 0;
+
+    STOP = 1;
+
+    PAUSE = 2;
+  }
+}
+
+message CaptureState {
+  repeated string port_names = 1;
+
+  State state = 2;
+
+  enum State {
+    START = 0;
+
+    STOP = 1;
+  }
+}
+
+message Bgpv4RouteState {
+  repeated string names = 1;
+
+  State state = 2;
+
+  enum State {
+    WITHDRAW_ROUTES = 0;
+
+    ADVERTISE_ROUTES = 1;
+  }
+}
+
+message Bgpv6RouteState {
+  repeated string names = 1;
+
+  State state = 2;
+
+  enum State {
+    WITHDRAW_ROUTES = 0;
+
+    ADVERTISE_ROUTES = 1;
+  }
+}
+
+message MetricsRequest {
+  Choice choice = 1;
+
+  PortMetricsRequest port = 2;
+
+  FlowMetricsRequest flow = 3;
+
+  Bgpv4MetricsRequest bgpv4 = 4;
+
+  enum Choice {
+    PORT = 0;
+
+    FLOW = 1;
+
+    BGPV4 = 2;
+  }
+}
+
+message MetricsResponse {
+  Choice choice = 1;
+
+  repeated PortMetric port_metrics = 2;
+
+  repeated FlowMetric flow_metrics = 3;
+
+  repeated Bgpv4Metric bgpv4_metrics = 4;
+
+  enum Choice {
+    PORT_METRICS = 0;
+
+    FLOW_METRICS = 1;
+
+    BGPV4_METRICS = 2;
+  }
+}
+
+message PortMetricsRequest {
+  repeated string port_names = 1;
+
+  repeated Column_names column_names = 2;
+
+  enum Column_names {
+    TRANSMIT = 0;
+
+    LOCATION = 1;
+
+    LINK = 2;
+
+    CAPTURE = 3;
+
+    FRAMES_TX = 4;
+
+    FRAMES_RX = 5;
+
+    BYTES_TX = 6;
+
+    BYTES_RX = 7;
+
+    FRAMES_TX_RATE = 8;
+
+    FRAMES_RX_RATE = 9;
+
+    BYTES_TX_RATE = 10;
+
+    BYTES_RX_RATE = 11;
+  }
+}
+
+message PortMetric {
+  string name = 1;
+
+  string location = 2;
+
+  Link link = 3;
+
+  Capture capture = 4;
+
+  int64 frames_tx = 5;
+
+  int64 frames_rx = 6;
+
+  int64 bytes_tx = 7;
+
+  int64 bytes_rx = 8;
+
+  float frames_tx_rate = 9;
+
+  float frames_rx_rate = 10;
+
+  float bytes_tx_rate = 11;
+
+  float bytes_rx_rate = 12;
+
+  enum Link {
+    UP = 0;
+
+    DOWN = 1;
+  }
+
+  enum Capture {
+    STARTED = 0;
+
+    STOPPED = 1;
+  }
+}
+
+message FlowMetricsRequest {
+  repeated string flow_names = 1;
+
+  repeated Column_names column_names = 2;
+
+  repeated string metric_group_names = 3;
+
+  enum Column_names {
+    TRANSMIT = 0;
+
+    PORT_TX = 1;
+
+    PORT_RX = 2;
+
+    FRAMES_TX = 3;
+
+    FRAMES_RX = 4;
+
+    BYTES_TX = 5;
+
+    BYTES_RX = 6;
+
+    FRAMES_TX_RATE = 7;
+
+    FRAMES_RX_RATE = 8;
+
+    LOSS = 9;
+  }
+}
+
+message FlowMetricGroup {
+  string name = 1;
+
+  float value = 2;
+}
+
+message FlowMetric {
+  string name = 1;
+
+  Transmit transmit = 2;
+
+  string port_tx = 3;
+
+  string port_rx = 4;
+
+  int64 frames_tx = 5;
+
+  int64 frames_rx = 6;
+
+  int64 bytes_tx = 7;
+
+  int64 bytes_rx = 8;
+
+  float frames_tx_rate = 9;
+
+  float frames_rx_rate = 10;
+
+  float loss = 11;
+
+  repeated FlowMetricGroup metric_groups = 12;
+
+  enum Transmit {
+    STARTED = 0;
+
+    STOPPED = 1;
+
+    PAUSED = 2;
+  }
+}
+
+message Bgpv4MetricsRequest {
+  repeated string names = 1;
+}
+
+message Bgpv4Metric {
+  string name = 1;
+
+  int64 sessions_total = 2;
+
+  int64 sessions_up = 3;
+
+  int64 sessions_down = 4;
+
+  int64 sessions_not_started = 5;
+
+  int64 routes_advertised = 6;
+
+  int64 routes_withdrawn = 7;
+}
+
+message StateMetrics {
+  repeated PortState port_state = 1;
+
+  repeated FlowState flow_state = 2;
+}
+
+message PortState {
+  string name = 1;
+
+  Link link = 2;
+
+  Capture capture = 3;
+
+  enum Link {
+    UP = 0;
+
+    DOWN = 1;
+  }
+
+  enum Capture {
+    STARTED = 0;
+
+    STOPPED = 1;
+  }
+}
+
+message FlowState {
+  string name = 1;
+
+  Transmit transmit = 2;
+
+  enum Transmit {
+    STARTED = 0;
+
+    STOPPED = 1;
+
+    PAUSED = 2;
+  }
+}
+
+message Capabilities {
+  repeated string unsupported = 1;
+
+  repeated string formats = 2;
+}
+
+message CaptureRequest {
+  string port_name = 1;
+}
+
+message SuccessNoContent {
+}
+
+message Pending {
+  PendingDetail pending__detail = 1;
+}
+
+message SetConfigRequest {
+  Config config = 1;
+}
+
+message UpdateConfigRequest {
+  Config config = 1;
+}
+
+message SetTransmitStateRequest {
+  TransmitState transmit__state = 1;
+}
+
+message SetLinkStateRequest {
+  LinkState link__state = 1;
+}
+
+message SetCaptureStateRequest {
+  CaptureState capture__state = 1;
+}
+
+message GetMetricsRequest {
+  MetricsRequest metrics__request = 1;
+}
+
+message GetCaptureRequest {
+  CaptureRequest capture__request = 1;
+}
+
+service Openapi {
+  rpc GetConfig ( google.protobuf.Empty ) returns ( Config ) {
+    //option (google.api.http) = { get:"/config"  };
+  }
+
+  rpc SetConfig ( SetConfigRequest ) returns ( Details ) {
+    //option (google.api.http) = { post:"/config" body:"config"  };
+  }
+
+  rpc UpdateConfig ( UpdateConfigRequest ) returns ( Details ) {
+    //option (google.api.http) = { patch:"/config" body:"config"  };
+  }
+
+  rpc SetTransmitState ( SetTransmitStateRequest ) returns ( Details ) {
+    //option (google.api.http) = { post:"/control/transmit" body:"transmit__state"  };
+  }
+
+  rpc SetLinkState ( SetLinkStateRequest ) returns ( Details ) {
+    //option (google.api.http) = { post:"/control/link" body:"link__state"  };
+  }
+
+  rpc SetCaptureState ( SetCaptureStateRequest ) returns ( Details ) {
+    //option (google.api.http) = { post:"/control/capture" body:"capture__state"  };
+  }
+
+  rpc GetMetrics ( GetMetricsRequest ) returns ( MetricsResponse ) {
+    //option (google.api.http) = { post:"/results/metrics" body:"metrics__request"  };
+  }
+
+  rpc GetStateMetrics ( google.protobuf.Empty ) returns ( StateMetrics ) {
+    //option (google.api.http) = { post:"/results/state"  };
+  }
+
+  rpc GetCapabilities ( google.protobuf.Empty ) returns ( Capabilities ) {
+    //option (google.api.http) = { post:"/results/capabilities"  };
+  }
+
+  rpc GetCapture ( GetCaptureRequest ) returns ( google.protobuf.Empty ) {
+    //option (google.api.http) = { post:"/results/capture" body:"capture__request"  };
+  }
+}
