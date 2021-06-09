@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package openapi;
+package otg;
 
-//import "google/api/annotations.proto";
+// import "google/api/annotations.proto";
 
-//import "google/protobuf/descriptor.proto";
+import "google/protobuf/descriptor.proto";
 
 import "google/protobuf/empty.proto";
 
@@ -39,303 +39,641 @@ message PortOptions {
 }
 
 message Lag {
-  repeated string port_names = 1;
+  repeated LagPort ports = 1;
+
+  string name = 2;
+}
+
+message LagPort {
+  string port_name = 1;
 
   LagProtocol protocol = 2;
 
-  DeviceEthernet ethernet = 3;
-
-  string name = 4;
+  DeviceEthernetBase ethernet = 3;
 }
 
 message LagProtocol {
-  Choice choice = 1;
+  Choice.Enum choice = 1;
 
   LagLacp lacp = 2;
 
   LagStatic static = 3;
 
-  enum Choice {
-    LACP = 0;
+  message Choice { enum Enum {
+    lacp = 0;
 
-    STATIC = 1;
-  }
+    static = 1;
+  } }
 }
 
 message LagStatic {
-  DevicePattern lag_id = 1;
+  int32 lag_id = 1;
 }
 
 message LagLacp {
-  DevicePattern actor_key = 1;
+  int32 actor_key = 1;
 
-  DevicePattern actor_port_number = 2;
+  int32 actor_port_number = 2;
 
-  DevicePattern actor_port_priority = 3;
+  int32 actor_port_priority = 3;
 
-  DevicePattern actor_system_id = 4;
+  string actor_system_id = 4;
 
-  DevicePattern actor_system_priority = 5;
+  int32 actor_system_priority = 5;
+
+  int32 lacpdu_periodic_time_interval = 6;
+
+  int32 lacpdu_timeout = 7;
+
+  Actor_activity.Enum actor_activity = 8;
+
+  message Actor_activity { enum Enum {
+    passive = 0;
+
+    active = 1;
+  } }
 }
 
-message DeviceEthernet {
-  DevicePattern mac = 1;
+message DeviceEthernetBase {
+  string mac = 1;
 
-  DevicePattern mtu = 2;
+  int32 mtu = 2;
 
   repeated DeviceVlan vlans = 3;
 
-  DeviceIpv4 ipv4 = 4;
+  string name = 4;
+}
 
-  DeviceIpv6 ipv6 = 5;
+message DeviceEthernet {
+  DeviceIpv4 ipv4 = 1;
+
+  DeviceIpv6 ipv6 = 2;
+
+  string mac = 3;
+
+  int32 mtu = 4;
+
+  repeated DeviceVlan vlans = 5;
 
   string name = 6;
 }
 
-message DevicePattern {
-  Choice choice = 1;
-
-  string value = 2;
-
-  repeated string values = 3;
-
-  DeviceCounter increment = 4;
-
-  DeviceCounter decrement = 5;
-
-  enum Choice {
-    VALUE = 0;
-
-    VALUES = 1;
-
-    INCREMENT = 2;
-
-    DECREMENT = 3;
-  }
-}
-
-message DeviceCounter {
-  string start = 1;
-
-  string step = 2;
-}
-
 message DeviceVlan {
-  DevicePattern tpid = 1;
+  Tpid.Enum tpid = 1;
 
-  DevicePattern priority = 2;
+  int32 priority = 2;
 
-  DevicePattern id = 3;
+  int32 id = 3;
+
+  string name = 4;
+
+  message Tpid { enum Enum {
+    x8100 = 0;
+
+    x88a8 = 1;
+
+    x9100 = 2;
+
+    x9200 = 3;
+
+    x9300 = 4;
+  } }
+}
+
+message DeviceIpv4Base {
+  string address = 1;
+
+  int32 prefix = 2;
+
+  DeviceBgpv4 bgpv4 = 3;
 
   string name = 4;
 }
 
 message DeviceIpv4 {
-  DevicePattern address = 1;
+  string gateway = 1;
 
-  DevicePattern gateway = 2;
+  string address = 2;
 
-  DevicePattern prefix = 3;
+  int32 prefix = 3;
 
   DeviceBgpv4 bgpv4 = 4;
 
   string name = 5;
 }
 
-message DeviceIpv4Loopback {
-  DevicePattern address = 1;
-
-  DeviceBgpv4 bgpv4 = 2;
-
-  string name = 3;
-}
-
 message DeviceBgpv4 {
-  DevicePattern router_id = 1;
+  string local_address = 1;
 
-  DevicePattern as_number = 2;
+  string dut_address = 2;
 
-  As_type as_type = 3;
+  string router_id = 3;
 
-  DevicePattern hold_time_interval = 4;
+  As_type.Enum as_type = 4;
 
-  DevicePattern keep_alive_interval = 5;
+  int32 as_number = 5;
 
-  DevicePattern dut_ipv4_address = 6;
+  As_number_width.Enum as_number_width = 6;
 
-  DevicePattern dut_as_number = 7;
+  As_number_set_mode.Enum as_number_set_mode = 7;
 
-  repeated DeviceBgpv4RouteRange bgpv4_route_ranges = 8;
+  DeviceBgpAdvanced advanced = 8;
 
-  repeated DeviceBgpv6RouteRange bgpv6_route_ranges = 9;
+  DeviceBgpCapability capability = 9;
 
-  string name = 10;
+  repeated DeviceBgpSrTePolicy sr_te_policies = 10;
 
-  enum As_type {
-    IBGP = 0;
+  repeated DeviceBgpv4Route bgpv4_routes = 11;
 
-    EBGP = 1;
-  }
+  repeated DeviceBgpv6Route bgpv6_routes = 12;
+
+  string name = 13;
+
+  bool active = 14;
+
+  message As_type { enum Enum {
+    ibgp = 0;
+
+    ebgp = 1;
+  } }
+
+  message As_number_width { enum Enum {
+    two = 0;
+
+    four = 1;
+  } }
+
+  message As_number_set_mode { enum Enum {
+    do_not_include_as = 0;
+
+    include_as_seq = 1;
+
+    include_as_set = 2;
+
+    include_as_seq_confed = 3;
+
+    include_as_set_confed = 4;
+
+    prepend_as_to_first_segment = 5;
+  } }
 }
 
-message DeviceBgpv4RouteRange {
-  int64 range_count = 1;
+message DeviceBgpAdvanced {
+  int32 hold_time_interval = 1;
 
-  int64 address_count = 2;
+  int32 keep_alive_interval = 2;
 
-  DevicePattern address = 3;
+  int32 update_interval = 3;
 
-  DevicePattern address_step = 4;
+  int32 time_to_live = 4;
 
-  DevicePattern prefix = 5;
+  string md5_key = 5;
+}
 
-  DevicePattern next_hop_address = 6;
+message DeviceBgpCapability {
+  bool vpls = 1;
 
-  repeated DeviceBgpCommunity community = 7;
+  bool route_refresh = 2;
+
+  bool route_constraint = 3;
+
+  bool link_state_non_vpn = 4;
+
+  bool link_state_vpn = 5;
+
+  bool evpn = 6;
+
+  bool extended_next_hop_encoding = 7;
+
+  bool ipv4_unicast = 8;
+
+  bool ipv4_multicast = 9;
+
+  bool ipv4_multicast_vpn = 10;
+
+  bool ipv4_mpls_vpn = 11;
+
+  bool ipv4_mdt = 12;
+
+  bool ipv4_multicast_mpls_vpn = 13;
+
+  bool ipv4_unicast_flow_spec = 14;
+
+  bool ipv4_sr_te_policy = 15;
+
+  bool ipv4_unicast_add_path = 16;
+
+  bool ipv6_unicast = 17;
+
+  bool ipv6_multicast = 18;
+
+  bool ipv6_multicast_vpn = 19;
+
+  bool ipv6_mpls_vpn = 20;
+
+  bool ipv6_mdt = 21;
+
+  bool ipv6_multicast_mpls_vpn = 22;
+
+  bool ipv6_unicast_flow_spec = 23;
+
+  bool ipv6_sr_te_policy = 24;
+
+  bool ipv6_unicast_add_path = 25;
+}
+
+message DeviceBgpSrTePolicy {
+  Policy_type.Enum policy_type = 1;
+
+  int32 distinguisher = 2;
+
+  int32 color = 3;
+
+  string ipv4_endpoint = 4;
+
+  string ipv6_endpoint = 5;
+
+  DeviceBgpSrTePolicyNextHop next_hop = 6;
+
+  DeviceBgpAddPath add_path = 7;
 
   DeviceBgpAsPath as_path = 8;
 
-  string name = 9;
+  repeated DeviceBgpTunnelTlv tunnel_tlvs = 9;
+
+  repeated DeviceBgpCommunity communities = 10;
+
+  message Policy_type { enum Enum {
+    ipv4 = 0;
+
+    ipv6 = 1;
+  } }
 }
 
-message DeviceBgpCommunity {
-  Community_type community_type = 1;
+message DeviceBgpSrTePolicyNextHop {
+  Next_hop_mode.Enum next_hop_mode = 1;
 
-  DevicePattern as_number = 2;
+  Next_hop_address_type.Enum next_hop_address_type = 2;
 
-  DevicePattern as_custom = 3;
+  string ipv4_address = 3;
 
-  enum Community_type {
-    MANUAL_AS_NUMBER = 0;
+  string ipv6_address = 4;
 
-    NO_EXPORT = 1;
+  message Next_hop_mode { enum Enum {
+    local_ip = 0;
 
-    NO_ADVERTISED = 2;
+    manual = 1;
+  } }
 
-    NO_EXPORT_SUBCONFED = 3;
+  message Next_hop_address_type { enum Enum {
+    ipv4 = 0;
 
-    LLGR_STALE = 4;
+    ipv6 = 1;
+  } }
+}
 
-    NO_LLGR = 5;
-  }
+message DeviceBgpAddPath {
+  int32 path_id = 1;
 }
 
 message DeviceBgpAsPath {
-  DevicePattern override_peer_as_set_mode = 1;
+  bool override_peer_as_set_mode = 1;
 
-  As_set_mode as_set_mode = 2;
+  As_set_mode.Enum as_set_mode = 2;
 
   repeated DeviceBgpAsPathSegment as_path_segments = 3;
 
-  enum As_set_mode {
-    DO_NOT_INCLUDE_LOCAL_AS = 0;
+  message As_set_mode { enum Enum {
+    do_not_include_local_as = 0;
 
-    INCLUDE_AS_SEQ = 1;
+    include_as_seq = 1;
 
-    INCLUDE_AS_SET = 2;
+    include_as_set = 2;
 
-    INCLUDE_AS_CONFED_SEQ = 3;
+    include_as_confed_seq = 3;
 
-    INCLUDE_AS_CONFED_SET = 4;
+    include_as_confed_set = 4;
 
-    PREPEND_TO_FIRST_SEGMENT = 5;
-  }
+    prepend_to_first_segment = 5;
+  } }
 }
 
 message DeviceBgpAsPathSegment {
-  Segment_type segment_type = 1;
+  Segment_type.Enum segment_type = 1;
 
-  repeated int64 as_numbers = 2;
+  repeated int32 as_numbers = 2;
 
-  enum Segment_type {
-    AS_SEQ = 0;
+  message Segment_type { enum Enum {
+    as_seq = 0;
 
-    AS_SET = 1;
+    as_set = 1;
 
-    AS_CONFED_SEQ = 2;
+    as_confed_seq = 2;
 
-    AS_CONFED_SET = 3;
-  }
+    as_confed_set = 3;
+  } }
 }
 
-message DeviceBgpv6RouteRange {
-  int64 range_count = 1;
+message DeviceBgpTunnelTlv {
+  repeated DeviceBgpSegmentList segment_lists = 1;
 
-  int64 address_count = 2;
+  DeviceBgpRemoteEndpointSubTlv remote_endpoint_sub_tlv = 2;
 
-  DevicePattern address = 3;
+  DeviceBgpPreferenceSubTlv preference_sub_tlv = 3;
 
-  DevicePattern address_step = 4;
+  DeviceBgpBindingSubTlv binding_sub_tlv = 4;
 
-  DevicePattern prefix = 5;
+  DeviceBgpExplicitNullLabelPolicySubTlv explicit_null_label_policy_sub_tlv = 5;
 
-  DevicePattern next_hop_address = 6;
+  bool active = 6;
+}
 
-  repeated DeviceBgpCommunity community = 7;
+message DeviceBgpSegmentList {
+  int32 segment_weight = 1;
 
-  DeviceBgpAsPath as_path = 8;
+  repeated DeviceBgpSegment segments = 2;
 
-  string name = 9;
+  bool active = 3;
+}
+
+message DeviceBgpSegment {
+  Segment_type.Enum segment_type = 1;
+
+  int32 mpls_label = 2;
+
+  int32 mpls_tc = 3;
+
+  int32 mpls_ttl = 4;
+
+  bool v_flag = 5;
+
+  string ipv6_sid = 6;
+
+  int32 remaining_flag_bits = 7;
+
+  bool active = 8;
+
+  message Segment_type { enum Enum {
+    mpls_sid = 0;
+
+    ipv6_sid = 1;
+  } }
+}
+
+message DeviceBgpRemoteEndpointSubTlv {
+  int32 as_number = 1;
+
+  Address_family.Enum address_family = 2;
+
+  string ipv4_address = 3;
+
+  string ipv6_address = 4;
+
+  message Address_family { enum Enum {
+    ipv4 = 0;
+
+    ipv6 = 1;
+  } }
+}
+
+message DeviceBgpPreferenceSubTlv {
+  int32 preference = 1;
+}
+
+message DeviceBgpBindingSubTlv {
+  Binding_sid_type.Enum binding_sid_type = 1;
+
+  int32 four_octet_sid = 2;
+
+  bool bsid_as_mpls_label = 3;
+
+  string ipv6_sid = 4;
+
+  bool s_flag = 5;
+
+  bool i_flag = 6;
+
+  int32 remaining_flag_bits = 7;
+
+  message Binding_sid_type { enum Enum {
+    no_binding = 0;
+
+    four_octet_sid = 1;
+
+    ipv6_sid = 2;
+  } }
+}
+
+message DeviceBgpExplicitNullLabelPolicySubTlv {
+  Explicit_null_label_policy.Enum explicit_null_label_policy = 1;
+
+  message Explicit_null_label_policy { enum Enum {
+    reserved_enlp = 0;
+
+    push_ipv4_enlp = 1;
+
+    push_ipv6_enlp = 2;
+
+    push_ipv4_ipv6_enlp = 3;
+
+    do_not_push_enlp = 4;
+  } }
+}
+
+message DeviceBgpCommunity {
+  Community_type.Enum community_type = 1;
+
+  int32 as_number = 2;
+
+  int32 as_custom = 3;
+
+  message Community_type { enum Enum {
+    manual_as_number = 0;
+
+    no_export = 1;
+
+    no_advertised = 2;
+
+    no_export_subconfed = 3;
+
+    llgr_stale = 4;
+
+    no_llgr = 5;
+  } }
+}
+
+message DeviceBgpv4Route {
+  repeated DeviceBgpv4RouteAddress addresses = 1;
+
+  string next_hop_address = 2;
+
+  DeviceBgpRouteAdvanced advanced = 3;
+
+  repeated DeviceBgpCommunity communities = 4;
+
+  DeviceBgpAsPath as_path = 5;
+
+  DeviceBgpAddPath add_path = 6;
+
+  string name = 7;
+}
+
+message DeviceBgpv4RouteAddress {
+  string address = 1;
+
+  int32 prefix = 2;
+
+  string count = 3;
+
+  string step = 4;
+}
+
+message DeviceBgpRouteAdvanced {
+  int32 multi_exit_discriminator = 1;
+
+  Origin.Enum origin = 2;
+
+  message Origin { enum Enum {
+    igp = 0;
+
+    egp = 1;
+  } }
+}
+
+message DeviceBgpv6Route {
+  repeated DeviceBgpv6RouteAddress addresses = 1;
+
+  string next_hop_address = 2;
+
+  DeviceBgpRouteAdvanced advanced = 3;
+
+  repeated DeviceBgpCommunity communities = 4;
+
+  DeviceBgpAsPath as_path = 5;
+
+  DeviceBgpAddPath add_path = 6;
+
+  string name = 7;
+}
+
+message DeviceBgpv6RouteAddress {
+  string address = 1;
+
+  int32 prefix = 2;
+
+  string count = 3;
+
+  string step = 4;
+}
+
+message DeviceIpv6Base {
+  string address = 1;
+
+  int32 prefix = 2;
+
+  DeviceBgpv6 bgpv6 = 3;
+
+  string name = 4;
 }
 
 message DeviceIpv6 {
-  DevicePattern address = 1;
+  string gateway = 1;
 
-  DevicePattern gateway = 2;
+  string address = 2;
 
-  DevicePattern prefix = 3;
+  int32 prefix = 3;
 
   DeviceBgpv6 bgpv6 = 4;
 
   string name = 5;
 }
 
-message DeviceIpv6Loopback {
-  DevicePattern address = 1;
+message DeviceBgpv6 {
+  string local_address = 1;
 
-  DeviceBgpv6 bgpv6 = 2;
+  string dut_address = 2;
 
-  string name = 3;
+  DeviceBgpv6SegmentRouting segment_routing = 3;
+
+  string router_id = 4;
+
+  As_type.Enum as_type = 5;
+
+  int32 as_number = 6;
+
+  As_number_width.Enum as_number_width = 7;
+
+  As_number_set_mode.Enum as_number_set_mode = 8;
+
+  DeviceBgpAdvanced advanced = 9;
+
+  DeviceBgpCapability capability = 10;
+
+  repeated DeviceBgpSrTePolicy sr_te_policies = 11;
+
+  repeated DeviceBgpv4Route bgpv4_routes = 12;
+
+  repeated DeviceBgpv6Route bgpv6_routes = 13;
+
+  string name = 14;
+
+  bool active = 15;
+
+  message As_type { enum Enum {
+    ibgp = 0;
+
+    ebgp = 1;
+  } }
+
+  message As_number_width { enum Enum {
+    two = 0;
+
+    four = 1;
+  } }
+
+  message As_number_set_mode { enum Enum {
+    do_not_include_as = 0;
+
+    include_as_seq = 1;
+
+    include_as_set = 2;
+
+    include_as_seq_confed = 3;
+
+    include_as_set_confed = 4;
+
+    prepend_as_to_first_segment = 5;
+  } }
 }
 
-message DeviceBgpv6 {
-  DevicePattern router_id = 1;
+message DeviceBgpv6SegmentRouting {
+  bool ingress_supports_vpn = 1;
 
-  DevicePattern as_number = 2;
+  bool reduced_encapsulation = 2;
 
-  As_type as_type = 3;
+  bool copy_time_to_live = 3;
 
-  DevicePattern hold_time_interval = 4;
+  int32 time_to_live = 4;
 
-  DevicePattern keep_alive_interval = 5;
+  int32 max_sids_per_srh = 5;
 
-  DevicePattern dut_ipv6_address = 6;
+  bool auto_generate_segment_left_value = 6;
 
-  DevicePattern dut_as_number = 7;
+  int32 segment_left_value = 7;
 
-  repeated DeviceBgpv4RouteRange bgpv4_route_ranges = 8;
-
-  repeated DeviceBgpv6RouteRange bgpv6_route_ranges = 9;
-
-  string name = 10;
-
-  enum As_type {
-    IBGP = 0;
-
-    EBGP = 1;
-  }
+  bool advertise_sr_te_policy = 8;
 }
 
 message Layer1 {
   repeated string port_names = 1;
 
-  Speed speed = 2;
+  Speed.Enum speed = 2;
 
-  Media media = 3;
+  Media.Enum media = 3;
 
   bool promiscuous = 4;
 
-  int64 mtu = 5;
+  int32 mtu = 5;
 
   bool ieee_media_defaults = 6;
 
@@ -347,37 +685,37 @@ message Layer1 {
 
   string name = 10;
 
-  enum Speed {
-    SPEED_10_FD_MBPS = 0;
+  message Speed { enum Enum {
+    speed_10_fd_mbps = 0;
 
-    SPEED_10_HD_MBPS = 1;
+    speed_10_hd_mbps = 1;
 
-    SPEED_100_FD_MBPS = 2;
+    speed_100_fd_mbps = 2;
 
-    SPEED_100_HD_MBPS = 3;
+    speed_100_hd_mbps = 3;
 
-    SPEED_1_GBPS = 4;
+    speed_1_gbps = 4;
 
-    SPEED_10_GBPS = 5;
+    speed_10_gbps = 5;
 
-    SPEED_25_GBPS = 6;
+    speed_25_gbps = 6;
 
-    SPEED_40_GBPS = 7;
+    speed_40_gbps = 7;
 
-    SPEED_100_GBPS = 8;
+    speed_100_gbps = 8;
 
-    SPEED_200_GBPS = 9;
+    speed_200_gbps = 9;
 
-    SPEED_400_GBPS = 10;
-  }
+    speed_400_gbps = 10;
+  } }
 
-  enum Media {
-    COPPER = 0;
+  message Media { enum Enum {
+    copper = 0;
 
-    FIBER = 1;
+    fiber = 1;
 
-    SGMII = 2;
-  }
+    sgmii = 2;
+  } }
 }
 
 message Layer1AutoNegotiation {
@@ -399,40 +737,40 @@ message Layer1AutoNegotiation {
 message Layer1FlowControl {
   string directed_address = 1;
 
-  Choice choice = 2;
+  Choice.Enum choice = 2;
 
   Layer1Ieee8021qbb ieee_802_1qbb = 3;
 
   Layer1Ieee8023x ieee_802_3x = 4;
 
-  enum Choice {
-    IEEE_802_1QBB = 0;
+  message Choice { enum Enum {
+    ieee_802_1qbb = 0;
 
-    IEEE_802_3X = 1;
-  }
+    ieee_802_3x = 1;
+  } }
 }
 
 message Layer1Ieee8023x {
 }
 
 message Layer1Ieee8021qbb {
-  int64 pfc_delay = 1;
+  int32 pfc_delay = 1;
 
-  int64 pfc_class_0 = 2;
+  int32 pfc_class_0 = 2;
 
-  int64 pfc_class_1 = 3;
+  int32 pfc_class_1 = 3;
 
-  int64 pfc_class_2 = 4;
+  int32 pfc_class_2 = 4;
 
-  int64 pfc_class_3 = 5;
+  int32 pfc_class_3 = 5;
 
-  int64 pfc_class_4 = 6;
+  int32 pfc_class_4 = 6;
 
-  int64 pfc_class_5 = 7;
+  int32 pfc_class_5 = 7;
 
-  int64 pfc_class_6 = 8;
+  int32 pfc_class_6 = 8;
 
-  int64 pfc_class_7 = 9;
+  int32 pfc_class_7 = 9;
 }
 
 message Capture {
@@ -442,21 +780,21 @@ message Capture {
 
   bool overwrite = 3;
 
-  int64 packet_size = 4;
+  int32 packet_size = 4;
 
-  Format format = 5;
+  Format.Enum format = 5;
 
   string name = 6;
 
-  enum Format {
-    PCAP = 0;
+  message Format { enum Enum {
+    pcap = 0;
 
-    PCAPNG = 1;
-  }
+    pcapng = 1;
+  } }
 }
 
 message CaptureFilter {
-  Choice choice = 1;
+  Choice.Enum choice = 1;
 
   CaptureCustom custom = 2;
 
@@ -466,19 +804,19 @@ message CaptureFilter {
 
   CaptureIpv4 ipv4 = 5;
 
-  enum Choice {
-    CUSTOM = 0;
+  message Choice { enum Enum {
+    custom = 0;
 
-    ETHERNET = 1;
+    ethernet = 1;
 
-    VLAN = 2;
+    vlan = 2;
 
-    IPV4 = 3;
-  }
+    ipv4 = 3;
+  } }
 }
 
 message CaptureCustom {
-  int64 offset = 1;
+  int32 offset = 1;
 
   string value = 2;
 
@@ -545,18 +883,16 @@ message CaptureIpv4 {
   CaptureField dst = 14;
 }
 
+message DeviceActive {
+  bool active = 1;
+}
+
 message Device {
   string container_name = 1;
 
-  int64 device_count = 2;
+  DeviceEthernet ethernet = 2;
 
-  DeviceEthernet ethernet = 3;
-
-  DeviceIpv4Loopback ipv4_loopback = 4;
-
-  DeviceIpv6Loopback ipv6_loopback = 5;
-
-  string name = 6;
+  string name = 3;
 }
 
 message Flow {
@@ -574,17 +910,17 @@ message Flow {
 }
 
 message FlowTxRx {
-  Choice choice = 1;
+  Choice.Enum choice = 1;
 
   FlowPort port = 2;
 
   FlowDevice device = 3;
 
-  enum Choice {
-    PORT = 0;
+  message Choice { enum Enum {
+    port = 0;
 
-    DEVICE = 1;
-  }
+    device = 1;
+  } }
 }
 
 message FlowPort {
@@ -594,13 +930,21 @@ message FlowPort {
 }
 
 message FlowDevice {
-  repeated string tx_names = 1;
+  Mode.Enum mode = 1;
 
-  repeated string rx_names = 2;
+  repeated string tx_names = 2;
+
+  repeated string rx_names = 3;
+
+  message Mode { enum Enum {
+    mesh = 0;
+
+    one_to_one = 1;
+  } }
 }
 
 message FlowHeader {
-  Choice choice = 1;
+  Choice.Enum choice = 1;
 
   FlowCustom custom = 2;
 
@@ -630,471 +974,487 @@ message FlowHeader {
 
   FlowArp arp = 15;
 
-  enum Choice {
-    CUSTOM = 0;
+  FlowIcmp icmp = 16;
 
-    ETHERNET = 1;
+  FlowIcmpv6 icmpv6 = 17;
 
-    VLAN = 2;
+  FlowPpp ppp = 18;
 
-    VXLAN = 3;
+  FlowIgmpv1 igmpv1 = 19;
 
-    IPV4 = 4;
+  message Choice { enum Enum {
+    custom = 0;
 
-    IPV6 = 5;
+    ethernet = 1;
 
-    PFCPAUSE = 6;
+    vlan = 2;
 
-    ETHERNETPAUSE = 7;
+    vxlan = 3;
 
-    TCP = 8;
+    ipv4 = 4;
 
-    UDP = 9;
+    ipv6 = 5;
 
-    GRE = 10;
+    pfcpause = 6;
 
-    GTPV1 = 11;
+    ethernetpause = 7;
 
-    GTPV2 = 12;
+    tcp = 8;
 
-    ARP = 13;
-  }
+    udp = 9;
+
+    gre = 10;
+
+    gtpv1 = 11;
+
+    gtpv2 = 12;
+
+    arp = 13;
+
+    icmp = 14;
+
+    icmpv6 = 15;
+
+    ppp = 16;
+
+    igmpv1 = 17;
+  } }
 }
 
 message FlowCustom {
   string bytes = 1;
-
-  repeated FlowBitPattern patterns = 2;
-}
-
-message FlowBitPattern {
-  Choice choice = 1;
-
-  FlowBitList bitlist = 2;
-
-  FlowBitCounter bitcounter = 3;
-
-  enum Choice {
-    BITLIST = 0;
-
-    BITCOUNTER = 1;
-  }
-}
-
-message FlowBitList {
-  int64 offset = 1;
-
-  int64 length = 2;
-
-  int64 count = 3;
-
-  repeated string values = 4;
-}
-
-message FlowBitCounter {
-  int64 offset = 1;
-
-  int64 length = 2;
-
-  int64 count = 3;
-
-  string start = 4;
-
-  string step = 5;
 }
 
 message FlowEthernet {
-  FlowPattern dst = 1;
+  PatternFlowEthernetDst dst = 1;
 
-  FlowPattern src = 2;
+  PatternFlowEthernetSrc src = 2;
 
-  FlowPattern ether_type = 3;
+  PatternFlowEthernetEtherType ether_type = 3;
 
-  FlowPattern pfc_queue = 4;
-}
-
-message FlowPattern {
-  Choice choice = 1;
-
-  string value = 2;
-
-  repeated string values = 3;
-
-  FlowCounter increment = 4;
-
-  FlowCounter decrement = 5;
-
-  string metric_group = 6;
-
-  enum Choice {
-    VALUE = 0;
-
-    VALUES = 1;
-
-    INCREMENT = 2;
-
-    DECREMENT = 3;
-  }
-}
-
-message FlowCounter {
-  string start = 1;
-
-  string step = 2;
-
-  int64 count = 3;
+  PatternFlowEthernetPfcQueue pfc_queue = 4;
 }
 
 message FlowVlan {
-  FlowPattern priority = 1;
+  PatternFlowVlanPriority priority = 1;
 
-  FlowPattern cfi = 2;
+  PatternFlowVlanCfi cfi = 2;
 
-  FlowPattern id = 3;
+  PatternFlowVlanId id = 3;
 
-  FlowPattern protocol = 4;
+  PatternFlowVlanTpid tpid = 4;
 }
 
 message FlowVxlan {
-  FlowPattern flags = 1;
+  PatternFlowVxlanFlags flags = 1;
 
-  FlowPattern reserved0 = 2;
+  PatternFlowVxlanReserved0 reserved0 = 2;
 
-  FlowPattern vni = 3;
+  PatternFlowVxlanVni vni = 3;
 
-  FlowPattern reserved1 = 4;
+  PatternFlowVxlanReserved1 reserved1 = 4;
 }
 
 message FlowIpv4 {
-  FlowPattern version = 1;
+  PatternFlowIpv4Version version = 1;
 
-  FlowPattern header_length = 2;
+  PatternFlowIpv4HeaderLength header_length = 2;
 
   FlowIpv4Priority priority = 3;
 
-  FlowPattern total_length = 4;
+  PatternFlowIpv4TotalLength total_length = 4;
 
-  FlowPattern identification = 5;
+  PatternFlowIpv4Identification identification = 5;
 
-  FlowPattern reserved = 6;
+  PatternFlowIpv4Reserved reserved = 6;
 
-  FlowPattern dont_fragment = 7;
+  PatternFlowIpv4DontFragment dont_fragment = 7;
 
-  FlowPattern more_fragments = 8;
+  PatternFlowIpv4MoreFragments more_fragments = 8;
 
-  FlowPattern fragment_offset = 9;
+  PatternFlowIpv4FragmentOffset fragment_offset = 9;
 
-  FlowPattern time_to_live = 10;
+  PatternFlowIpv4TimeToLive time_to_live = 10;
 
-  FlowPattern protocol = 11;
+  PatternFlowIpv4Protocol protocol = 11;
 
-  FlowPattern header_checksum = 12;
+  PatternFlowIpv4HeaderChecksum header_checksum = 12;
 
-  FlowPattern src = 13;
+  PatternFlowIpv4Src src = 13;
 
-  FlowPattern dst = 14;
+  PatternFlowIpv4Dst dst = 14;
 }
 
 message FlowIpv4Priority {
-  Choice choice = 1;
+  Choice.Enum choice = 1;
 
-  FlowPattern raw = 2;
+  PatternFlowIpv4PriorityRaw raw = 2;
 
   FlowIpv4Tos tos = 3;
 
   FlowIpv4Dscp dscp = 4;
 
-  enum Choice {
-    RAW = 0;
+  message Choice { enum Enum {
+    raw = 0;
 
-    TOS = 1;
+    tos = 1;
 
-    DSCP = 2;
-  }
+    dscp = 2;
+  } }
 }
 
 message FlowIpv4Dscp {
-  FlowPattern phb = 1;
+  PatternFlowIpv4DscpPhb phb = 1;
 
-  FlowPattern ecn = 2;
+  PatternFlowIpv4DscpEcn ecn = 2;
 }
 
 message FlowIpv4Tos {
-  FlowPattern precedence = 1;
+  PatternFlowIpv4TosPrecedence precedence = 1;
 
-  FlowPattern delay = 2;
+  PatternFlowIpv4TosDelay delay = 2;
 
-  FlowPattern throughput = 3;
+  PatternFlowIpv4TosThroughput throughput = 3;
 
-  FlowPattern reliability = 4;
+  PatternFlowIpv4TosReliability reliability = 4;
 
-  FlowPattern monetary = 5;
+  PatternFlowIpv4TosMonetary monetary = 5;
 
-  FlowPattern unused = 6;
+  PatternFlowIpv4TosUnused unused = 6;
 }
 
 message FlowIpv6 {
-  FlowPattern version = 1;
+  PatternFlowIpv6Version version = 1;
 
-  FlowPattern traffic_class = 2;
+  PatternFlowIpv6TrafficClass traffic_class = 2;
 
-  FlowPattern flow_label = 3;
+  PatternFlowIpv6FlowLabel flow_label = 3;
 
-  FlowPattern payload_length = 4;
+  PatternFlowIpv6PayloadLength payload_length = 4;
 
-  FlowPattern next_header = 5;
+  PatternFlowIpv6NextHeader next_header = 5;
 
-  FlowPattern hop_limit = 6;
+  PatternFlowIpv6HopLimit hop_limit = 6;
 
-  FlowPattern src = 7;
+  PatternFlowIpv6Src src = 7;
 
-  FlowPattern dst = 8;
+  PatternFlowIpv6Dst dst = 8;
 }
 
 message FlowPfcPause {
-  FlowPattern dst = 1;
+  PatternFlowPfcPauseDst dst = 1;
 
-  FlowPattern src = 2;
+  PatternFlowPfcPauseSrc src = 2;
 
-  FlowPattern ether_type = 3;
+  PatternFlowPfcPauseEtherType ether_type = 3;
 
-  FlowPattern control_op_code = 4;
+  PatternFlowPfcPauseControlOpCode control_op_code = 4;
 
-  FlowPattern class_enable_vector = 5;
+  PatternFlowPfcPauseClassEnableVector class_enable_vector = 5;
 
-  FlowPattern pause_class_0 = 6;
+  PatternFlowPfcPausePauseClass0 pause_class_0 = 6;
 
-  FlowPattern pause_class_1 = 7;
+  PatternFlowPfcPausePauseClass1 pause_class_1 = 7;
 
-  FlowPattern pause_class_2 = 8;
+  PatternFlowPfcPausePauseClass2 pause_class_2 = 8;
 
-  FlowPattern pause_class_3 = 9;
+  PatternFlowPfcPausePauseClass3 pause_class_3 = 9;
 
-  FlowPattern pause_class_4 = 10;
+  PatternFlowPfcPausePauseClass4 pause_class_4 = 10;
 
-  FlowPattern pause_class_5 = 11;
+  PatternFlowPfcPausePauseClass5 pause_class_5 = 11;
 
-  FlowPattern pause_class_6 = 12;
+  PatternFlowPfcPausePauseClass6 pause_class_6 = 12;
 
-  FlowPattern pause_class_7 = 13;
+  PatternFlowPfcPausePauseClass7 pause_class_7 = 13;
 }
 
 message FlowEthernetPause {
-  FlowPattern dst = 1;
+  PatternFlowEthernetPauseDst dst = 1;
 
-  FlowPattern src = 2;
+  PatternFlowEthernetPauseSrc src = 2;
 
-  FlowPattern ether_type = 3;
+  PatternFlowEthernetPauseEtherType ether_type = 3;
 
-  FlowPattern control_op_code = 4;
+  PatternFlowEthernetPauseControlOpCode control_op_code = 4;
 
-  FlowPattern time = 5;
+  PatternFlowEthernetPauseTime time = 5;
 }
 
 message FlowTcp {
-  FlowPattern src_port = 1;
+  PatternFlowTcpSrcPort src_port = 1;
 
-  FlowPattern dst_port = 2;
+  PatternFlowTcpDstPort dst_port = 2;
 
-  FlowPattern seq_num = 3;
+  PatternFlowTcpSeqNum seq_num = 3;
 
-  FlowPattern ack_num = 4;
+  PatternFlowTcpAckNum ack_num = 4;
 
-  FlowPattern data_offset = 5;
+  PatternFlowTcpDataOffset data_offset = 5;
 
-  FlowPattern ecn_ns = 6;
+  PatternFlowTcpEcnNs ecn_ns = 6;
 
-  FlowPattern ecn_cwr = 7;
+  PatternFlowTcpEcnCwr ecn_cwr = 7;
 
-  FlowPattern ecn_echo = 8;
+  PatternFlowTcpEcnEcho ecn_echo = 8;
 
-  FlowPattern ctl_urg = 9;
+  PatternFlowTcpCtlUrg ctl_urg = 9;
 
-  FlowPattern ctl_ack = 10;
+  PatternFlowTcpCtlAck ctl_ack = 10;
 
-  FlowPattern ctl_psh = 11;
+  PatternFlowTcpCtlPsh ctl_psh = 11;
 
-  FlowPattern ctl_rst = 12;
+  PatternFlowTcpCtlRst ctl_rst = 12;
 
-  FlowPattern ctl_syn = 13;
+  PatternFlowTcpCtlSyn ctl_syn = 13;
 
-  FlowPattern ctl_fin = 14;
+  PatternFlowTcpCtlFin ctl_fin = 14;
 
-  FlowPattern window = 15;
+  PatternFlowTcpWindow window = 15;
 }
 
 message FlowUdp {
-  FlowPattern src_port = 1;
+  PatternFlowUdpSrcPort src_port = 1;
 
-  FlowPattern dst_port = 2;
+  PatternFlowUdpDstPort dst_port = 2;
 
-  FlowPattern length = 3;
+  PatternFlowUdpLength length = 3;
 
-  FlowPattern checksum = 4;
+  PatternFlowUdpChecksum checksum = 4;
 }
 
 message FlowGre {
-  FlowPattern checksum_present = 1;
+  PatternFlowGreChecksumPresent checksum_present = 1;
 
-  FlowPattern key_present = 2;
+  PatternFlowGreReserved0 reserved0 = 2;
 
-  FlowPattern seq_number_present = 3;
+  PatternFlowGreVersion version = 3;
 
-  FlowPattern reserved0 = 4;
+  PatternFlowGreProtocol protocol = 4;
 
-  FlowPattern version = 5;
+  PatternFlowGreChecksum checksum = 5;
 
-  FlowPattern protocol = 6;
-
-  FlowPattern checksum = 7;
-
-  FlowPattern reserved1 = 8;
-
-  FlowPattern key = 9;
-
-  FlowPattern sequence_number = 10;
+  PatternFlowGreReserved1 reserved1 = 6;
 }
 
 message FlowGtpv1 {
-  FlowPattern version = 1;
+  PatternFlowGtpv1Version version = 1;
 
-  FlowPattern protocol_type = 2;
+  PatternFlowGtpv1ProtocolType protocol_type = 2;
 
-  FlowPattern reserved = 3;
+  PatternFlowGtpv1Reserved reserved = 3;
 
-  FlowPattern e_flag = 4;
+  PatternFlowGtpv1EFlag e_flag = 4;
 
-  FlowPattern s_flag = 5;
+  PatternFlowGtpv1SFlag s_flag = 5;
 
-  FlowPattern pn_flag = 6;
+  PatternFlowGtpv1PnFlag pn_flag = 6;
 
-  FlowPattern message_type = 7;
+  PatternFlowGtpv1MessageType message_type = 7;
 
-  FlowPattern message_length = 8;
+  PatternFlowGtpv1MessageLength message_length = 8;
 
-  FlowPattern teid = 9;
+  PatternFlowGtpv1Teid teid = 9;
 
-  FlowPattern squence_number = 10;
+  PatternFlowGtpv1SquenceNumber squence_number = 10;
 
-  FlowPattern n_pdu_number = 11;
+  PatternFlowGtpv1NPduNumber n_pdu_number = 11;
 
-  FlowPattern next_extension_header_type = 12;
+  PatternFlowGtpv1NextExtensionHeaderType next_extension_header_type = 12;
 
   repeated FlowGtpExtension extension_headers = 13;
 }
 
 message FlowGtpExtension {
-  FlowPattern extension_length = 1;
+  PatternFlowGtpExtensionExtensionLength extension_length = 1;
 
-  FlowPattern contents = 2;
+  PatternFlowGtpExtensionContents contents = 2;
 
-  FlowPattern next_extension_header = 3;
+  PatternFlowGtpExtensionNextExtensionHeader next_extension_header = 3;
 }
 
 message FlowGtpv2 {
-  FlowPattern version = 1;
+  PatternFlowGtpv2Version version = 1;
 
-  FlowPattern piggybacking_flag = 2;
+  PatternFlowGtpv2PiggybackingFlag piggybacking_flag = 2;
 
-  FlowPattern teid_flag = 3;
+  PatternFlowGtpv2TeidFlag teid_flag = 3;
 
-  FlowPattern spare1 = 4;
+  PatternFlowGtpv2Spare1 spare1 = 4;
 
-  FlowPattern message_type = 5;
+  PatternFlowGtpv2MessageType message_type = 5;
 
-  FlowPattern message_length = 6;
+  PatternFlowGtpv2MessageLength message_length = 6;
 
-  FlowPattern teid = 7;
+  PatternFlowGtpv2Teid teid = 7;
 
-  FlowPattern sequence_number = 8;
+  PatternFlowGtpv2SequenceNumber sequence_number = 8;
 
-  FlowPattern spare2 = 9;
+  PatternFlowGtpv2Spare2 spare2 = 9;
 }
 
 message FlowArp {
-  FlowPattern hardware_type = 1;
+  PatternFlowArpHardwareType hardware_type = 1;
 
-  FlowPattern protocol_type = 2;
+  PatternFlowArpProtocolType protocol_type = 2;
 
-  FlowPattern hardware_length = 3;
+  PatternFlowArpHardwareLength hardware_length = 3;
 
-  FlowPattern protocol_length = 4;
+  PatternFlowArpProtocolLength protocol_length = 4;
 
-  FlowPattern operation = 5;
+  PatternFlowArpOperation operation = 5;
 
-  FlowPattern sender_hardware_addr = 6;
+  PatternFlowArpSenderHardwareAddr sender_hardware_addr = 6;
 
-  FlowPattern sender_protocol_addr = 7;
+  PatternFlowArpSenderProtocolAddr sender_protocol_addr = 7;
 
-  FlowPattern target_hardware_addr = 8;
+  PatternFlowArpTargetHardwareAddr target_hardware_addr = 8;
 
-  FlowPattern target_protocol_addr = 9;
+  PatternFlowArpTargetProtocolAddr target_protocol_addr = 9;
+}
+
+message FlowIcmp {
+  Choice.Enum choice = 1;
+
+  FlowIcmpEcho echo = 2;
+
+  message Choice { enum Enum {
+    echo = 0;
+  } }
+}
+
+message FlowIcmpEcho {
+  PatternFlowIcmpEchoType type = 1;
+
+  PatternFlowIcmpEchoCode code = 2;
+
+  PatternFlowIcmpEchoChecksum checksum = 3;
+
+  PatternFlowIcmpEchoIdentifier identifier = 4;
+
+  PatternFlowIcmpEchoSequenceNumber sequence_number = 5;
+}
+
+message FlowIcmpCommon {
+  PatternFlowIcmpCommonChecksum checksum = 1;
+}
+
+message FlowIcmpNextFields {
+  PatternFlowIcmpNextFieldsIdentifier identifier = 1;
+
+  PatternFlowIcmpNextFieldsSequenceNumber sequence_number = 2;
+}
+
+message FlowIcmpv6 {
+  Choice.Enum choice = 1;
+
+  FlowIcmpv6Echo echo = 2;
+
+  message Choice { enum Enum {
+    echo = 0;
+  } }
+}
+
+message FlowIcmpv6Echo {
+  PatternFlowIcmpv6EchoType type = 1;
+
+  PatternFlowIcmpv6EchoCode code = 2;
+
+  PatternFlowIcmpv6EchoIdentifier identifier = 3;
+
+  PatternFlowIcmpv6EchoSequenceNumber sequence_number = 4;
+
+  PatternFlowIcmpv6EchoChecksum checksum = 5;
+}
+
+message FlowIcmpv6Common {
+  PatternFlowIcmpv6CommonChecksum checksum = 1;
+}
+
+message FlowPpp {
+  PatternFlowPppAddress address = 1;
+
+  PatternFlowPppControl control = 2;
+
+  PatternFlowPppProtocolType protocol_type = 3;
+}
+
+message FlowIgmpv1 {
+  PatternFlowIgmpv1Version version = 1;
+
+  PatternFlowIgmpv1Type type = 2;
+
+  PatternFlowIgmpv1Unused unused = 3;
+
+  PatternFlowIgmpv1Checksum checksum = 4;
+
+  PatternFlowIgmpv1GroupAddress group_address = 5;
 }
 
 message FlowSize {
-  Choice choice = 1;
+  Choice.Enum choice = 1;
 
-  int64 fixed = 2;
+  int32 fixed = 2;
 
   FlowSizeIncrement increment = 3;
 
   FlowSizeRandom random = 4;
 
-  enum Choice {
-    FIXED = 0;
+  message Choice { enum Enum {
+    fixed = 0;
 
-    INCREMENT = 1;
+    increment = 1;
 
-    RANDOM = 2;
-  }
+    random = 2;
+  } }
 }
 
 message FlowSizeIncrement {
-  int64 start = 1;
+  int32 start = 1;
 
-  int64 end = 2;
+  int32 end = 2;
 
-  int64 step = 3;
+  int32 step = 3;
 }
 
 message FlowSizeRandom {
-  int64 min = 1;
+  int32 min = 1;
 
-  int64 max = 2;
+  int32 max = 2;
 }
 
 message FlowRate {
-  Choice choice = 1;
+  Choice.Enum choice = 1;
 
-  int64 pps = 2;
+  int32 pps = 2;
 
-  int64 bps = 3;
+  int32 bps = 3;
 
-  int64 kbps = 4;
+  float kbps = 4;
 
-  int64 mbps = 5;
+  float mbps = 5;
 
-  int64 gbps = 6;
+  float gbps = 6;
 
   float percentage = 7;
 
-  enum Choice {
-    PPS = 0;
+  message Choice { enum Enum {
+    pps = 0;
 
-    BPS = 1;
+    bps = 1;
 
-    KBPS = 2;
+    kbps = 2;
 
-    MBPS = 3;
+    mbps = 3;
 
-    GBPS = 4;
+    gbps = 4;
 
-    PERCENTAGE = 5;
-  }
+    percentage = 5;
+  } }
 }
 
 message FlowDuration {
-  Choice choice = 1;
+  Choice.Enum choice = 1;
 
   FlowFixedPackets fixed_packets = 2;
 
@@ -1104,89 +1464,95 @@ message FlowDuration {
 
   FlowContinuous continuous = 5;
 
-  enum Choice {
-    FIXED_PACKETS = 0;
+  message Choice { enum Enum {
+    fixed_packets = 0;
 
-    FIXED_SECONDS = 1;
+    fixed_seconds = 1;
 
-    BURST = 2;
+    burst = 2;
 
-    CONTINUOUS = 3;
-  }
+    continuous = 3;
+  } }
 }
 
 message FlowContinuous {
-  int64 gap = 1;
+  int32 gap = 1;
 
-  int64 delay = 2;
+  FlowDelay delay = 2;
+}
 
-  Delay_unit delay_unit = 3;
+message FlowDelay {
+  Choice.Enum choice = 1;
 
-  enum Delay_unit {
-    BYTES = 0;
+  float bytes = 2;
 
-    NANOSECONDS = 1;
-  }
+  float nanoseconds = 3;
+
+  float microseconds = 4;
+
+  message Choice { enum Enum {
+    bytes = 0;
+
+    nanoseconds = 1;
+
+    microseconds = 2;
+  } }
 }
 
 message FlowFixedPackets {
-  int64 packets = 1;
+  int32 packets = 1;
 
-  int64 gap = 2;
+  int32 gap = 2;
 
-  int64 delay = 3;
-
-  Delay_unit delay_unit = 4;
-
-  enum Delay_unit {
-    BYTES = 0;
-
-    NANOSECONDS = 1;
-  }
+  FlowDelay delay = 3;
 }
 
 message FlowFixedSeconds {
   float seconds = 1;
 
-  int64 gap = 2;
+  int32 gap = 2;
 
-  int64 delay = 3;
-
-  Delay_unit delay_unit = 4;
-
-  enum Delay_unit {
-    BYTES = 0;
-
-    NANOSECONDS = 1;
-  }
+  FlowDelay delay = 3;
 }
 
 message FlowBurst {
-  int64 packets = 1;
+  int32 bursts = 1;
 
-  int64 gap = 2;
+  int32 packets = 2;
 
-  int64 inter_burst_gap = 3;
+  int32 gap = 3;
 
-  Inter_burst_gap_unit inter_burst_gap_unit = 4;
+  FlowDurationInterBurstGap inter_burst_gap = 4;
+}
 
-  enum Inter_burst_gap_unit {
-    BYTES = 0;
+message FlowDurationInterBurstGap {
+  Choice.Enum choice = 1;
 
-    NANOSECONDS = 1;
-  }
+  double bytes = 2;
+
+  double nanoseconds = 3;
+
+  double microseconds = 4;
+
+  message Choice { enum Enum {
+    bytes = 0;
+
+    nanoseconds = 1;
+
+    microseconds = 2;
+  } }
 }
 
 message PendingDetail {
-  State state = 1;
+  State.Enum state = 1;
 
   string url = 2;
 
-  enum State {
-    PENDING = 0;
+  message State { enum Enum {
+    pending = 0;
 
-    SUCCESS = 1;
-  }
+    success = 1;
+  } }
 }
 
 message Details {
@@ -1198,67 +1564,67 @@ message Details {
 message LinkState {
   repeated string port_names = 1;
 
-  State state = 2;
+  State.Enum state = 2;
 
-  enum State {
-    UP = 0;
+  message State { enum Enum {
+    up = 0;
 
-    DOWN = 1;
-  }
+    down = 1;
+  } }
 }
 
 message TransmitState {
   repeated string flow_names = 1;
 
-  State state = 2;
+  State.Enum state = 2;
 
-  enum State {
-    START = 0;
+  message State { enum Enum {
+    start = 0;
 
-    STOP = 1;
+    stop = 1;
 
-    PAUSE = 2;
-  }
+    pause = 2;
+  } }
 }
 
 message CaptureState {
   repeated string port_names = 1;
 
-  State state = 2;
+  State.Enum state = 2;
 
-  enum State {
-    START = 0;
+  message State { enum Enum {
+    start = 0;
 
-    STOP = 1;
-  }
+    stop = 1;
+  } }
 }
 
 message Bgpv4RouteState {
   repeated string names = 1;
 
-  State state = 2;
+  State.Enum state = 2;
 
-  enum State {
-    WITHDRAW_ROUTES = 0;
+  message State { enum Enum {
+    withdraw_routes = 0;
 
-    ADVERTISE_ROUTES = 1;
-  }
+    advertise_routes = 1;
+  } }
 }
 
 message Bgpv6RouteState {
   repeated string names = 1;
 
-  State state = 2;
+  State.Enum state = 2;
 
-  enum State {
-    WITHDRAW_ROUTES = 0;
+  message State { enum Enum {
+    withdraw_routes = 0;
 
-    ADVERTISE_ROUTES = 1;
-  }
+    advertise_routes = 1;
+  } }
 }
 
 message MetricsRequest {
-  Choice choice = 1;
+  Choice.Enum choice = 1;
 
   PortMetricsRequest port = 2;
 
@@ -1266,17 +1632,21 @@ message MetricsRequest {
 
   Bgpv4MetricsRequest bgpv4 = 4;
 
-  enum Choice {
-    PORT = 0;
+  Bgpv6MetricsRequest bgpv6 = 5;
 
-    FLOW = 1;
+  message Choice { enum Enum {
+    port = 0;
 
-    BGPV4 = 2;
-  }
+    flow = 1;
+
+    bgpv4 = 2;
+
+    bgpv6 = 3;
+  } }
 }
 
 message MetricsResponse {
-  Choice choice = 1;
+  Choice.Enum choice = 1;
 
   repeated PortMetric port_metrics = 2;
 
@@ -1284,13 +1654,15 @@ message MetricsResponse {
 
   repeated Bgpv4Metric bgpv4_metrics = 4;
 
-  enum Choice {
-    PORT_METRICS = 0;
+  repeated Bgpv6Metric bgpv6_metrics = 5;
 
-    FLOW_METRICS = 1;
+  message Choice { enum Enum {
+    port_metrics = 0;
 
-    BGPV4_METRICS = 2;
-  }
+    flow_metrics = 1;
+
+    bgpv4_metrics = 2;
+  } }
 }
 
 message PortMetricsRequest {
@@ -1298,31 +1670,31 @@ message PortMetricsRequest {
 
   repeated Column_names column_names = 2;
 
-  enum Column_names {
-    TRANSMIT = 0;
+  message Column_names { enum Enum {
+    transmit = 0;
 
-    LOCATION = 1;
+    location = 1;
 
-    LINK = 2;
+    link = 2;
 
-    CAPTURE = 3;
+    capture = 3;
 
-    FRAMES_TX = 4;
+    frames_tx = 4;
 
-    FRAMES_RX = 5;
+    frames_rx = 5;
 
-    BYTES_TX = 6;
+    bytes_tx = 6;
 
-    BYTES_RX = 7;
+    bytes_rx = 7;
 
-    FRAMES_TX_RATE = 8;
+    frames_tx_rate = 8;
 
-    FRAMES_RX_RATE = 9;
+    frames_rx_rate = 9;
 
-    BYTES_TX_RATE = 10;
+    bytes_tx_rate = 10;
 
-    BYTES_RX_RATE = 11;
-  }
+    bytes_rx_rate = 11;
+  } }
 }
 
 message PortMetric {
@@ -1330,17 +1702,17 @@ message PortMetric {
 
   string location = 2;
 
-  Link link = 3;
+  Link.Enum link = 3;
 
-  Capture capture = 4;
+  Capture.Enum capture = 4;
 
-  int64 frames_tx = 5;
+  int32 frames_tx = 5;
 
-  int64 frames_rx = 6;
+  int32 frames_rx = 6;
 
-  int64 bytes_tx = 7;
+  int32 bytes_tx = 7;
 
-  int64 bytes_rx = 8;
+  int32 bytes_rx = 8;
 
   float frames_tx_rate = 9;
 
@@ -1350,17 +1722,17 @@ message PortMetric {
 
   float bytes_rx_rate = 12;
 
-  enum Link {
-    UP = 0;
+  message Link { enum Enum {
+    up = 0;
 
-    DOWN = 1;
-  }
+    down = 1;
+  } }
 
-  enum Capture {
-    STARTED = 0;
+  message Capture { enum Enum {
+    started = 0;
 
-    STOPPED = 1;
-  }
+    stopped = 1;
+  } }
 }
 
 message FlowMetricsRequest {
@@ -1370,27 +1742,33 @@ message FlowMetricsRequest {
 
   repeated string metric_group_names = 3;
 
-  enum Column_names {
-    TRANSMIT = 0;
+  message Column_names { enum Enum {
+    transmit = 0;
 
-    PORT_TX = 1;
+    port_tx = 1;
 
-    PORT_RX = 2;
+    port_rx = 2;
 
-    FRAMES_TX = 3;
+    frames_tx = 3;
 
-    FRAMES_RX = 4;
+    frames_rx = 4;
 
-    BYTES_TX = 5;
+    bytes_tx = 5;
 
-    BYTES_RX = 6;
+    bytes_rx = 6;
 
-    FRAMES_TX_RATE = 7;
+    frames_tx_rate = 7;
 
-    FRAMES_RX_RATE = 8;
+    frames_rx_rate = 8;
 
-    LOSS = 9;
-  }
+    min_latency_ns = 9;
+
+    max_latency_ns = 10;
+
+    avg_latency_ns = 11;
+
+    loss = 12;
+  } }
 }
 
 message FlowMetricGroup {
@@ -1402,55 +1780,113 @@ message FlowMetricGroup {
 message FlowMetric {
   string name = 1;
 
-  Transmit transmit = 2;
+  Transmit.Enum transmit = 2;
 
   string port_tx = 3;
 
   string port_rx = 4;
 
-  int64 frames_tx = 5;
+  int32 frames_tx = 5;
 
-  int64 frames_rx = 6;
+  int32 frames_rx = 6;
 
-  int64 bytes_tx = 7;
+  int32 bytes_tx = 7;
 
-  int64 bytes_rx = 8;
+  int32 bytes_rx = 8;
 
   float frames_tx_rate = 9;
 
   float frames_rx_rate = 10;
 
-  float loss = 11;
+  float min_latency_ns = 11;
 
-  repeated FlowMetricGroup metric_groups = 12;
+  float max_latency_ns = 12;
 
-  enum Transmit {
-    STARTED = 0;
+  float avg_latency_ns = 13;
 
-    STOPPED = 1;
+  float loss = 14;
 
-    PAUSED = 2;
-  }
+  repeated FlowMetricGroup metric_groups = 15;
+
+  message Transmit { enum Enum {
+    started = 0;
+
+    stopped = 1;
+
+    paused = 2;
+  } }
 }
 
 message Bgpv4MetricsRequest {
-  repeated string names = 1;
+  repeated string device_names = 1;
+
+  repeated Column_names column_names = 2;
+
+  message Column_names { enum Enum {
+    sessions_total = 0;
+
+    sessions_up = 1;
+
+    sessions_down = 2;
+
+    sessions_not_started = 3;
+
+    routes_advertised = 4;
+
+    routes_withdrawn = 5;
+  } }
 }
 
 message Bgpv4Metric {
   string name = 1;
 
-  int64 sessions_total = 2;
+  int32 sessions_total = 2;
 
-  int64 sessions_up = 3;
+  int32 sessions_up = 3;
 
-  int64 sessions_down = 4;
+  int32 sessions_down = 4;
 
-  int64 sessions_not_started = 5;
+  int32 sessions_not_started = 5;
 
-  int64 routes_advertised = 6;
+  int32 routes_advertised = 6;
 
-  int64 routes_withdrawn = 7;
+  int32 routes_withdrawn = 7;
+}
+
+message Bgpv6MetricsRequest {
+  repeated string device_names = 1;
+
+  repeated Column_names column_names = 2;
+
+  message Column_names { enum Enum {
+    sessions_total = 0;
+
+    sessions_up = 1;
+
+    sessions_down = 2;
+
+    sessions_not_started = 3;
+
+    routes_advertised = 4;
+
+    routes_withdrawn = 5;
+  } }
+}
+
+message Bgpv6Metric {
+  string name = 1;
+
+  int32 sessions_total = 2;
+
+  int32 sessions_up = 3;
+
+  int32 sessions_down = 4;
+
+  int32 sessions_not_started = 5;
+
+  int32 routes_advertised = 6;
+
+  int32 routes_withdrawn = 7;
 }
 
 message StateMetrics {
@@ -1462,35 +1898,35 @@ message StateMetrics {
 message PortState {
   string name = 1;
 
-  Link link = 2;
+  Link.Enum link = 2;
 
-  Capture capture = 3;
+  Capture.Enum capture = 3;
 
-  enum Link {
-    UP = 0;
+  message Link { enum Enum {
+    up = 0;
 
-    DOWN = 1;
-  }
+    down = 1;
+  } }
 
-  enum Capture {
-    STARTED = 0;
+  message Capture { enum Enum {
+    started = 0;
 
-    STOPPED = 1;
-  }
+    stopped = 1;
+  } }
 }
 
 message FlowState {
   string name = 1;
 
-  Transmit transmit = 2;
+  Transmit.Enum transmit = 2;
 
-  enum Transmit {
-    STARTED = 0;
+  message Transmit { enum Enum {
+    started = 0;
 
-    STOPPED = 1;
+    stopped = 1;
 
-    PAUSED = 2;
-  }
+    paused = 2;
+  } }
 }
 
 message Capabilities {
@@ -1503,6 +1939,4430 @@ message CaptureRequest {
   string port_name = 1;
 }
 
+message PatternFlowEthernetDstCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowEthernetDst {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowEthernetDstCounter increment = 5;
+
+  PatternFlowEthernetDstCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowEthernetSrcCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowEthernetSrc {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowEthernetSrcCounter increment = 5;
+
+  PatternFlowEthernetSrcCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowEthernetEtherTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowEthernetEtherType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  Auto.Enum auto = 4;
+
+  string metric_group = 5;
+
+  PatternFlowEthernetEtherTypeCounter increment = 6;
+
+  PatternFlowEthernetEtherTypeCounter decrement = 7;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    auto = 2;
+
+    increment = 3;
+
+    decrement = 4;
+  } }
+
+  message Auto { enum Enum {
+    auto = 0;
+  } }
+}
+
+message PatternFlowEthernetPfcQueueCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowEthernetPfcQueue {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowEthernetPfcQueueCounter increment = 5;
+
+  PatternFlowEthernetPfcQueueCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowVlanPriorityCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowVlanPriority {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowVlanPriorityCounter increment = 5;
+
+  PatternFlowVlanPriorityCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowVlanCfiCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowVlanCfi {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowVlanCfiCounter increment = 5;
+
+  PatternFlowVlanCfiCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowVlanIdCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowVlanId {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowVlanIdCounter increment = 5;
+
+  PatternFlowVlanIdCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowVlanTpidCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowVlanTpid {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowVlanTpidCounter increment = 5;
+
+  PatternFlowVlanTpidCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowVxlanFlagsCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowVxlanFlags {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowVxlanFlagsCounter increment = 5;
+
+  PatternFlowVxlanFlagsCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowVxlanReserved0Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowVxlanReserved0 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowVxlanReserved0Counter increment = 5;
+
+  PatternFlowVxlanReserved0Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowVxlanVniCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowVxlanVni {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowVxlanVniCounter increment = 5;
+
+  PatternFlowVxlanVniCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowVxlanReserved1Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowVxlanReserved1 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowVxlanReserved1Counter increment = 5;
+
+  PatternFlowVxlanReserved1Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4VersionCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4Version {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4VersionCounter increment = 5;
+
+  PatternFlowIpv4VersionCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4HeaderLengthCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4HeaderLength {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  Auto.Enum auto = 4;
+
+  string metric_group = 5;
+
+  PatternFlowIpv4HeaderLengthCounter increment = 6;
+
+  PatternFlowIpv4HeaderLengthCounter decrement = 7;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    auto = 2;
+
+    increment = 3;
+
+    decrement = 4;
+  } }
+
+  message Auto { enum Enum {
+    auto = 0;
+  } }
+}
+
+message PatternFlowIpv4TotalLengthCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4TotalLength {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  Auto.Enum auto = 4;
+
+  string metric_group = 5;
+
+  PatternFlowIpv4TotalLengthCounter increment = 6;
+
+  PatternFlowIpv4TotalLengthCounter decrement = 7;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    auto = 2;
+
+    increment = 3;
+
+    decrement = 4;
+  } }
+
+  message Auto { enum Enum {
+    auto = 0;
+  } }
+}
+
+message PatternFlowIpv4IdentificationCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4Identification {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4IdentificationCounter increment = 5;
+
+  PatternFlowIpv4IdentificationCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4ReservedCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4Reserved {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4ReservedCounter increment = 5;
+
+  PatternFlowIpv4ReservedCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4DontFragmentCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4DontFragment {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4DontFragmentCounter increment = 5;
+
+  PatternFlowIpv4DontFragmentCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4MoreFragmentsCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4MoreFragments {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4MoreFragmentsCounter increment = 5;
+
+  PatternFlowIpv4MoreFragmentsCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4FragmentOffsetCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4FragmentOffset {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4FragmentOffsetCounter increment = 5;
+
+  PatternFlowIpv4FragmentOffsetCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4TimeToLiveCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4TimeToLive {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4TimeToLiveCounter increment = 5;
+
+  PatternFlowIpv4TimeToLiveCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4ProtocolCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4Protocol {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4ProtocolCounter increment = 5;
+
+  PatternFlowIpv4ProtocolCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4HeaderChecksum {
+  Choice.Enum choice = 1;
+
+  Generated.Enum generated = 2;
+
+  int32 custom = 3;
+
+  message Choice { enum Enum {
+    generated = 0;
+
+    custom = 1;
+  } }
+
+  message Generated { enum Enum {
+    good = 0;
+
+    bad = 1;
+  } }
+}
+
+message PatternFlowIpv4SrcCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4Src {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4SrcCounter increment = 5;
+
+  PatternFlowIpv4SrcCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4DstCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4Dst {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4DstCounter increment = 5;
+
+  PatternFlowIpv4DstCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4PriorityRawCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4PriorityRaw {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4PriorityRawCounter increment = 5;
+
+  PatternFlowIpv4PriorityRawCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4DscpPhbCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4DscpPhb {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4DscpPhbCounter increment = 5;
+
+  PatternFlowIpv4DscpPhbCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4DscpEcnCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4DscpEcn {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4DscpEcnCounter increment = 5;
+
+  PatternFlowIpv4DscpEcnCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4TosPrecedenceCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4TosPrecedence {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4TosPrecedenceCounter increment = 5;
+
+  PatternFlowIpv4TosPrecedenceCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4TosDelayCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4TosDelay {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4TosDelayCounter increment = 5;
+
+  PatternFlowIpv4TosDelayCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4TosThroughputCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4TosThroughput {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4TosThroughputCounter increment = 5;
+
+  PatternFlowIpv4TosThroughputCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4TosReliabilityCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4TosReliability {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4TosReliabilityCounter increment = 5;
+
+  PatternFlowIpv4TosReliabilityCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4TosMonetaryCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4TosMonetary {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4TosMonetaryCounter increment = 5;
+
+  PatternFlowIpv4TosMonetaryCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv4TosUnusedCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv4TosUnused {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv4TosUnusedCounter increment = 5;
+
+  PatternFlowIpv4TosUnusedCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv6VersionCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv6Version {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv6VersionCounter increment = 5;
+
+  PatternFlowIpv6VersionCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv6TrafficClassCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv6TrafficClass {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv6TrafficClassCounter increment = 5;
+
+  PatternFlowIpv6TrafficClassCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv6FlowLabelCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv6FlowLabel {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv6FlowLabelCounter increment = 5;
+
+  PatternFlowIpv6FlowLabelCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv6PayloadLengthCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv6PayloadLength {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  Auto.Enum auto = 4;
+
+  string metric_group = 5;
+
+  PatternFlowIpv6PayloadLengthCounter increment = 6;
+
+  PatternFlowIpv6PayloadLengthCounter decrement = 7;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    auto = 2;
+
+    increment = 3;
+
+    decrement = 4;
+  } }
+
+  message Auto { enum Enum {
+    auto = 0;
+  } }
+}
+
+message PatternFlowIpv6NextHeaderCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv6NextHeader {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv6NextHeaderCounter increment = 5;
+
+  PatternFlowIpv6NextHeaderCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv6HopLimitCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv6HopLimit {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv6HopLimitCounter increment = 5;
+
+  PatternFlowIpv6HopLimitCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv6SrcCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv6Src {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv6SrcCounter increment = 5;
+
+  PatternFlowIpv6SrcCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIpv6DstCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIpv6Dst {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIpv6DstCounter increment = 5;
+
+  PatternFlowIpv6DstCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPauseDstCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPauseDst {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPauseDstCounter increment = 5;
+
+  PatternFlowPfcPauseDstCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPauseSrcCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPauseSrc {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPauseSrcCounter increment = 5;
+
+  PatternFlowPfcPauseSrcCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPauseEtherTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPauseEtherType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPauseEtherTypeCounter increment = 5;
+
+  PatternFlowPfcPauseEtherTypeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPauseControlOpCodeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPauseControlOpCode {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPauseControlOpCodeCounter increment = 5;
+
+  PatternFlowPfcPauseControlOpCodeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPauseClassEnableVectorCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPauseClassEnableVector {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPauseClassEnableVectorCounter increment = 5;
+
+  PatternFlowPfcPauseClassEnableVectorCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPausePauseClass0Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPausePauseClass0 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPausePauseClass0Counter increment = 5;
+
+  PatternFlowPfcPausePauseClass0Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPausePauseClass1Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPausePauseClass1 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPausePauseClass1Counter increment = 5;
+
+  PatternFlowPfcPausePauseClass1Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPausePauseClass2Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPausePauseClass2 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPausePauseClass2Counter increment = 5;
+
+  PatternFlowPfcPausePauseClass2Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPausePauseClass3Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPausePauseClass3 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPausePauseClass3Counter increment = 5;
+
+  PatternFlowPfcPausePauseClass3Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPausePauseClass4Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPausePauseClass4 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPausePauseClass4Counter increment = 5;
+
+  PatternFlowPfcPausePauseClass4Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPausePauseClass5Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPausePauseClass5 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPausePauseClass5Counter increment = 5;
+
+  PatternFlowPfcPausePauseClass5Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPausePauseClass6Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPausePauseClass6 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPausePauseClass6Counter increment = 5;
+
+  PatternFlowPfcPausePauseClass6Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPfcPausePauseClass7Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPfcPausePauseClass7 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPfcPausePauseClass7Counter increment = 5;
+
+  PatternFlowPfcPausePauseClass7Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowEthernetPauseDstCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowEthernetPauseDst {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowEthernetPauseDstCounter increment = 5;
+
+  PatternFlowEthernetPauseDstCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowEthernetPauseSrcCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowEthernetPauseSrc {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowEthernetPauseSrcCounter increment = 5;
+
+  PatternFlowEthernetPauseSrcCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowEthernetPauseEtherTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowEthernetPauseEtherType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowEthernetPauseEtherTypeCounter increment = 5;
+
+  PatternFlowEthernetPauseEtherTypeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowEthernetPauseControlOpCodeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowEthernetPauseControlOpCode {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowEthernetPauseControlOpCodeCounter increment = 5;
+
+  PatternFlowEthernetPauseControlOpCodeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowEthernetPauseTimeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowEthernetPauseTime {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowEthernetPauseTimeCounter increment = 5;
+
+  PatternFlowEthernetPauseTimeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpSrcPortCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpSrcPort {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpSrcPortCounter increment = 5;
+
+  PatternFlowTcpSrcPortCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpDstPortCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpDstPort {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpDstPortCounter increment = 5;
+
+  PatternFlowTcpDstPortCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpSeqNumCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpSeqNum {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpSeqNumCounter increment = 5;
+
+  PatternFlowTcpSeqNumCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpAckNumCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpAckNum {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpAckNumCounter increment = 5;
+
+  PatternFlowTcpAckNumCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpDataOffsetCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpDataOffset {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpDataOffsetCounter increment = 5;
+
+  PatternFlowTcpDataOffsetCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpEcnNsCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpEcnNs {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpEcnNsCounter increment = 5;
+
+  PatternFlowTcpEcnNsCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpEcnCwrCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpEcnCwr {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpEcnCwrCounter increment = 5;
+
+  PatternFlowTcpEcnCwrCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpEcnEchoCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpEcnEcho {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpEcnEchoCounter increment = 5;
+
+  PatternFlowTcpEcnEchoCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpCtlUrgCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpCtlUrg {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpCtlUrgCounter increment = 5;
+
+  PatternFlowTcpCtlUrgCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpCtlAckCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpCtlAck {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpCtlAckCounter increment = 5;
+
+  PatternFlowTcpCtlAckCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpCtlPshCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpCtlPsh {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpCtlPshCounter increment = 5;
+
+  PatternFlowTcpCtlPshCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpCtlRstCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpCtlRst {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpCtlRstCounter increment = 5;
+
+  PatternFlowTcpCtlRstCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpCtlSynCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpCtlSyn {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpCtlSynCounter increment = 5;
+
+  PatternFlowTcpCtlSynCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpCtlFinCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpCtlFin {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpCtlFinCounter increment = 5;
+
+  PatternFlowTcpCtlFinCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowTcpWindowCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowTcpWindow {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowTcpWindowCounter increment = 5;
+
+  PatternFlowTcpWindowCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowUdpSrcPortCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowUdpSrcPort {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowUdpSrcPortCounter increment = 5;
+
+  PatternFlowUdpSrcPortCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowUdpDstPortCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowUdpDstPort {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowUdpDstPortCounter increment = 5;
+
+  PatternFlowUdpDstPortCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowUdpLengthCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowUdpLength {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowUdpLengthCounter increment = 5;
+
+  PatternFlowUdpLengthCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowUdpChecksum {
+  Choice.Enum choice = 1;
+
+  Generated.Enum generated = 2;
+
+  int32 custom = 3;
+
+  message Choice { enum Enum {
+    generated = 0;
+
+    custom = 1;
+  } }
+
+  message Generated { enum Enum {
+    good = 0;
+
+    bad = 1;
+  } }
+}
+
+message PatternFlowGreChecksumPresentCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGreChecksumPresent {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGreChecksumPresentCounter increment = 5;
+
+  PatternFlowGreChecksumPresentCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGreReserved0Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGreReserved0 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGreReserved0Counter increment = 5;
+
+  PatternFlowGreReserved0Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGreVersionCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGreVersion {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGreVersionCounter increment = 5;
+
+  PatternFlowGreVersionCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGreProtocolCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGreProtocol {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGreProtocolCounter increment = 5;
+
+  PatternFlowGreProtocolCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGreChecksum {
+  Choice.Enum choice = 1;
+
+  Generated.Enum generated = 2;
+
+  int32 custom = 3;
+
+  message Choice { enum Enum {
+    generated = 0;
+
+    custom = 1;
+  } }
+
+  message Generated { enum Enum {
+    good = 0;
+
+    bad = 1;
+  } }
+}
+
+message PatternFlowGreReserved1Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGreReserved1 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGreReserved1Counter increment = 5;
+
+  PatternFlowGreReserved1Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1VersionCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1Version {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1VersionCounter increment = 5;
+
+  PatternFlowGtpv1VersionCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1ProtocolTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1ProtocolType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1ProtocolTypeCounter increment = 5;
+
+  PatternFlowGtpv1ProtocolTypeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1ReservedCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1Reserved {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1ReservedCounter increment = 5;
+
+  PatternFlowGtpv1ReservedCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1EFlagCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1EFlag {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1EFlagCounter increment = 5;
+
+  PatternFlowGtpv1EFlagCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1SFlagCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1SFlag {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1SFlagCounter increment = 5;
+
+  PatternFlowGtpv1SFlagCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1PnFlagCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1PnFlag {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1PnFlagCounter increment = 5;
+
+  PatternFlowGtpv1PnFlagCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1MessageTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1MessageType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1MessageTypeCounter increment = 5;
+
+  PatternFlowGtpv1MessageTypeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1MessageLengthCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1MessageLength {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1MessageLengthCounter increment = 5;
+
+  PatternFlowGtpv1MessageLengthCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1TeidCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1Teid {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1TeidCounter increment = 5;
+
+  PatternFlowGtpv1TeidCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1SquenceNumberCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1SquenceNumber {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1SquenceNumberCounter increment = 5;
+
+  PatternFlowGtpv1SquenceNumberCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1NPduNumberCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1NPduNumber {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1NPduNumberCounter increment = 5;
+
+  PatternFlowGtpv1NPduNumberCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv1NextExtensionHeaderTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv1NextExtensionHeaderType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv1NextExtensionHeaderTypeCounter increment = 5;
+
+  PatternFlowGtpv1NextExtensionHeaderTypeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpExtensionExtensionLengthCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpExtensionExtensionLength {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpExtensionExtensionLengthCounter increment = 5;
+
+  PatternFlowGtpExtensionExtensionLengthCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpExtensionContentsCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpExtensionContents {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpExtensionContentsCounter increment = 5;
+
+  PatternFlowGtpExtensionContentsCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpExtensionNextExtensionHeaderCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpExtensionNextExtensionHeader {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpExtensionNextExtensionHeaderCounter increment = 5;
+
+  PatternFlowGtpExtensionNextExtensionHeaderCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv2VersionCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv2Version {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv2VersionCounter increment = 5;
+
+  PatternFlowGtpv2VersionCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv2PiggybackingFlagCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv2PiggybackingFlag {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv2PiggybackingFlagCounter increment = 5;
+
+  PatternFlowGtpv2PiggybackingFlagCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv2TeidFlagCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv2TeidFlag {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv2TeidFlagCounter increment = 5;
+
+  PatternFlowGtpv2TeidFlagCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv2Spare1Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv2Spare1 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv2Spare1Counter increment = 5;
+
+  PatternFlowGtpv2Spare1Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv2MessageTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv2MessageType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv2MessageTypeCounter increment = 5;
+
+  PatternFlowGtpv2MessageTypeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv2MessageLengthCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv2MessageLength {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv2MessageLengthCounter increment = 5;
+
+  PatternFlowGtpv2MessageLengthCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv2TeidCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv2Teid {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv2TeidCounter increment = 5;
+
+  PatternFlowGtpv2TeidCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv2SequenceNumberCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv2SequenceNumber {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv2SequenceNumberCounter increment = 5;
+
+  PatternFlowGtpv2SequenceNumberCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowGtpv2Spare2Counter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowGtpv2Spare2 {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowGtpv2Spare2Counter increment = 5;
+
+  PatternFlowGtpv2Spare2Counter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowArpHardwareTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowArpHardwareType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowArpHardwareTypeCounter increment = 5;
+
+  PatternFlowArpHardwareTypeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowArpProtocolTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowArpProtocolType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowArpProtocolTypeCounter increment = 5;
+
+  PatternFlowArpProtocolTypeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowArpHardwareLengthCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowArpHardwareLength {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowArpHardwareLengthCounter increment = 5;
+
+  PatternFlowArpHardwareLengthCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowArpProtocolLengthCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowArpProtocolLength {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowArpProtocolLengthCounter increment = 5;
+
+  PatternFlowArpProtocolLengthCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowArpOperationCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowArpOperation {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowArpOperationCounter increment = 5;
+
+  PatternFlowArpOperationCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowArpSenderHardwareAddrCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowArpSenderHardwareAddr {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowArpSenderHardwareAddrCounter increment = 5;
+
+  PatternFlowArpSenderHardwareAddrCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowArpSenderProtocolAddrCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowArpSenderProtocolAddr {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowArpSenderProtocolAddrCounter increment = 5;
+
+  PatternFlowArpSenderProtocolAddrCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowArpTargetHardwareAddrCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowArpTargetHardwareAddr {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowArpTargetHardwareAddrCounter increment = 5;
+
+  PatternFlowArpTargetHardwareAddrCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowArpTargetProtocolAddrCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowArpTargetProtocolAddr {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowArpTargetProtocolAddrCounter increment = 5;
+
+  PatternFlowArpTargetProtocolAddrCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIcmpEchoTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIcmpEchoType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIcmpEchoTypeCounter increment = 5;
+
+  PatternFlowIcmpEchoTypeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIcmpEchoCodeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIcmpEchoCode {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIcmpEchoCodeCounter increment = 5;
+
+  PatternFlowIcmpEchoCodeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIcmpEchoChecksum {
+  Choice.Enum choice = 1;
+
+  Generated.Enum generated = 2;
+
+  int32 custom = 3;
+
+  message Choice { enum Enum {
+    generated = 0;
+
+    custom = 1;
+  } }
+
+  message Generated { enum Enum {
+    good = 0;
+
+    bad = 1;
+  } }
+}
+
+message PatternFlowIcmpEchoIdentifierCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIcmpEchoIdentifier {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIcmpEchoIdentifierCounter increment = 5;
+
+  PatternFlowIcmpEchoIdentifierCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIcmpEchoSequenceNumberCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIcmpEchoSequenceNumber {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIcmpEchoSequenceNumberCounter increment = 5;
+
+  PatternFlowIcmpEchoSequenceNumberCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIcmpCommonChecksum {
+  Choice.Enum choice = 1;
+
+  Generated.Enum generated = 2;
+
+  int32 custom = 3;
+
+  message Choice { enum Enum {
+    generated = 0;
+
+    custom = 1;
+  } }
+
+  message Generated { enum Enum {
+    good = 0;
+
+    bad = 1;
+  } }
+}
+
+message PatternFlowIcmpNextFieldsIdentifierCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIcmpNextFieldsIdentifier {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIcmpNextFieldsIdentifierCounter increment = 5;
+
+  PatternFlowIcmpNextFieldsIdentifierCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIcmpNextFieldsSequenceNumberCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIcmpNextFieldsSequenceNumber {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIcmpNextFieldsSequenceNumberCounter increment = 5;
+
+  PatternFlowIcmpNextFieldsSequenceNumberCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIcmpv6EchoTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIcmpv6EchoType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIcmpv6EchoTypeCounter increment = 5;
+
+  PatternFlowIcmpv6EchoTypeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIcmpv6EchoCodeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIcmpv6EchoCode {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIcmpv6EchoCodeCounter increment = 5;
+
+  PatternFlowIcmpv6EchoCodeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIcmpv6EchoIdentifierCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIcmpv6EchoIdentifier {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIcmpv6EchoIdentifierCounter increment = 5;
+
+  PatternFlowIcmpv6EchoIdentifierCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIcmpv6EchoSequenceNumberCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIcmpv6EchoSequenceNumber {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIcmpv6EchoSequenceNumberCounter increment = 5;
+
+  PatternFlowIcmpv6EchoSequenceNumberCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIcmpv6EchoChecksum {
+  Choice.Enum choice = 1;
+
+  Generated.Enum generated = 2;
+
+  int32 custom = 3;
+
+  message Choice { enum Enum {
+    generated = 0;
+
+    custom = 1;
+  } }
+
+  message Generated { enum Enum {
+    good = 0;
+
+    bad = 1;
+  } }
+}
+
+message PatternFlowIcmpv6CommonChecksum {
+  Choice.Enum choice = 1;
+
+  Generated.Enum generated = 2;
+
+  int32 custom = 3;
+
+  message Choice { enum Enum {
+    generated = 0;
+
+    custom = 1;
+  } }
+
+  message Generated { enum Enum {
+    good = 0;
+
+    bad = 1;
+  } }
+}
+
+message PatternFlowPppAddressCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPppAddress {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPppAddressCounter increment = 5;
+
+  PatternFlowPppAddressCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPppControlCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPppControl {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowPppControlCounter increment = 5;
+
+  PatternFlowPppControlCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowPppProtocolTypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowPppProtocolType {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  Auto.Enum auto = 4;
+
+  string metric_group = 5;
+
+  PatternFlowPppProtocolTypeCounter increment = 6;
+
+  PatternFlowPppProtocolTypeCounter decrement = 7;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    auto = 2;
+
+    increment = 3;
+
+    decrement = 4;
+  } }
+
+  message Auto { enum Enum {
+    auto = 0;
+  } }
+}
+
+message PatternFlowIgmpv1VersionCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIgmpv1Version {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIgmpv1VersionCounter increment = 5;
+
+  PatternFlowIgmpv1VersionCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIgmpv1TypeCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIgmpv1Type {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIgmpv1TypeCounter increment = 5;
+
+  PatternFlowIgmpv1TypeCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIgmpv1UnusedCounter {
+  int32 start = 1;
+
+  int32 step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIgmpv1Unused {
+  Choice.Enum choice = 1;
+
+  int32 value = 2;
+
+  repeated int32 values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIgmpv1UnusedCounter increment = 5;
+
+  PatternFlowIgmpv1UnusedCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
+message PatternFlowIgmpv1Checksum {
+  Choice.Enum choice = 1;
+
+  Generated.Enum generated = 2;
+
+  int32 custom = 3;
+
+  message Choice { enum Enum {
+    generated = 0;
+
+    custom = 1;
+  } }
+
+  message Generated { enum Enum {
+    good = 0;
+
+    bad = 1;
+  } }
+}
+
+message PatternFlowIgmpv1GroupAddressCounter {
+  string start = 1;
+
+  string step = 2;
+
+  int32 count = 3;
+}
+
+message PatternFlowIgmpv1GroupAddress {
+  Choice.Enum choice = 1;
+
+  string value = 2;
+
+  repeated string values = 3;
+
+  string metric_group = 4;
+
+  PatternFlowIgmpv1GroupAddressCounter increment = 5;
+
+  PatternFlowIgmpv1GroupAddressCounter decrement = 6;
+
+  message Choice { enum Enum {
+    value = 0;
+
+    values = 1;
+
+    increment = 2;
+
+    decrement = 3;
+  } }
+}
+
 message SuccessNoContent {
 }
 
@@ -1510,72 +6370,73 @@ message Pending {
   PendingDetail pending__detail = 1;
 }
 
-message SetConfigRequest {
+message SetConfigParameters {
   Config config = 1;
 }
 
-message UpdateConfigRequest {
+message UpdateConfigParameters {
   Config config = 1;
 }
 
-message SetTransmitStateRequest {
+message SetTransmitStateParameters {
   TransmitState transmit__state = 1;
 }
 
-message SetLinkStateRequest {
+message SetLinkStateParameters {
   LinkState link__state = 1;
 }
 
-message SetCaptureStateRequest {
+message SetCaptureStateParameters {
   CaptureState capture__state = 1;
 }
 
-message GetMetricsRequest {
+message GetMetricsParameters {
   MetricsRequest metrics__request = 1;
 }
 
-message GetCaptureRequest {
+message GetCaptureParameters {
   CaptureRequest capture__request = 1;
 }
 
 service Openapi {
   rpc GetConfig ( google.protobuf.Empty ) returns ( Config ) {
-    //option (google.api.http) = { get:"/config"  };
+//     option (google.api.http) = { get:"/config"  };
   }
 
-  rpc SetConfig ( SetConfigRequest ) returns ( Details ) {
-    //option (google.api.http) = { post:"/config" body:"config"  };
+  rpc SetConfig ( SetConfigParameters ) returns ( Details ) {
+//     option (google.api.http) = { post:"/config"  };
   }
 
-  rpc UpdateConfig ( UpdateConfigRequest ) returns ( Details ) {
-    //option (google.api.http) = { patch:"/config" body:"config"  };
+  rpc UpdateConfig ( UpdateConfigParameters ) returns ( Details ) {
+//     option (google.api.http) = { patch:"/config"  };
   }
 
-  rpc SetTransmitState ( SetTransmitStateRequest ) returns ( Details ) {
-    //option (google.api.http) = { post:"/control/transmit" body:"transmit__state"  };
+  rpc SetTransmitState ( SetTransmitStateParameters ) returns ( Details ) {
+//     option (google.api.http) = { post:"/control/transmit"  };
   }
 
-  rpc SetLinkState ( SetLinkStateRequest ) returns ( Details ) {
-    //option (google.api.http) = { post:"/control/link" body:"link__state"  };
+  rpc SetLinkState ( SetLinkStateParameters ) returns ( Details ) {
+//     option (google.api.http) = { post:"/control/link"  };
   }
 
-  rpc SetCaptureState ( SetCaptureStateRequest ) returns ( Details ) {
-    //option (google.api.http) = { post:"/control/capture" body:"capture__state"  };
+  rpc SetCaptureState ( SetCaptureStateParameters ) returns ( Details ) {
+//     option (google.api.http) = { post:"/control/capture"  };
   }
 
-  rpc GetMetrics ( GetMetricsRequest ) returns ( MetricsResponse ) {
-    //option (google.api.http) = { post:"/results/metrics" body:"metrics__request"  };
+  rpc GetMetrics ( GetMetricsParameters ) returns ( MetricsResponse ) {
+//     option (google.api.http) = { post:"/results/metrics"  };
   }
 
   rpc GetStateMetrics ( google.protobuf.Empty ) returns ( StateMetrics ) {
-    //option (google.api.http) = { post:"/results/state"  };
+//     option (google.api.http) = { post:"/results/state"  };
   }
 
   rpc GetCapabilities ( google.protobuf.Empty ) returns ( Capabilities ) {
-    //option (google.api.http) = { post:"/results/capabilities"  };
+//     option (google.api.http) = { post:"/results/capabilities"  };
   }
 
-  rpc GetCapture ( GetCaptureRequest ) returns ( google.protobuf.Empty ) {
-    //option (google.api.http) = { post:"/results/capture" body:"capture__request"  };
+  rpc GetCapture ( GetCaptureParameters ) returns ( google.protobuf.Empty ) {
+//     option (google.api.http) = { post:"/results/capture"  };
   }
 }
+

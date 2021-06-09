@@ -27,6 +27,7 @@ class OpenapiClient():
     
         self.logger = logging.getLogger(args.logfile) 
         self.server_address = "{}:{}".format(args.target_host, args.target_port)
+        self.app_mode = args.app_mode
         
         self.logger.info("Connecting servar at {}".format(self.server_address))
 
@@ -38,12 +39,16 @@ class OpenapiClient():
 
         if (create_option == 1):
             # create from json
-            jsonRequest = """
+            jsonRequestIxN = """
             {
                 "ports": [
                     {
                     "location": "10.74.45.189;1;1",
                     "name": "tx"
+                    },
+                    {
+                    "location": "10.74.45.189;1;2",
+                    "name": "rx"
                     }
                 ],
                 "options": {
@@ -56,14 +61,128 @@ class OpenapiClient():
                         "container_name": "tx",
                         "name": "Device Group",
                         "ethernet": {
-                            "name": "Ethernet"
+                            "name": "Ethernet",
+                            "mac": "02:42:ac:11:00:04",
+                            "mtu": 10000
                         }
+                    }
+                ],
+                "flows": [
+                    {
+                        "name": "tx->rx",
+                        "tx_rx": {
+                            "choice": "port",
+                            "port": {
+                                "tx_name": "tx",
+                                "rx_name": "rx"
+                            }
+                        },
+                        "size": {
+                            "choice": "fixed",
+                            "fixed": 1518
+                        },
+                        "rate": {
+                            "choice": "percentage",
+                            "percentage": 1
+                        },
+                        "packet": [
+                            {
+                                "choice": "ethernet",
+                                "ethernet": {
+                                    "dst": {
+                                        "choice": "value",
+                                        "value": "00:AB:BC:AB:BC:AB"
+                                    },
+                                    "src": {
+                                        "choice": "value",
+                                        "value": "00:CD:DC:CD:DC:CD"
+                                    }
+                                }
+                            },
+                            {
+                                "choice": "custom",
+                                "custom": {
+                                    "bytes": "00112233445566778899AABBCCDDEEFF"
+                                }
+                            }
+                        ]
                     }
                 ]
             }
             """
-            # self.logger.info("SetConfig [From Json] :: Config (JSON) = {}".format(jsonRequest))
-            protoRequest = json_format.Parse(jsonRequest, otg_pb2.Config())
+            jsonRequestAthena = """
+            {
+                "ports": [
+                    {
+                    "location": "localhost:5555",
+                    "name": "tx"
+                    },
+                    {
+                    "location": "localhost:5556",
+                    "name": "rx"
+                    }
+                ],
+                "options": {
+                    "port_options": {
+                    "location_preemption": true
+                    }
+                },
+                "flows": [
+                    {
+                        "name": "tx->rx",
+                        "tx_rx": {
+                            "choice": "port",
+                            "port": {
+                                "tx_name": "tx",
+                                "rx_name": "rx"
+                            }
+                        },
+                        "size": {
+                            "choice": "fixed",
+                            "fixed": 1518
+                        },
+                        "rate": {
+                            "choice": "percentage",
+                            "percentage": 1
+                        },
+                        "duration": {
+                            "choice": "fixed_packets",
+                            "fixed_packets": {
+                                "packets": 1000
+                            }
+                        },
+                        "packet": [
+                            {
+                                "choice": "ethernet",
+                                "ethernet": {
+                                    "dst": {
+                                        "choice": "value",
+                                        "value": "00:AB:BC:AB:BC:AB"
+                                    },
+                                    "src": {
+                                        "choice": "value",
+                                        "value": "00:CD:DC:CD:DC:CD"
+                                    }
+                                }
+                            },
+                            {
+                                "choice": "custom",
+                                "custom": {
+                                    "bytes": "00112233445566778899AABBCCDDEEFF"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+            """
+            if (self.app_mode == "ixnetwork"):
+                # self.logger.info("SetConfig [From Json] :: Config (JSON) = {}".format(jsonRequest))
+                protoRequest = json_format.Parse(jsonRequestIxN, otg_pb2.Config())
+            else:
+                # self.logger.info("SetConfig [From Json] :: Config (JSON) = {}".format(jsonRequest))
+                protoRequest = json_format.Parse(jsonRequestAthena, otg_pb2.Config())
+
         else:
             self.logger.info("Not implemented!!")
      
@@ -74,7 +193,7 @@ class OpenapiClient():
 
             self.logger.info("Sending Configuration and waiting for response ...")
 
-            response = stub.SetConfig(otg_pb2.SetConfigRequest(config=protoRequest))
+            response = stub.SetConfig(otg_pb2.SetConfigParameters(config=protoRequest))
             self.logger.info("Received Response: Warning = {}, Error = {}".format(response.warnings, response.errors))
 
     def SetTransmitState(self, create_option):
@@ -86,7 +205,7 @@ class OpenapiClient():
             jsonRequest = """
             {
                 "flow_names": null,
-                "state" : "START"
+                "state" : "start"
             }
             """
             self.logger.info("SetTransmitState [From Json] :: TransmitState (JSON) = {}".format(jsonRequest))
@@ -102,7 +221,7 @@ class OpenapiClient():
             
             self.logger.info("Sending Start request and waiting for response ...")
 
-            response = stub.SetTransmitState(otg_pb2.SetTransmitStateRequest(transmit__state=protoRequest))
+            response = stub.SetTransmitState(otg_pb2.SetTransmitStateParameters(transmit__state=protoRequest))
             self.logger.info("Received Response: Warning = {}, Error = {}".format(response.warnings, response.errors))
 
 def serve(args):
@@ -156,6 +275,10 @@ if __name__ == '__main__':
     parser.add_argument('--target-port', help='target gRPC server port number',
                         default=40051,
                         type=int)
+    parser.add_argument('--app-mode', help='target Application mode)',
+                        choices=['ixnetwork', 'athena'],
+                        default='ixnetwork',
+                        type=str)
     parser.add_argument('--logfile', help='logfile name [date and time auto appended]',
                         default='gRPCClient',
                         type=str)    
