@@ -2,4 +2,4 @@ grpcio==1.35.0
 grpcio-tools==1.35.0
 protobuf==3.14.0
 snappi==0.3.18
-snappi[ixnetwork]
+snappi_ixnetwork==0.3.10
