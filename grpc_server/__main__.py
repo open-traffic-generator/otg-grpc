@@ -1,44 +1,41 @@
-# __main__.py
-# Python implementation of the GRPC otg server
+# Python implementation of gRPC Fake Protocol Server 
 
+#from __future__ import print_function
 from concurrent import futures
-
-import grpc
-
-from .autogen import otg_pb2
-from .autogen import otg_pb2_grpc
-
-
-import snappi
-from google.protobuf import json_format
-
 import argparse
 import logging
-import os
-import datetime
-import time
+from pathlib import Path
 
-# Json utils
+# snappi
+import snappi
+
+# gRPC stuffs
+import grpc
+from .autogen import otg_pb2
+from .autogen import otg_pb2_grpc
+from google.protobuf import empty_pb2
+
+# Json
 import json
+from google.protobuf import json_format
 
+from .common.utils import *
+
+# set API version
+OTG_API_Version="0.4.6"
 
 class Openapi(otg_pb2_grpc.OpenapiServicer):
 
     def __init__(self, args):
         super().__init__()
-    
-        self.logger = logging.getLogger(args.logfile) 
+
+        self.logger = logging.getLogger(args.logfile)
 
         self.app_mode = args.app_mode
         self.target_address = "{}:{}".format(args.target_host, args.target_port)
         self.api_initialized = False
 
-    def SetConfig(self, request, context):
-        #self.logger.info("Received request.config (string) = {}".format(request.config.SerializeToString()))
-        
-        jsonObj = json_format.MessageToJson(request.config, including_default_value_fields=True, preserving_proto_field_name=True)
-        #self.logger.info("Received request.config (JSON) = {}".format(jsonObj))
-
+    def InitSanppi(self):
         # for snappy
         if self.api_initialized == False:
             if self.app_mode == 'ixnetwork':
@@ -53,72 +50,128 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             self.api_initialized = True
             self.logger.info('Snappi initialized')
 
-        
+
+    def HandleReq(self):
+        pass
+
+    def SetConfig(self, request, context):
+
+        jsonObj = json_format.MessageToJson(request.config, including_default_value_fields=True, preserving_proto_field_name=True)
+        self.logger.debug("Received request.config (JSON)(default=True) = {}".format(jsonObj))
+
+        jsonObj = json_format.MessageToJson(request.config, preserving_proto_field_name=True)
+        self.logger.debug("Received request.config (JSON)(default=True) = {}".format(jsonObj))
+
+        self.InitSanppi()
+
         self.logger.info("Requesting set_config ...")
         response = self.api.set_config(jsonObj)
-        #self.logger.info("Received Reply from Remote Server (JSON) = {}".format(response))
 
-        return (json_format.Parse(response.serialize(), otg_pb2.Details()))
+        self.logger.debug("Received Reply from Remote Server (JSON) = {}".format(response), flush=True)
+
+        return (json_format.Parse(response.serialize(), otg_pb2.SetConfigResponse()))
+
+
+        response = """
+        {
+            "errors": [""],
+            "warnings" : ["warning message from fake protocol server"]
+        }
+        """
+        #return (json_format.Parse(response, otg_pb2.Details()))
+
+        response = """
+        {
+            "statuscode400" : {
+            }
+        }
+        """
+        response = """
+        {
+            "statuscode200" : {
+            }
+        }
+        """
+        # Can not set warning / error string in status obj
+
+        return (json_format.Parse(response, otg_pb2.SetConfigResponse()))
+
 
     def SetLinkState(self, request, context):
-        #self.logger.info("Received request.link__state (string) = {}".format(request.link__state.SerializeToString()))
+ 
+        jsonObj = json_format.MessageToJson(request.linkstate, preserving_proto_field_name=True)
+        self.logger.debug("Received request.linkstate (JSON) = {}".format(jsonObj))
 
-        jsonObj = json_format.MessageToJson(request.link__state, including_default_value_fields=True, preserving_proto_field_name=True)
-        #self.logger.info("Received request.link__state (JSON) = {}".format(jsonObj))
 
         # for snappy
         self.logger.info("Requesting SetLinkState ...")
         response = self.api.set_link_state(jsonObj)
-        #self.logger.info("Received Reply from Remote Server (JSON) = {}".format(response))
+        self.logger.debug("Received Reply from Remote Server (JSON) = {}".format(response))
 
-        return (json_format.Parse(response.serialize(), otg_pb2.Details()))
+        return (json_format.Parse(response.serialize(), otg_pb2.SetLinkStateResponse()))
+
+        response = """
+        {
+            "statuscode200" : {
+            }
+        }
+        """
+        return (json_format.Parse(response, otg_pb2.SetLinkStateResponse()))
 
     def SetTransmitState(self, request, context):
-        #self.logger.info("Received request.transmit__state (string) = {}".format(request.transmit__state.SerializeToString()))
         
-        jsonObj = json_format.MessageToJson(request.transmit__state, including_default_value_fields=True, preserving_proto_field_name=True)
-        #self.logger.info("Received request.transmit__state (JSON) = {}".format(jsonObj))
+        jsonObj = json_format.MessageToJson(request.transmitstate, preserving_proto_field_name=True)
+        self.logger.debug("Received request.transmitstate (JSON)(default=False) = {}".format(jsonObj))
 
         # for snappy
         self.logger.info("Requesting SetTransmitState ...")
         response = self.api.set_transmit_state(jsonObj)
-        #self.logger.info("Received Reply from Remote Server (JSON) = {}".format(response))
+        self.logger.debug("Received Reply from Remote Server (JSON) = {}".format(response))
 
-        return (json_format.Parse(response.serialize(), otg_pb2.Details()))
+        return (json_format.Parse(response.serialize(), otg_pb2.SetTransmitStateResponse()))
+
+        response = """
+        {
+            "statuscode200" : {
+            }
+        }
+        """
+        return (json_format.Parse(response, otg_pb2.SetTransmitStateResponse()))
+
 
     def GetMetrics(self, request, context):
-        #self.logger.info("Received request.metrics__request (string) = {}".format(request.metrics__request.SerializeToString()))
 
-        jsonObj = json_format.MessageToJson(request.metrics__request, including_default_value_fields=True, preserving_proto_field_name=True)
-        #self.logger.info("Received request.metrics__request (JSON) = {}".format(jsonObj))
+        jsonObj = json_format.MessageToJson(request.metrics__request, preserving_proto_field_name=True)
+        self.logger.debug("Received request.metrics__request (JSON)(default=False) = {}".format(jsonObj))
 
-        # for snappy
-        self.logger.info("Requesting GetMetrics ...")
-        response = self.api.get_metrics(jsonObj)
-        #self.logger.info("Received Reply from Remote Server (JSON) = {}".format(response))
-
+        response = """
+        {
+        }
+        """
         return json_format.Parse(response.serialize(), otg_pb2.MetricsResponse())
 
 
 def serve(args):
-    args.logfile = init_logging(args.logfile)
-    server_logger = logging.getLogger(args.logfile) 
+    log_level = logging.INFO
+    if args.log_debug == True:
+        log_level = logging.DEBUG
+    args.logfile = init_logging(args.logfile, log_level, args.log_stdout)
 
-    app_name = "Athena"
-    if (args.app_mode == 'ixnetwork'):
-        app_name = 'IxNetwork'
+    server_logger = logging.getLogger(args.logfile) 
+    
+    server_logger.info("Starting gRPC Server [OTG API Version = {}] ...".format(OTG_API_Version))
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     otg_pb2_grpc.add_OpenapiServicer_to_server(Openapi(args), server)
     
     server_address = "[::]:{}".format(args.server_port)
-    
+
     if args.insecure == True:
-        server_logger.info("Enabling insecure channel")
+        server_logger.info("Enabling insecure channel ...")
         server.add_insecure_port(server_address)
         server_logger.info("Enabled insecure channel")
     else:
-        server_logger.info("Enabling secure channel")
+        server_logger.info("Enabling secure channel ...")
         private_key = None
         certificate_chain = None
         with open(args.server_key, 'rb') as f:
@@ -133,43 +186,17 @@ def serve(args):
         else:
             server_logger.error("Cannot create secure channel, need openssl key. You can generate it with below openssl command")
             server_logger.error("openssl req -newkey rsa:2048 -nodes -keyout server.key -x509 -days 365 -out server.crt -subj '/CN=test.local'")
-            
-    server_logger.info("Starting gRPC server on %s [App: %s, Target: %s:%s]", server_address, app_name, args.target_host, args.target_port)
-
+    
     server.start()
-
-    print("gRPC Server Started.", flush=True)
+    server_logger.info("gRPC Dummy Protocol Server Started at {} ...".format(server_address))
 
     server.wait_for_termination()
-
-    print("Server closed gracefully")   
-
-def get_current_time():
-    current_utc = datetime.datetime.utcnow()
-    current_utc = str(current_utc).split('.')[0]
-    current_utc = current_utc.replace(' ','-')
-    current_utc = current_utc.replace(':','-')
-    return current_utc
+    server_logger.info("Server closed gracefully")
 
 
-def init_logging(logger_name, level=logging.DEBUG):
-    l = logging.getLogger(logger_name)
-    logfile = logger_name+'-'+str(get_current_time())+'.log'
-    logs_dir = os.path.join(os.path.curdir, 'logs')
-    if not os.path.exists(logs_dir):
-        os.makedirs(logs_dir)
-    logfile = os.path.join(logs_dir, logfile)  
-    formatter = logging.Formatter('%(asctime)s : %(message)s')
-    fileHandler = logging.FileHandler(logfile, mode='w')
-    fileHandler.setFormatter(formatter)
-    streamHandler = logging.StreamHandler()
-    streamHandler.setFormatter(formatter)
-    l.setLevel(level)
-    l.addHandler(fileHandler)
-    #l.addHandler(streamHandler)  
-    return logger_name 
 
 if __name__ == '__main__':
+
     # parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--server-port', help='gRPC server port number',
@@ -186,7 +213,7 @@ if __name__ == '__main__':
                         default=11009,
                         type=int)
     parser.add_argument('--logfile', help='logfile name [date and time auto appended]',
-                        default='gRPCServer',
+                        default='grpc_server',
                         type=str)    
     parser.add_argument('--insecure', help='disable TSL security, by default enabled',
                         default=True,
@@ -197,9 +224,14 @@ if __name__ == '__main__':
     parser.add_argument('--server-crt', help='path to certificate key, default is server.crt',
                         default='server.crt',
                         type=str)
+    parser.add_argument('--log-stdout', help='show log on stdout, in addition to file',
+                        default=False,
+                        action='store_true')
+    parser.add_argument('--log-debug', help='enable debug level logging',
+                    default=False,
+                    action='store_true')
     args = parser.parse_args()
 
     #print ("Args = {}".format(args))
 
     serve(args)
-        

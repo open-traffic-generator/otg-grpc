@@ -1,0 +1,66 @@
+{
+    "ports": [
+        {
+            "name": "p1",
+            "location": "localhost:5555"
+        },
+        {
+            "name": "p2",
+            "location": "localhost:5556"
+        }
+    ],
+    "layer1": [
+        {
+            "name": "l1",
+            "port_names": ["p1", "p2"],
+            "speed": "SPEED_SPEED_1_GBPS"
+        }
+    ],
+    "flows": [
+        {
+            "name": "p1->p2",
+            "tx_rx": {
+                "choice": "CHOICE_PORT",
+                "port": {
+                    "tx_name": "p1",
+                    "rx_name": "p2"
+                }
+            },
+            "size": {
+                "choice": "CHOICE_FIXED",
+                "fixed": 1518
+            },
+            "rate": {
+                "choice": "CHOICE_PERCENTAGE",
+                "percentage": 10
+            },
+            "duration": {
+                "choice": "CHOICE_FIXED_PACKETS",
+                "fixed_packets": {
+                    "packets": 100000
+                }
+            },
+            "packet": [
+                {
+                    "choice": "CHOICE_ETHERNET",
+                    "ethernet": {
+                        "dst": {
+                            "choice": "CHOICE_VALUE",
+                            "value": "00:AB:BC:AB:BC:AB"
+                        },
+                        "src": {
+                            "choice": "CHOICE_VALUE",
+                            "value": "00:CD:DC:CD:DC:CD"
+                        }
+                    }
+                },
+                {
+                    "choice": "CHOICE_CUSTOM",
+                    "custom": {
+                        "bytes": "00112233445566778899AABBCCDDEEFF"
+                    }
+                }
+            ]
+        }
+    ]
+}

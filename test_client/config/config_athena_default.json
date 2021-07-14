@@ -1,0 +1,182 @@
+{
+    "ports": [
+        {
+            "name": "p1",
+            "location": "localhost:5555"
+        },
+        {
+            "name": "p2",
+            "location": "localhost:5556+localhost:40061"
+        }
+    ],
+    "layer1": [
+        {
+            "name": "l1",
+            "port_names": ["p1", "p2"],
+            "speed": "SPEED_SPEED_1_GBPS"
+        }
+    ],
+    "options": {
+        "port_options": {
+            "location_preemption": true
+        }
+    },
+    "devices": [
+        {
+            "container_name": "p2",
+            "name": "Device Group 1",
+            "ethernet": {
+                "name": "Ethernet 1",
+                "mac": "02:42:ac:11:00:04",
+                "mtu": 10000,
+                "ipv4": {
+                    "name": "IPv4 1",
+                    "address": "20.20.20.11",
+                    "prefix": 24,
+                    "gateway": "20.20.20.2",
+                    "bgpv4": {
+                        "name": "BGP Peer 1",
+                        "local_address": "100.1.1.1",
+                        "dut_address": "20.20.20.2",
+                        "router_id": "2.2.2.2",
+                        "as_type": "AS_TYPE_IBGP",
+                        "as_number": 4000,
+                        "as_number_width": "AS_NUMBER_WIDTH_FOUR",
+                        "as_number_set_mode": "AS_NUMBER_SET_MODE_DO_NOT_INCLUDE_AS",
+                        "active": true,
+                        "bgpv4_routes": [
+                            {
+                                "name": "Network Group 1",
+                                "next_hop_address": "101.1.1.1"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "container_name": "p2",
+            "name": "Device Group 2",
+            "ethernet": {
+                "name": "Ethernet 2",
+                "mac": "02:42:ac:11:00:04",
+                "mtu": 10000,
+                "ipv4": {
+                    "name": "IPv4 2",
+                    "address": "20.20.20.11",
+                    "prefix": 24,
+                    "gateway": "20.20.20.2",
+                    "bgpv4": {
+                        "name": "BGP Peer 2",
+                        "local_address": "100.1.1.1",
+                        "dut_address": "20.20.20.2",
+                        "router_id": "2.2.2.2",
+                        "as_type": "AS_TYPE_IBGP",
+                        "as_number": 4000,
+                        "as_number_width": "AS_NUMBER_WIDTH_FOUR",
+                        "as_number_set_mode": "AS_NUMBER_SET_MODE_DO_NOT_INCLUDE_AS",
+                        "active": true,
+                        "bgpv4_routes": [
+                            {
+                                "name": "Network Group 2",
+                                "next_hop_address": "101.1.1.1"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ],
+    "flows": [
+        {
+            "name": "p1->p2",
+            "tx_rx": {
+                "choice": "CHOICE_PORT",
+                "port": {
+                    "tx_name": "p1",
+                    "rx_name": "p2"
+                }
+            },
+            "size": {
+                "choice": "CHOICE_FIXED",
+                "fixed": 1518
+            },
+            "rate": {
+                "choice": "CHOICE_PERCENTAGE",
+                "percentage": 10
+            },
+            "duration": {
+                "choice": "CHOICE_FIXED_PACKETS",
+                "fixed_packets": {
+                    "packets": 100000
+                }
+            },
+            "packet": [
+                {
+                    "choice": "CHOICE_ETHERNET",
+                    "ethernet": {
+                        "dst": {
+                            "choice": "CHOICE_VALUE",
+                            "value": "00:AB:BC:AB:BC:AB"
+                        },
+                        "src": {
+                            "choice": "CHOICE_VALUE",
+                            "value": "00:CD:DC:CD:DC:CD"
+                        }
+                    }
+                },
+                {
+                    "choice": "CHOICE_CUSTOM",
+                    "custom": {
+                        "bytes": "00112233445566778899AABBCCDDEEFF"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "p2->p1",
+            "tx_rx": {
+                "choice": "CHOICE_PORT",
+                "port": {
+                    "tx_name": "p2",
+                    "rx_name": "p1"
+                }
+            },
+            "size": {
+                "choice": "CHOICE_FIXED",
+                "fixed": 1518
+            },
+            "rate": {
+                "choice": "CHOICE_PERCENTAGE",
+                "percentage": 10
+            },
+            "duration": {
+                "choice": "CHOICE_FIXED_PACKETS",
+                "fixed_packets": {
+                    "packets": 100000
+                }
+            },
+            "packet": [
+                {
+                    "choice": "CHOICE_ETHERNET",
+                    "ethernet": {
+                        "dst": {
+                            "choice": "CHOICE_VALUE",
+                            "value": "00:CD:DC:CD:DC:CD"
+                        },
+                        "src": {
+                            "choice": "CHOICE_VALUE",
+                            "value": "00:AB:BC:AB:BC:AB"
+                        }
+                    }
+                },
+                {
+                    "choice": "CHOICE_CUSTOM",
+                    "custom": {
+                        "bytes": "00112233445566778899AABBCCDDEEFF"
+                    }
+                }
+            ]
+        }
+    ]
+}
