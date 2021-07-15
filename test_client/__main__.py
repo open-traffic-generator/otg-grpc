@@ -23,7 +23,7 @@ from google.protobuf import json_format
 from grpc_server.common.utils import *
 
 # set API version
-OTG_API_Version="0.4.6"
+OTG_API_Version="0.4.8"
 
 class OtgClient():
 
@@ -68,8 +68,7 @@ class OtgClient():
             except grpc.RpcError as e:
                 self.logger.error("gRPC ERROR {}".format(e.code(), e.details()))
             else:
-                #self.logger.info("Received Response: Warning = {}, Error = {}".format(response.warnings, response.errors))
-                self.logger.info("Received Response: {}, Type: {}, Success: {}".format(response, type(response), response.HasField("statuscode200")))
+                self.logger.info("Received Response: {}, Success: {}".format(response, response.HasField("status_code_200")))
 
 
     def SetTransmitState(self, start):
@@ -104,11 +103,11 @@ class OtgClient():
           
             self.logger.debug("Sending Start/Stop request and waiting for response ...")
             try:
-                response = stub.SetTransmitState(otg_pb2.SetTransmitStateRequest(transmitstate=protoRequest))
+                response = stub.SetTransmitState(otg_pb2.SetTransmitStateRequest(transmit_state=protoRequest))
             except grpc.RpcError as e:
                 self.logger.error("gRPC ERROR {}".format(e.code(), e.details()))
             else:
-                self.logger.info("Received Response: {}, Type: {}, Success: {}".format(response, type(response), response.HasField("statuscode200")))
+                self.logger.info("Received Response: {}, Success: {}".format(response, response.HasField("status_code_200")))
 
 
     def SetLinkState(self, up):
@@ -141,11 +140,11 @@ class OtgClient():
           
             self.logger.debug("Sending Up/Down request and waiting for response ...")
             try:
-                response = stub.SetLinkState(otg_pb2.SetLinkStateRequest(linkstate=protoRequest))
+                response = stub.SetLinkState(otg_pb2.SetLinkStateRequest(link_state=protoRequest))
             except grpc.RpcError as e:
                 self.logger.error("gRPC ERROR {}".format(e.code(), e.details()))
             else:
-                self.logger.info("Received Response: {}, Type: {}, Success: {}".format(response, type(response), response.HasField("statuscode200")))
+                self.logger.info("Received Response: {}, Success: {}".format(response, response.HasField("status_code_200")))
 
 def serve(args):
     log_level = logging.INFO

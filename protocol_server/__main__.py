@@ -24,7 +24,7 @@ from google.protobuf import json_format
 from grpc_server.common.utils import *
 
 # set API version
-OTG_API_Version="0.4.6"
+OTG_API_Version="0.4.8"
 
 class Openapi(otg_pb2_grpc.OpenapiServicer):
 
@@ -45,57 +45,83 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
         jsonObj = json_format.MessageToJson(request.config, preserving_proto_field_name=True)
         self.logger.debug("Received request.config (JSON)(default=True) = {}".format(jsonObj))
 
-        #self.logger.debug("Verify response path")
         response = """
         {
-            "errors": [""],
-            "warnings" : ["warning message from fake protocol server"]
-        }
-        """
-        #return (json_format.Parse(response, otg_pb2.Details()))
-
-        response = """
-        {
-            "statuscode400" : {
+            "status_code_200" : {
+                "success" : {
+                    "response_warning" : {
+                        "warnings" : ["success message from fake protocol server"]
+                    }
+                }
             }
         }
         """
+        return (json_format.Parse(response, otg_pb2.SetConfigResponse()))
+
         response = """
         {
-            "statuscode200" : {
+            "status_code_400" : {
+                "bad_request" : {
+                    "response_error" : {
+                        "errors" : ["error message from fake protocol server"]
+                    }
+                }
             }
         }
         """
-        # Can not set warning / error string in status obj
+        return (json_format.Parse(response, otg_pb2.SetConfigResponse()))
 
+        response = """
+        {
+            "status_code_500" : {
+                "internal_server_error" : {
+                    "response_error" : {
+                        "errors" : ["error message from fake protocol server"]
+                    }
+                }
+            }
+        }
+        """
         return (json_format.Parse(response, otg_pb2.SetConfigResponse()))
 
 
     def SetLinkState(self, request, context):
  
-        jsonObj = json_format.MessageToJson(request.linkstate, preserving_proto_field_name=True)
+        jsonObj = json_format.MessageToJson(request.link_state, preserving_proto_field_name=True)
         self.logger.debug("Received request.linkstate (JSON) = {}".format(jsonObj))
 
 
         response = """
         {
-            "statuscode200" : {
+            "status_code_200" : {
+                "success" : {
+                    "response_warning" : {
+                        "warnings" : ["success message from fake protocol server"]
+                    }
+                }
             }
         }
         """
+
         return (json_format.Parse(response, otg_pb2.SetLinkStateResponse()))
 
     def SetTransmitState(self, request, context):
         
-        jsonObj = json_format.MessageToJson(request.transmitstate, preserving_proto_field_name=True)
+        jsonObj = json_format.MessageToJson(request.transmit_state, preserving_proto_field_name=True)
         self.logger.debug("Received request.transmitstate (JSON)(default=False) = {}".format(jsonObj))
 
         response = """
         {
-            "statuscode200" : {
+            "status_code_200" : {
+                "success" : {
+                    "response_warning" : {
+                        "warnings" : ["success message from fake protocol server"]
+                    }
+                }
             }
         }
         """
+
         return (json_format.Parse(response, otg_pb2.SetTransmitStateResponse()))
 
 

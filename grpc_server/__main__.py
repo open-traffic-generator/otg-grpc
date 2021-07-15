@@ -22,7 +22,7 @@ from google.protobuf import json_format
 from .common.utils import *
 
 # set API version
-OTG_API_Version="0.4.6"
+OTG_API_Version="0.4.8"
 
 class Openapi(otg_pb2_grpc.OpenapiServicer):
 
@@ -99,7 +99,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
 
     def SetLinkState(self, request, context):
  
-        jsonObj = json_format.MessageToJson(request.linkstate, preserving_proto_field_name=True)
+        jsonObj = json_format.MessageToJson(request.links_tate, preserving_proto_field_name=True)
         self.logger.debug("Received request.linkstate (JSON) = {}".format(jsonObj))
 
 
@@ -120,7 +120,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
 
     def SetTransmitState(self, request, context):
         
-        jsonObj = json_format.MessageToJson(request.transmitstate, preserving_proto_field_name=True)
+        jsonObj = json_format.MessageToJson(request.transmit_state, preserving_proto_field_name=True)
         self.logger.debug("Received request.transmitstate (JSON)(default=False) = {}".format(jsonObj))
 
         # for snappy
