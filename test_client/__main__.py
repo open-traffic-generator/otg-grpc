@@ -228,7 +228,9 @@ def serve(args):
         client_logger.info("Do Start Transmit")
         client.SetTransmitState(True)
 
-        client.GetMetrics()
+        for count in range(2):
+            time.sleep(1)
+            client.GetMetrics()
 
         client_logger.info("Do Stop Transmit")
         client.SetTransmitState(False)

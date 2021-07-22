@@ -116,7 +116,6 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 return config_response
             
             error_code, error_details = get_error_details(e)
-            #self.logger.error("Error code : {}, errors : {}".format(error_code, error_details))
             
             if error_code == 400:
                 config_response = json_format.Parse(response_400, otg_pb2.SetConfigResponse())
@@ -177,7 +176,6 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             """
             self.logger.error("Snappi_api Getconfig Returned Exception :  {}".format(repr(e)))
             error_code, error_details = get_error_details(e)
-            #self.logger.error("Error code : {}, errors : {}".format(error_code, error_details))
             
             if error_code == 400:
                 config_response = json_format.Parse(response_400, otg_pb2.GetConfigResponse())
@@ -244,7 +242,6 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             """
             self.logger.error("Snappi_api set_link_state Returned Exception :  {}".format(repr(e)))
             error_code, error_details = get_error_details(e)
-            #self.logger.error("Error code : {}, errors : {}".format(error_code, error_details))
             
             if error_code == 400:
                 link_state_response = json_format.Parse(response_400, otg_pb2.SetLinkStateResponse())
@@ -311,7 +308,6 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             """
             self.logger.error("Snappi_api SetTransmitState Returned Exception :  {}".format(repr(e)))
             error_code, error_details = get_error_details(e)
-            #self.logger.error("Error code : {}, errors : {}".format(error_code, error_details))
             
             if error_code == 400:
                 transmit_response = json_format.Parse(response_400, otg_pb2.SetTransmitStateResponse())
@@ -386,8 +382,11 @@ def serve(args):
     server.start()
     server_logger.info("gRPC Server Started at {} ...".format(server_address))
 
-    server.wait_for_termination()
-    server_logger.info("Server closed gracefully")
+    try:            
+        server.wait_for_termination()
+    except KeyboardInterrupt:
+        server.stop(5)
+        print("Server shutdown gracefully")
 
 
 

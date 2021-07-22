@@ -2,6 +2,8 @@
 
 FROM ubuntu:latest
 
+LABEL OTG_API_Version="0.4.10"
+
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
 	&& apt-get -y install --no-install-recommends python3-pip 
