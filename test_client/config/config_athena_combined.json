@@ -2,18 +2,18 @@
     "ports": [
         {
             "name": "p1",
-            "location": "localhost:5555"
+            "location": "192.168.39.102:5555"
         },
         {
             "name": "p2",
-            "location": "localhost:5556+localhost:40071"
+            "location": "192.168.39.102:5556+192.168.39.101:40071"
         }
     ],
     "layer1": [
         {
             "name": "l1",
             "port_names": ["p1", "p2"],
-            "speed": "SPEED_SPEED_1_GBPS"
+            "speed": "speed_1_gbps"
         }
     ],
     "devices": [
@@ -34,10 +34,10 @@
                         "local_address": "100.1.1.1",
                         "dut_address": "20.20.20.2",
                         "router_id": "2.2.2.2",
-                        "as_type": "AS_TYPE_IBGP",
+                        "as_type": "ibgp",
                         "as_number": 4000,
-                        "as_number_width": "AS_NUMBER_WIDTH_FOUR",
-                        "as_number_set_mode": "AS_NUMBER_SET_MODE_DO_NOT_INCLUDE_AS",
+                        "as_number_width": "four",
+                        "as_number_set_mode": "do_not_include_as",
                         "active": true,
                         "bgpv4_routes": [
                             {
@@ -66,10 +66,10 @@
                         "local_address": "100.1.1.1",
                         "dut_address": "20.20.20.2",
                         "router_id": "2.2.2.2",
-                        "as_type": "AS_TYPE_IBGP",
+                        "as_type": "ibgp",
                         "as_number": 4000,
-                        "as_number_width": "AS_NUMBER_WIDTH_FOUR",
-                        "as_number_set_mode": "AS_NUMBER_SET_MODE_DO_NOT_INCLUDE_AS",
+                        "as_number_width": "four",
+                        "as_number_set_mode": "do_not_include_as",
                         "active": true,
                         "bgpv4_routes": [
                             {
@@ -86,44 +86,47 @@
         {
             "name": "p1->p2",
             "tx_rx": {
-                "choice": "CHOICE_PORT",
+                "choice": "port",
                 "port": {
                     "tx_name": "p1",
                     "rx_name": "p2"
                 }
             },
+            "metrics":{
+                "enable": true
+            },
             "size": {
-                "choice": "CHOICE_FIXED",
+                "choice": "fixed",
                 "fixed": 1518
             },
             "rate": {
-                "choice": "CHOICE_PERCENTAGE",
+                "choice": "percentage",
                 "percentage": 10
             },
             "duration": {
-                "choice": "CHOICE_FIXED_PACKETS",
+                "choice": "fixed_packets",
                 "fixed_packets": {
-                    "packets": 100000
+                    "packets": 500
                 }
             },
             "packet": [
                 {
-                    "choice": "CHOICE_ETHERNET",
+                    "choice": "ethernet",
                     "ethernet": {
                         "dst": {
-                            "choice": "CHOICE_VALUE",
+                            "choice": "value",
                             "value": "00:AB:BC:AB:BC:AB"
                         },
                         "src": {
-                            "choice": "CHOICE_VALUE",
+                            "choice": "value",
                             "value": "00:CD:DC:CD:DC:CD"
                         }
                     }
                 },
                 {
-                    "choice": "CHOICE_CUSTOM",
+                    "choice": "custom",
                     "custom": {
-                        "bytes": "00112233445566778899AABBCCDDEEFF"
+                        "bytes": "AABBCCDDEE0011223344"
                     }
                 }
             ]
@@ -131,44 +134,47 @@
         {
             "name": "p2->p1",
             "tx_rx": {
-                "choice": "CHOICE_PORT",
+                "choice": "port",
                 "port": {
                     "tx_name": "p2",
                     "rx_name": "p1"
                 }
             },
+            "metrics":{
+                "enable": true
+            },
             "size": {
-                "choice": "CHOICE_FIXED",
-                "fixed": 1518
+                "choice": "fixed",
+                "fixed": 512
             },
             "rate": {
-                "choice": "CHOICE_PERCENTAGE",
+                "choice": "percentage",
                 "percentage": 10
             },
             "duration": {
-                "choice": "CHOICE_FIXED_PACKETS",
+                "choice": "fixed_packets",
                 "fixed_packets": {
-                    "packets": 100000
+                    "packets": 500
                 }
             },
             "packet": [
                 {
-                    "choice": "CHOICE_ETHERNET",
+                    "choice": "ethernet",
                     "ethernet": {
                         "dst": {
-                            "choice": "CHOICE_VALUE",
+                            "choice": "value",
                             "value": "00:CD:DC:CD:DC:CD"
                         },
                         "src": {
-                            "choice": "CHOICE_VALUE",
+                            "choice": "value",
                             "value": "00:AB:BC:AB:BC:AB"
                         }
                     }
                 },
                 {
-                    "choice": "CHOICE_CUSTOM",
+                    "choice": "custom",
                     "custom": {
-                        "bytes": "00112233445566778899AABBCCDDEEFF"
+                        "bytes": "0011223344AABBCCDDEE"
                     }
                 }
             ]

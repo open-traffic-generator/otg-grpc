@@ -27,4 +27,7 @@ def init_logging(logger_name, level=logging.DEBUG, log_stdout=False):
     l.addHandler(fileHandler)
     if log_stdout:
         l.addHandler(streamHandler)  
-    return logger_name 
+    return logger_name
+
+def get_error_details(exception):
+    return exception.args[0], exception.args[1]['errors']

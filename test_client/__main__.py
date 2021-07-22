@@ -23,7 +23,7 @@ from google.protobuf import json_format
 from grpc_server.common.utils import *
 
 # set API version
-OTG_API_Version="0.4.8"
+OTG_API_Version="0.4.10"
 
 class OtgClient():
 
@@ -66,7 +66,22 @@ class OtgClient():
             try:
                 response = stub.SetConfig(otg_pb2.SetConfigRequest(config=protoRequest))
             except grpc.RpcError as e:
-                self.logger.error("gRPC ERROR {}".format(e.code(), e.details()))
+                self.logger.error("gRPC Exception Code: {}, Details: {}".format(e.code(), e.details()))
+            else:
+                self.logger.info("Received Response: {}, Success: {}".format(response, response.HasField("status_code_200")))
+
+    def GetConfig(self):
+
+        with grpc.insecure_channel(self.server_address) as channel:
+            stub = otg_pb2_grpc.OpenapiStub(channel)
+
+            self.logger.debug("Sending GetConfigRequest request and waiting for response ...")
+
+            try:
+                empty = otg_pb2.google_dot_protobuf_dot_empty__pb2.Empty()
+                response = stub.GetConfig(empty)
+            except grpc.RpcError as e:
+                self.logger.error("gRPC Exception Code: {}, Details: {}".format(e.code(), e.details()))
             else:
                 self.logger.info("Received Response: {}, Success: {}".format(response, response.HasField("status_code_200")))
 
@@ -80,7 +95,7 @@ class OtgClient():
             jsonRequest = """
             {
                 "flow_names": null,
-                "state" : "STATE_START"
+                "state" : "start"
             }
             """
             self.logger.debug("SetTransmitState :: TransmitState (JSON) = {}".format(jsonRequest))
@@ -90,7 +105,7 @@ class OtgClient():
             jsonRequest = """
             {
                 "flow_names": null,
-                "state" : "STATE_STOP"
+                "state" : "stop"
             }
             """
             self.logger.debug("SetTransmitState :: TransmitState (JSON) = {}".format(jsonRequest))
@@ -105,7 +120,7 @@ class OtgClient():
             try:
                 response = stub.SetTransmitState(otg_pb2.SetTransmitStateRequest(transmit_state=protoRequest))
             except grpc.RpcError as e:
-                self.logger.error("gRPC ERROR {}".format(e.code(), e.details()))
+                self.logger.error("gRPC Exception Code: {}, Details: {}".format(e.code(), e.details()))
             else:
                 self.logger.info("Received Response: {}, Success: {}".format(response, response.HasField("status_code_200")))
 
@@ -118,7 +133,7 @@ class OtgClient():
             # create from json
             jsonRequest = """
             {
-                "state" : "STATE_UP"
+                "state" : "up"
             }
             """
             self.logger.debug("SetLinkState :: LinkState (JSON) = {}".format(jsonRequest))
@@ -127,7 +142,7 @@ class OtgClient():
             # create from json
             jsonRequest = """
             {
-                "state" : "STATE_DOWN"
+                "state" : "down"
             }
             """
             self.logger.debug("SetLinkState :: LinkState (JSON) = {}".format(jsonRequest))
@@ -138,13 +153,59 @@ class OtgClient():
 
             self.logger.debug("SetLinkState :: LinkState (protobuf) = {}".format(protoRequest))
           
-            self.logger.debug("Sending Up/Down request and waiting for response ...")
+            self.logger.debug("Sending SetLinkState Up/Down request and waiting for response ...")
             try:
                 response = stub.SetLinkState(otg_pb2.SetLinkStateRequest(link_state=protoRequest))
             except grpc.RpcError as e:
-                self.logger.error("gRPC ERROR {}".format(e.code(), e.details()))
+                self.logger.error("gRPC Exception Code: {}, Details: {}".format(e.code(), e.details()))
             else:
                 self.logger.info("Received Response: {}, Success: {}".format(response, response.HasField("status_code_200")))
+
+
+    def GetMetrics(self):
+        protoRequest = None
+
+        # create from json
+        jsonRequest = """
+        {
+            "choice" : "flow",
+            "flow" : {
+                "flow_names" : ["p1->p2"],
+                "metric_names" : ["frames_tx", "frames_rx"]
+            }
+        }
+        """
+        self.logger.debug("GetMetrics :: MetricsRequest (JSON) = {}".format(jsonRequest))
+        protoRequest = json_format.Parse(jsonRequest, otg_pb2.MetricsRequest())
+
+        with grpc.insecure_channel(self.server_address) as channel:
+            stub = otg_pb2_grpc.OpenapiStub(channel)
+
+            self.logger.debug("Sending GetMetrics request and waiting for response ...")
+
+            try:
+                response = stub.GetMetrics(otg_pb2.GetMetricsRequest(metrics_request = protoRequest))
+            except grpc.RpcError as e:
+                self.logger.error("gRPC Exception Code: {}, Details: {}".format(e.code(), e.details()))
+            else:
+                self.logger.info("Received Response: {}".format(response))
+
+    def GetStateMetrics(self):
+
+        with grpc.insecure_channel(self.server_address) as channel:
+            stub = otg_pb2_grpc.OpenapiStub(channel)
+
+            self.logger.debug("Sending GetStateMetrics request and waiting for response ...")
+
+            try:
+                empty = otg_pb2.google_dot_protobuf_dot_empty__pb2.Empty()
+                response = stub.GetStateMetrics(empty)
+            except grpc.RpcError as e:
+                self.logger.error("gRPC Exception Code: {}, Details: {}".format(e.code(), e.details()))
+            else:
+                self.logger.info("Received Response: {}".format(response))
+
+
 
 def serve(args):
     log_level = logging.INFO
@@ -160,21 +221,33 @@ def serve(args):
     client_logger.info("Do SetConfig")
     client.SetConfig()
 
-    client_logger.info("Do Start Transmit")
-    client.SetTransmitState(True)
+    if args.app_mode == "athena":
+        client_logger.info("Do GetConfig")
+        client.GetConfig()
 
-    client_logger.info("Do Stop Transmit")
-    client.SetTransmitState(False)
-
-    client_logger.info("Do LinkState Up/Down")
-    client.SetLinkState(True)
-    client.SetLinkState(False)
-
-    """for count in range(2):
-        client.SetConfig()
+        client_logger.info("Do Start Transmit")
         client.SetTransmitState(True)
+
+        client.GetMetrics()
+
+        client_logger.info("Do Stop Transmit")
         client.SetTransmitState(False)
-    """
+
+
+        #client.GetStateMetrics()
+
+    
+    else:
+        client_logger.info("Do LinkState Up/Down")
+        client.SetLinkState(False)
+        client.SetLinkState(True)
+
+        client_logger.info("Do Start Transmit")
+        client.SetTransmitState(True)
+
+        client_logger.info("Do Stop Transmit")
+        client.SetTransmitState(False)
+
     client_logger.info("Client closed.")
 
 

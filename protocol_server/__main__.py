@@ -24,7 +24,7 @@ from google.protobuf import json_format
 from grpc_server.common.utils import *
 
 # set API version
-OTG_API_Version="0.4.8"
+OTG_API_Version="0.4.10"
 
 class Openapi(otg_pb2_grpc.OpenapiServicer):
 
@@ -43,7 +43,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
         self.logger.debug("Received request.config (JSON)(default=True) = {}".format(jsonObj))
 
         jsonObj = json_format.MessageToJson(request.config, preserving_proto_field_name=True)
-        self.logger.debug("Received request.config (JSON)(default=True) = {}".format(jsonObj))
+        self.logger.debug("Received request.config (JSON)(default=False) = {}".format(jsonObj))
 
         response = """
         {

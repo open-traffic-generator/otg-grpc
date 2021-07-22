@@ -29,36 +29,36 @@
         {
             "name": "tx->rx",
             "tx_rx": {
-                "choice": "CHOICE_PORT",
+                "choice": "port",
                 "port": {
                     "tx_name": "tx",
                     "rx_name": "rx"
                 }
             },
             "size": {
-                "choice": "CHOICE_FIXED",
+                "choice": "fixed",
                 "fixed": 1518
             },
             "rate": {
-                "choice": "CHOICE_PERCENTAGE",
+                "choice": "percentage",
                 "percentage": 1
             },
             "packet": [
                 {
-                    "choice": "CHOICE_ETHERNET",
+                    "choice": "ethernet",
                     "ethernet": {
                         "dst": {
-                            "choice": "CHOICE_VALUE",
+                            "choice": "value",
                             "value": "00:AB:BC:AB:BC:AB"
                         },
                         "src": {
-                            "choice": "CHOICE_VALUE",
+                            "choice": "value",
                             "value": "00:CD:DC:CD:DC:CD"
                         }
                     }
                 },
                 {
-                    "choice": "CHOICE_CUSTOM",
+                    "choice": "custom",
                     "custom": {
                         "bytes": "00112233445566778899AABBCCDDEEFF"
                     }

@@ -13,49 +13,49 @@
         {
             "name": "l1",
             "port_names": ["p1", "p2"],
-            "speed": "SPEED_SPEED_1_GBPS"
+            "speed": "speed_1_gbps"
         }
     ],
     "flows": [
         {
             "name": "p1->p2",
             "tx_rx": {
-                "choice": "CHOICE_PORT",
+                "choice": "port",
                 "port": {
                     "tx_name": "p1",
                     "rx_name": "p2"
                 }
             },
             "size": {
-                "choice": "CHOICE_FIXED",
+                "choice": "fixed",
                 "fixed": 1518
             },
             "rate": {
-                "choice": "CHOICE_PERCENTAGE",
+                "choice": "percentage",
                 "percentage": 10
             },
             "duration": {
-                "choice": "CHOICE_FIXED_PACKETS",
+                "choice": "fixed_packets",
                 "fixed_packets": {
                     "packets": 100000
                 }
             },
             "packet": [
                 {
-                    "choice": "CHOICE_ETHERNET",
+                    "choice": "ethernet",
                     "ethernet": {
                         "dst": {
-                            "choice": "CHOICE_VALUE",
+                            "choice": "value",
                             "value": "00:AB:BC:AB:BC:AB"
                         },
                         "src": {
-                            "choice": "CHOICE_VALUE",
+                            "choice": "value",
                             "value": "00:CD:DC:CD:DC:CD"
                         }
                     }
                 },
                 {
-                    "choice": "CHOICE_CUSTOM",
+                    "choice": "custom",
                     "custom": {
                         "bytes": "00112233445566778899AABBCCDDEEFF"
                     }
@@ -65,42 +65,42 @@
         {
             "name": "p2->p1",
             "tx_rx": {
-                "choice": "CHOICE_PORT",
+                "choice": "port",
                 "port": {
                     "tx_name": "p2",
                     "rx_name": "p1"
                 }
             },
             "size": {
-                "choice": "CHOICE_FIXED",
+                "choice": "fixed",
                 "fixed": 1518
             },
             "rate": {
-                "choice": "CHOICE_PERCENTAGE",
+                "choice": "percentage",
                 "percentage": 10
             },
             "duration": {
-                "choice": "CHOICE_FIXED_PACKETS",
+                "choice": "fixed_packets",
                 "fixed_packets": {
                     "packets": 100000
                 }
             },
             "packet": [
                 {
-                    "choice": "CHOICE_ETHERNET",
+                    "choice": "ethernet",
                     "ethernet": {
                         "dst": {
-                            "choice": "CHOICE_VALUE",
+                            "choice": "value",
                             "value": "00:CD:DC:CD:DC:CD"
                         },
                         "src": {
-                            "choice": "CHOICE_VALUE",
+                            "choice": "value",
                             "value": "00:AB:BC:AB:BC:AB"
                         }
                     }
                 },
                 {
-                    "choice": "CHOICE_CUSTOM",
+                    "choice": "custom",
                     "custom": {
                         "bytes": "00112233445566778899AABBCCDDEEFF"
                     }
