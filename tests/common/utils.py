@@ -121,5 +121,47 @@ def set_config(api, payload):
     return json_res
 
 
+def get_config(api):
+    print('Getting Config......')
+    empty_req_obj = otg_pb2.google_dot_protobuf_dot_empty__pb2.Empty()
+    proto_res = api.GetConfig(empty_req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(proto_res)
+    return json_res
+
+
+def set_transmit_state(api, payload):
+    print('Setting Transmit State......')
+    if not isinstance(payload, str):
+        # accept both string and dict
+        payload = json.dumps(payload, indent=4)
+    proto_state_req = json_format.Parse(payload, otg_pb2.TransmitState())
+    req_obj = otg_pb2.SetTransmitStateRequest(transmit_state=proto_state_req)
+    proto_res = api.SetTransmitState(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(proto_res)
+    return json_res
+
+def set_link_state(api, payload):
+    print('Setting Link State......')
+    if not isinstance(payload, str):
+        # accept both string and dict
+        payload = json.dumps(payload, indent=4)
+    proto_state_req = json_format.Parse(payload, otg_pb2.LinkState())
+    req_obj = otg_pb2.SetLinkStateRequest(link_state=proto_state_req)
+    proto_res = api.SetLinkState(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(proto_res)
+    return json_res
+
+def get_metrics(api, payload):
+    print('Fetching Metrices......')
+    if not isinstance(payload, str):
+        # accept both string and dict
+        payload = json.dumps(payload, indent=4)
+    proto_state_req = json_format.Parse(payload, otg_pb2.MetricsRequest())
+    req_obj = otg_pb2.GetMetricsRequest(metrics_request=proto_state_req)
+    proto_res = api.GetMetrics(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(proto_res)
+    return json_res
+
+
 
 

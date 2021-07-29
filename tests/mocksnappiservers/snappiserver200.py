@@ -3,9 +3,17 @@ import threading
 import json
 import time
 import snappi
+import requests
 
 app = Flask(__name__)
 CONFIG = None
+
+
+@app.route('/status', methods=['GET'])
+def get_status():
+    return Response(status=200,
+                   response=json.dumps({'status': 'up'}),
+                   headers={'Content-Type': 'application/json'})
 
 
 @app.route('/config', methods=['POST'])
@@ -34,10 +42,20 @@ def get_config():
                     status=200)
 
 
+@app.route('/control/link', methods=['POST'])
+def set_link_state():
+    global CONFIG
+    return Response(status=200,
+                    response=json.dumps({'warnings': []}),
+                    headers={'Content-Type': 'application/json'})
+
+
 @app.route('/control/transmit', methods=['POST'])
 def set_transmit_state():
     global CONFIG
-    return Response(status=200)
+    return Response(status=200,
+                    response=json.dumps({'warnings': []}),
+                    headers={'Content-Type': 'application/json'})
 
 
 @app.route('/results/metrics', methods=['POST'])
@@ -85,11 +103,14 @@ class SnappiServer200(object):
         return self
 
     def _wait_until_ready(self):
-        api = snappi.api(location='http://127.0.0.1:80')
         while True:
             try:
-                api.get_config()
+                r = requests.get(url='http://127.0.0.1:80/status')
+                res = r.json()
+                if res['status'] != 'up':
+                    raise Exception('waiting for SnappiServer200 to be up')
                 break
-            except Exception:
+            except Exception as e:
+                print(e)
                 pass
             time.sleep(.1)

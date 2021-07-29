@@ -3,9 +3,16 @@ import threading
 import json
 import time
 import snappi
+import requests
 
 app = Flask(__name__)
 CONFIG = None
+
+@app.route('/status', methods=['GET'])
+def get_status():
+    return Response(status=200,
+                   response=json.dumps({'status': 'up'}),
+                   headers={'Content-Type': 'application/json'})
 
 
 @app.route('/config', methods=['POST'])
@@ -21,7 +28,7 @@ def set_config():
     else:
         CONFIG = config
         return Response(status=200,
-                        response=json.dumps({'warnings': ['mock warning 1', 'mock warning 2']}),
+                        response=json.dumps({'warnings': ['mock 200 set_config warning']}),
                         headers={'Content-Type': 'application/json'})
 
 
@@ -37,7 +44,17 @@ def get_config():
 @app.route('/control/transmit', methods=['POST'])
 def set_transmit_state():
     global CONFIG
-    return Response(status=200)
+    return Response(status=200,
+                    response=json.dumps({'warnings': ['mock 200 set_transmit_state warning']}),
+                    headers={'Content-Type': 'application/json'})
+
+
+@app.route('/control/link', methods=['POST'])
+def set_link_state():
+    global CONFIG
+    return Response(status=200,
+                    response=json.dumps({'warnings': ['mock 200 set_link_state warning']}),
+                    headers={'Content-Type': 'application/json'})
 
 
 @app.route('/results/metrics', methods=['POST'])
@@ -85,11 +102,14 @@ class SnappiServer200Warning(object):
         return self
 
     def _wait_until_ready(self):
-        api = snappi.api(location='http://127.0.0.1:110')
         while True:
             try:
-                api.get_config()
+                r = requests.get(url='http://127.0.0.1:110/status')
+                res = r.json()
+                if res['status'] != 'up':
+                    raise Exception('waiting for SnappiServer200Warning to be up')
                 break
-            except Exception:
+            except Exception as e:
+                print(e)
                 pass
             time.sleep(.1)

@@ -20,6 +20,9 @@ def snappiserver():
 
     from .mocksnappiservers.snappiserver500 import SnappiServer500
     pytest.snappiserver500 = SnappiServer500().start()
+
+    from .mocksnappiservers.snappiserver_not_implemented import SnappiServerNotImplemented
+    pytest.snappiservernotimplemented = SnappiServerNotImplemented().start()
     yield
 
 @pytest.fixture(scope='session')
