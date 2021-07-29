@@ -46,6 +46,10 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 target = "http://{}".format(self.target_address)
                 self.api = snappi.api(location=target, ext=self.app_mode, verify=False, loglevel=self.snappi_log_level)
                 self.logger.info("Snappi Remote Server address = {} in IxNetwork mode".format(target))
+            if self.app_mode == "athena-insecure":
+                target = "http://{}".format(self.target_address)
+                self.api = snappi.api(location=target, verify=False)
+                self.logger.info("Snappi Remote Server address = {} in Athena mode".format(target))
             else:
                 target = "https://{}".format(self.target_address)
                 self.api = snappi.api(location=target, verify=False, loglevel=self.snappi_log_level)
@@ -398,7 +402,7 @@ if __name__ == '__main__':
                         default=40051,
                         type=int)
     parser.add_argument('--app-mode', help='target Application mode)',
-                        choices=['ixnetwork', 'athena'],
+                        choices=['ixnetwork', 'athena', 'athena-insecure'],
                         default='ixnetwork',
                         type=str)
     parser.add_argument('--target-host', help='target host address',

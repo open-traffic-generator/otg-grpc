@@ -26,8 +26,6 @@ gen_model_stubs() {
 upddate_code() {
     echo -e "\nUpdating Model version info in source code ...\n" \
     && sed -i "s/^OTG_API_Version.*$/OTG_API_Version=\"${OTG_API_VERSION}\"/" grpc_server/__main__.py \
-    && sed -i "s/^OTG_API_Version.*$/OTG_API_Version=\"${OTG_API_VERSION}\"/" test_client/__main__.py \
-    && sed -i "s/^OTG_API_Version.*$/OTG_API_Version=\"${OTG_API_VERSION}\"/" protocol_server/__main__.py \
     && sed -i "s/^LABEL .*$/LABEL OTG_API_Version=\"${OTG_API_VERSION}\"/" Dockerfile
 }
 

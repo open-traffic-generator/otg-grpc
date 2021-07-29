@@ -3,3 +3,5 @@
 
 download
 logs
+.coverage
+**/*,cover

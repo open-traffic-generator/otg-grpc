@@ -1,0 +1,10 @@
+{
+    "app-mode": "athena-insecure",
+    "target-host": "127.0.0.1",
+    "target-port": {
+        "200": 80,
+        "200-warning": 110,
+        "400": 90,
+        "500": 100
+    }
+}
