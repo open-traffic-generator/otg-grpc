@@ -26,4 +26,7 @@ jobs:
           export DOCKER_HUB_USERNAME='${{ github.actor }}' \
           && sudo chmod u+x ./do.sh \
           && sudo ./do.sh cicd
-      
+        env:
+          FIRST_NAME: Mona
+          middle_name: The
+          Last_Name: Octocat
