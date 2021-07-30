@@ -35,7 +35,7 @@ gen_py_stubs() {
 }
 
 run() {
-    python -m ./grpc_server ${@}
+    python -m grpc_server ${@}
 }
 
 run_unit_test() {

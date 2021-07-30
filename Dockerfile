@@ -22,4 +22,4 @@ COPY --from=dev ${SRC_ROOT}/do.sh ${SRC_ROOT}/
 COPY --from=dev ${SRC_ROOT}/requirements.txt ${SRC_ROOT}/
 RUN cd ${SRC_ROOT} && chmod +x ./do.sh && ./do.sh deps 2>&1 && rm ./do.sh && rm ./requirements.txt
 WORKDIR ${SRC_ROOT}
-ENTRYPOINT ["python", "-m", "./grpc_server"]
+ENTRYPOINT ["python", "-m", "grpc_server"]
