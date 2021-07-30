@@ -20,7 +20,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: testing
+      - name: Installing Docker on GitHub Runner
         run: |
-          sudo apt-get update
+          sudo apt-get update \
+          && sudo apt-get install -y docker.io \
+          && sudo systemctl enable docker.service
       
