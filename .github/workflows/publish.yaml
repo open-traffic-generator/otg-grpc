@@ -24,6 +24,7 @@ jobs:
       - name: Building Docker Images & Publishing
         run: |
           sudo chmod u+x ./do.sh
+          echo ${{ secrets.DOCKER_HUB_USERNAME }}
           sudo DOCKER_HUB_USERNAME='${{ secrets.DOCKER_HUB_USERNAME }}' ./do.sh cicd
         env:
           FIRST_NAME: Mona
