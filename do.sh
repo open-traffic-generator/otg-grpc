@@ -65,8 +65,6 @@ cicd() {
     version=$(head ./version | cut -d' ' -f1)
     echo "gRPC version : ${version}"
     # cicd_publish_to_docker_repo ${version}
-
-    docker images
 }
 
 
