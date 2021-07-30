@@ -23,9 +23,10 @@ jobs:
       
       - name: Building Docker Images & Publishing
         run: |
-          export DOCKER_HUB_USERNAME='${{ github.actor }}' \
-          && sudo chmod u+x ./do.sh \
-          && sudo ./do.sh cicd
+          printenv
+          export DOCKER_HUB_USERNAME='${{ github.actor }}'
+          sudo chmod u+x ./do.sh
+          sudo ./do.sh cicd
         env:
           FIRST_NAME: Mona
           middle_name: The
