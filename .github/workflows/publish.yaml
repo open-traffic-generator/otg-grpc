@@ -14,14 +14,13 @@ on: [push, pull_request, workflow_dispatch, repository_dispatch]
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
-
     steps:
       
       - name: Checkout
         uses: actions/checkout@v2
       
       - name: Installing Docker on GitHub Runner
-        using: 'docker'
+        uses: docker-practice/actions-setup-docker@master
         run: |
-          sudo docker ps -a
+          docker ps -a
       
