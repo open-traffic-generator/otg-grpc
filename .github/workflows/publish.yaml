@@ -22,5 +22,5 @@ jobs:
       
       - name: testing
         run: |
-          apt-get update
+          sudo apt-get update
       
