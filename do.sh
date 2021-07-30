@@ -7,11 +7,15 @@ export DEBIAN_FRONTEND=noninteractive
 
 install_deps() {
 	# Dependencies required by this project
+    # apt-get update \
+	# && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
+    # && apt-get -y install python-is-python3 python3-pip \
+    # && python -m pip install --default-timeout=100 -r requirements.txt \
+    # && apt-get -y clean all
+
     apt-get update \
 	&& apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
-    && apt-get -y install python-is-python3 python3-pip \
-    && python -m pip install --default-timeout=100 -r requirements.txt \
-    && apt-get -y clean all
+    && mkdir grpc_server/proto/
 }
 
 install_ext_deps() {
@@ -22,8 +26,8 @@ install_ext_deps() {
 
 get_otg_proto() {
     echo "Fetching OTG proto for ${OTG_API_VERSION} ..."
-    rm -rf grpc_server/proto> /dev/null 2>&1 || true
-    mkdir grpc_server/proto \
+    rm -rf grpc_server/proto/otg.proto> /dev/null 2>&1 || true \
+    && mkdir grpc_server/proto/ \
     && curl -kL https://github.com/open-traffic-generator/models/releases/download/v${OTG_API_VERSION}/otg.proto> ./grpc_server/proto
 }
 
