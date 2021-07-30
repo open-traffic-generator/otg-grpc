@@ -12,8 +12,8 @@ CONFIG = None
 @app.route('/status', methods=['GET'])
 def get_status():
     return Response(status=200,
-                   response=json.dumps({'status': 'up'}),
-                   headers={'Content-Type': 'application/json'})
+                    response=json.dumps({'status': 'up'}),
+                    headers={'Content-Type': 'application/json'})
 
 
 @app.route('/config', methods=['POST'])
@@ -31,7 +31,6 @@ def set_config():
         return Response(status=200,
                         response=json.dumps({'warnings': []}),
                         headers={'Content-Type': 'application/json'})
-
 
 
 @app.route('/config', methods=['GET'])
@@ -80,6 +79,7 @@ def get_metrics():
     return Response(metrics_response.serialize(),
                     mimetype='application/json',
                     status=200)
+
 
 @app.after_request
 def after_request(resp):

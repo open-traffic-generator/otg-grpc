@@ -8,11 +8,12 @@ import requests
 app = Flask(__name__)
 CONFIG = None
 
+
 @app.route('/status', methods=['GET'])
 def get_status():
     return Response(status=200,
-                   response=json.dumps({'status': 'up'}),
-                   headers={'Content-Type': 'application/json'})
+                    response=json.dumps({'status': 'up'}),
+                    headers={'Content-Type': 'application/json'})
 
 
 @app.route('/config', methods=['POST'])
@@ -28,9 +29,9 @@ def set_config():
     else:
         CONFIG = config
         return Response(status=200,
-                        response=json.dumps({'warnings': ['mock 200 set_config warning']}),
+                        response=json.dumps(
+                            {'warnings': ['mock 200 set_config warning']}),
                         headers={'Content-Type': 'application/json'})
-
 
 
 @app.route('/config', methods=['GET'])
@@ -45,7 +46,8 @@ def get_config():
 def set_transmit_state():
     global CONFIG
     return Response(status=200,
-                    response=json.dumps({'warnings': ['mock 200 set_transmit_state warning']}),
+                    response=json.dumps(
+                        {'warnings': ['mock 200 set_transmit_state warning']}),
                     headers={'Content-Type': 'application/json'})
 
 
@@ -53,7 +55,8 @@ def set_transmit_state():
 def set_link_state():
     global CONFIG
     return Response(status=200,
-                    response=json.dumps({'warnings': ['mock 200 set_link_state warning']}),
+                    response=json.dumps(
+                        {'warnings': ['mock 200 set_link_state warning']}),
                     headers={'Content-Type': 'application/json'})
 
 
@@ -79,6 +82,7 @@ def get_metrics():
     return Response(metrics_response.serialize(),
                     mimetype='application/json',
                     status=200)
+
 
 @app.after_request
 def after_request(resp):
@@ -107,7 +111,8 @@ class SnappiServer200Warning(object):
                 r = requests.get(url='http://127.0.0.1:110/status')
                 res = r.json()
                 if res['status'] != 'up':
-                    raise Exception('waiting for SnappiServer200Warning to be up')
+                    raise Exception(
+                        'waiting for SnappiServer200Warning to be up')
                 break
             except Exception as e:
                 print(e)

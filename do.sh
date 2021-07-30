@@ -39,17 +39,17 @@ run() {
 }
 
 run_unit_test() {
-    python -m pytest -p no:cacheprovider --cov=./grpc_server
+    python -m pytest ./tests -p no:cacheprovider --cov=./grpc_server
     rm -rf ./grpc_server/__pycache__
     rm -rf ./tests/__pycache__
     rm -rf ./tests/.pytest_cache
     rm .coverage
 }
 
-# cicd_is_dev_branch() {
-#     echo "Current ref: ${CI_COMMIT_REF_NAME}"
-#     echo "${CI_COMMIT_REF_NAME}" | grep --color=no -E "^dev-"
-# }
+echo_version() {
+    version=$(head ./version | cut -d' ' -f1)
+    echo "gRPC version : ${version}"
+}
 
 # cicd_publish_to_docker_repo() {
 #     version=${1}
@@ -64,11 +64,12 @@ run_unit_test() {
 # }
 
 cicd() {
-    docker build -t otgservices/otg-grpc-server .
+    echo "${{ secrets.DOCKER_HUB_USERNAME }}"
+    # docker build -t otgservices/otg-grpc-server .
 
-    echo "Docker Build Done"
+    # echo "Docker Build Done"
 
-    docker ps -a
+    # docker ps -a
 
     # cicd_install_deps
     # get_new_version
@@ -107,7 +108,10 @@ case $1 in
     cicd    )
         cicd
         ;;
+    version )
+        echo_version
+        ;;
 	*   )
-        $1 || echo "usage: $0 [deps|ext|clean|run|art|unit]"
+        $1 || echo "usage: $0 [deps|ext|clean|run|art|unit|cicd|version]"
 		;;
 esac

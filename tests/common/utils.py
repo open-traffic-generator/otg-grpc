@@ -37,40 +37,49 @@ def convert_proto_to_json(proto_obj):
     return json_obj
 
 
-
 def get_parsed_args(op_val):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--server-port', help='gRPC server port number',
+    parser.add_argument('--server-port',
+                        help='gRPC server port number',
                         default=40051,
                         type=int)
-    parser.add_argument('--app-mode', help='target Application mode)',
+    parser.add_argument('--app-mode',
+                        help='target Application mode',
                         choices=['ixnetwork', 'athena', 'athena-insecure'],
                         default='ixnetwork',
                         type=str)
-    parser.add_argument('--target-host', help='target host address',
+    parser.add_argument('--target-host',
+                        help='target host address',
                         default='localhost',
                         type=str)
-    parser.add_argument('--target-port', help='target port number',
+    parser.add_argument('--target-port',
+                        help='target port number',
                         default=11009,
                         type=int)
-    parser.add_argument('--logfile', help='logfile name [date and time auto appended]',
+    parser.add_argument('--logfile',
+                        help='logfile name [date and time auto appended]',
                         default='grpc_server',
-                        type=str)    
-    parser.add_argument('--insecure', help='disable TSL security, by default enabled',
+                        type=str)
+    parser.add_argument('--insecure',
+                        help='disable TSL security, by default enabled',
                         default=True,
                         action='store_true')
-    parser.add_argument('--server-key', help='path to private key, default is server.key',
+    parser.add_argument('--server-key',
+                        help='path to private key, default is server.key',
                         default='server.key',
                         type=str)
-    parser.add_argument('--server-crt', help='path to certificate key, default is server.crt',
+    parser.add_argument('--server-crt',
+                        help='path to certificate key, default is server.crt',
                         default='server.crt',
                         type=str)
-    parser.add_argument('--log-stdout', help='show log on stdout, in addition to file',
+    parser.add_argument('--log-stdout',
+                        help='show log on stdout, in addition to file',
                         default=False,
                         action='store_true')
-    parser.add_argument('--log-debug', help='enable debug level logging',
-                    default=False,
-                    action='store_true')
+    parser.add_argument('--log-debug',
+                        help='enable debug level logging',
+                        default=False,
+                        action='store_true')
 
     arg_inputs = []
     for op, val in list(op_val.items()):
@@ -99,8 +108,9 @@ def get_mock_server_settings(error_code=200, with_warning=False):
     return mock_config
 
 
-
-def init_grpc_with_mock_server(server_logfile, error_code=200, with_warning=False):
+def init_grpc_with_mock_server(server_logfile,
+                               error_code=200,
+                               with_warning=False):
     print('Intializing grpc server api......')
     mock_config = get_mock_server_settings(error_code, with_warning)
     mock_config['logfile'] = server_logfile
@@ -140,6 +150,7 @@ def set_transmit_state(api, payload):
     json_res = convert_proto_to_json(proto_res)
     return json_res
 
+
 def set_link_state(api, payload):
     print('Setting Link State......')
     if not isinstance(payload, str):
@@ -151,6 +162,7 @@ def set_link_state(api, payload):
     json_res = convert_proto_to_json(proto_res)
     return json_res
 
+
 def get_metrics(api, payload):
     print('Fetching Metrices......')
     if not isinstance(payload, str):
@@ -161,7 +173,3 @@ def get_metrics(api, payload):
     proto_res = api.GetMetrics(req_obj, MOCK_GRPC_SERVER_CONTEXT)
     json_res = convert_proto_to_json(proto_res)
     return json_res
-
-
-
-

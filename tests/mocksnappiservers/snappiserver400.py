@@ -2,7 +2,6 @@ from flask import Flask, request, Response
 import threading
 import json
 import time
-import snappi
 import requests
 
 app = Flask(__name__)
@@ -12,41 +11,49 @@ CONFIG = None
 @app.route('/status', methods=['GET'])
 def get_status():
     return Response(status=200,
-                   response=json.dumps({'status': 'up'}),
-                   headers={'Content-Type': 'application/json'})
+                    response=json.dumps({'status': 'up'}),
+                    headers={'Content-Type': 'application/json'})
 
 
 @app.route('/config', methods=['POST'])
 def set_config():
     return Response(status=400,
-                    response=json.dumps({'errors': ['mock 400 set_config error']}),
+                    response=json.dumps(
+                        {'errors': ['mock 400 set_config error']}),
                     headers={'Content-Type': 'application/json'})
+
 
 @app.route('/config', methods=['GET'])
 def get_config():
     return Response(status=400,
-                        response=json.dumps({'errors': ['mock 400 get_config error']}),
-                        headers={'Content-Type': 'application/json'})
+                    response=json.dumps(
+                        {'errors': ['mock 400 get_config error']}),
+                    headers={'Content-Type': 'application/json'})
 
 
 @app.route('/control/transmit', methods=['POST'])
 def set_transmit_state():
     return Response(status=400,
-                        response=json.dumps({'errors': ['mock 400 set_transmit_state error']}),
-                        headers={'Content-Type': 'application/json'})
+                    response=json.dumps(
+                        {'errors': ['mock 400 set_transmit_state error']}),
+                    headers={'Content-Type': 'application/json'})
+
 
 @app.route('/control/link', methods=['POST'])
 def set_link_state():
     return Response(status=400,
-                        response=json.dumps({'errors': ['mock 400 set_link_state error']}),
-                        headers={'Content-Type': 'application/json'})
+                    response=json.dumps(
+                        {'errors': ['mock 400 set_link_state error']}),
+                    headers={'Content-Type': 'application/json'})
 
 
 @app.route('/results/metrics', methods=['POST'])
 def get_metrics():
     return Response(status=400,
-                        response=json.dumps({'errors': ['mock 400 get_metrics error']}),
-                        headers={'Content-Type': 'application/json'})
+                    response=json.dumps(
+                        {'errors': ['mock 400 get_metrics error']}),
+                    headers={'Content-Type': 'application/json'})
+
 
 @app.after_request
 def after_request(resp):
@@ -72,10 +79,11 @@ class SnappiServer400(object):
     def _wait_until_ready(self):
         while True:
             try:
-                r = requests.get(url = 'http://127.0.0.1:90/status')
+                r = requests.get(url='http://127.0.0.1:90/status')
                 res = r.json()
                 if res['status'] != 'up':
-                    raise Exception('waiting for SnappiServer400 to be up')
+                    raise Exception(
+                        'waiting for SnappiServer400 to be up')
                 break
             except Exception as e:
                 print(e)

@@ -1,9 +1,8 @@
 import pytest
 import sys
-import subprocess
-import time
 import logging
 sys.path.append('.')
+
 
 @pytest.fixture(scope='session')
 def snappiserver():
@@ -12,7 +11,7 @@ def snappiserver():
     from .mocksnappiservers.snappiserver200 import SnappiServer200
     pytest.snappiserver200 = SnappiServer200().start()
 
-    from .mocksnappiservers.snappiserver200warning import SnappiServer200Warning
+    from .mocksnappiservers.snappiserver200warning import SnappiServer200Warning # noqa
     pytest.snappiserver200warning = SnappiServer200Warning().start()
 
     from .mocksnappiservers.snappiserver400 import SnappiServer400
@@ -21,9 +20,10 @@ def snappiserver():
     from .mocksnappiservers.snappiserver500 import SnappiServer500
     pytest.snappiserver500 = SnappiServer500().start()
 
-    from .mocksnappiservers.snappiserver_not_implemented import SnappiServerNotImplemented
+    from .mocksnappiservers.snappiserver_not_implemented import SnappiServerNotImplemented # noqa
     pytest.snappiservernotimplemented = SnappiServerNotImplemented().start()
     yield
+
 
 @pytest.fixture(scope='session')
 def serverlogfile():
@@ -33,4 +33,3 @@ def serverlogfile():
     log_level = logging.INFO
     serverlogfile = init_logging('test', log_level, False)
     yield serverlogfile
-

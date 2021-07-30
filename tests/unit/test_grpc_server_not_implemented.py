@@ -1,10 +1,10 @@
-import pytest
 import tests.common.utils as utils
 
 
-def test_grpc_server_set_config_with_501(snappiserver, serverlogfile):
+def test_grpc_server_set_config_with_501(snappiserver,
+                                         serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
-    
+
     config = {
         "ports": [
             {
@@ -23,7 +23,8 @@ def test_grpc_server_set_config_with_501(snappiserver, serverlogfile):
     assert found_err, 'Exception should be raised'
 
 
-def test_grpc_server_get_config_with_501(snappiserver, serverlogfile):
+def test_grpc_server_get_config_with_501(snappiserver,
+                                         serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
 
     found_err = False
@@ -35,14 +36,15 @@ def test_grpc_server_get_config_with_501(snappiserver, serverlogfile):
     assert found_err, 'Exception should be raised'
 
 
-def test_grpc_server_set_transmit_state_with_501(snappiserver, serverlogfile):
+def test_grpc_server_set_transmit_state_with_501(snappiserver,
+                                                 serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
-    
+
     state = {
         "flow_names": [
             "f1"
         ],
-        "state" : "start"
+        "state": "start"
     }
 
     found_err = False
@@ -53,9 +55,11 @@ def test_grpc_server_set_transmit_state_with_501(snappiserver, serverlogfile):
 
     assert found_err, 'Exception should be raised'
 
-def test_grpc_server_set_link_state_with_501(snappiserver, serverlogfile):
+
+def test_grpc_server_set_link_state_with_501(snappiserver,
+                                             serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
-    
+
     state = {
         "port_names": [
             "string"
@@ -71,7 +75,9 @@ def test_grpc_server_set_link_state_with_501(snappiserver, serverlogfile):
 
     assert found_err, 'Exception should be raised'
 
-def test_grpc_server_get_metrics_with_501(snappiserver, serverlogfile):
+
+def test_grpc_server_get_metrics_with_501(snappiserver,
+                                          serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
 
     metrc_req = {
@@ -90,9 +96,3 @@ def test_grpc_server_get_metrics_with_501(snappiserver, serverlogfile):
         found_err = True
 
     assert found_err, 'Exception should be raised'
-
-    
-
-
-    
-

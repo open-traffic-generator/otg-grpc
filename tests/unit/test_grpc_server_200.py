@@ -1,10 +1,10 @@
-import pytest
 import tests.common.utils as utils
 
 
-def test_grpc_server_set_config_with_200(snappiserver, serverlogfile):
+def test_grpc_server_set_config_with_200(snappiserver,
+                                         serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
-    
+
     config = {
         "ports": [
             {
@@ -18,15 +18,17 @@ def test_grpc_server_set_config_with_200(snappiserver, serverlogfile):
     exp_res = {
         "status_code_200": {
             "success": {
-            "response_warning": {}
+                "response_warning": {}
             }
         }
     }
     assert json_res == exp_res
 
-def test_grpc_server_get_config_with_200(snappiserver, serverlogfile):
+
+def test_grpc_server_get_config_with_200(snappiserver,
+                                         serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
-    
+
     config = {
         "ports": [
             {
@@ -40,7 +42,7 @@ def test_grpc_server_get_config_with_200(snappiserver, serverlogfile):
     exp_res = {
         "status_code_200": {
             "success": {
-            "response_warning": {}
+                "response_warning": {}
             }
         }
     }
@@ -53,45 +55,47 @@ def test_grpc_server_get_config_with_200(snappiserver, serverlogfile):
                 'config': {
                     'ports': [
                         {
-                            'location': 'localhost:5555', 
+                            'location': 'localhost:5555',
                             'name': 'tx'
                         }
-                    ], 
-                'options': {
-                    'port_options': {
-                        'location_preemption': False
+                    ],
+                    'options': {
+                        'port_options': {
+                            'location_preemption': False
+                        }
                     }
                 }
             }
         }
-    }
     assert json_res == exp_res
 
 
-def test_grpc_server_set_transmit_state_with_200(snappiserver, serverlogfile):
+def test_grpc_server_set_transmit_state_with_200(snappiserver,
+                                                 serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
-    
+
     state = {
         "flow_names": [
             "f1"
         ],
-        "state" : "start"
+        "state": "start"
     }
     json_res = utils.set_transmit_state(grpc_api, state)
 
     exp_res = {
         "status_code_200": {
             "success": {
-            "response_warning": {}
+                "response_warning": {}
             }
         }
     }
     assert json_res == exp_res
 
 
-def test_grpc_server_set_link_state_with_200(snappiserver, serverlogfile):
+def test_grpc_server_set_link_state_with_200(snappiserver,
+                                             serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
-    
+
     state = {
         "port_names": [
             "string"
@@ -103,16 +107,17 @@ def test_grpc_server_set_link_state_with_200(snappiserver, serverlogfile):
     exp_res = {
         "status_code_200": {
             "success": {
-            "response_warning": {}
+                "response_warning": {}
             }
         }
     }
     assert json_res == exp_res
 
 
-def test_grpc_server_get_port_metrics_with_200(snappiserver, serverlogfile):
+def test_grpc_server_get_port_metrics_with_200(snappiserver,
+                                               serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
-    
+
     config = {
         "ports": [
             {
@@ -126,7 +131,7 @@ def test_grpc_server_get_port_metrics_with_200(snappiserver, serverlogfile):
     exp_res = {
         "status_code_200": {
             "success": {
-            "response_warning": {}
+                "response_warning": {}
             }
         }
     }
@@ -159,9 +164,11 @@ def test_grpc_server_get_port_metrics_with_200(snappiserver, serverlogfile):
     }
     assert json_res == exp_res
 
-def test_grpc_server_get_flow_metrics_with_200(snappiserver, serverlogfile):
+
+def test_grpc_server_get_flow_metrics_with_200(snappiserver,
+                                               serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
-    
+
     config = {
         "ports": [
             {
@@ -186,7 +193,7 @@ def test_grpc_server_get_flow_metrics_with_200(snappiserver, serverlogfile):
     exp_res = {
         "status_code_200": {
             "success": {
-            "response_warning": {}
+                "response_warning": {}
             }
         }
     }
@@ -218,6 +225,3 @@ def test_grpc_server_get_flow_metrics_with_200(snappiserver, serverlogfile):
         }
     }
     assert json_res == exp_res
-
-
-

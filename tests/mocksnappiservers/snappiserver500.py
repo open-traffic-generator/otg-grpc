@@ -2,50 +2,58 @@ from flask import Flask, request, Response
 import threading
 import json
 import time
-import snappi
 import requests
 
 app = Flask(__name__)
 CONFIG = None
 
+
 @app.route('/status', methods=['GET'])
 def get_status():
     return Response(status=200,
-                   response=json.dumps({'status': 'up'}),
-                   headers={'Content-Type': 'application/json'})
+                    response=json.dumps({'status': 'up'}),
+                    headers={'Content-Type': 'application/json'})
 
 
 @app.route('/config', methods=['POST'])
 def set_config():
     return Response(status=500,
-                    response=json.dumps({'errors': ['mock 500 set_config error']}),
+                    response=json.dumps(
+                        {'errors': ['mock 500 set_config error']}),
                     headers={'Content-Type': 'application/json'})
+
 
 @app.route('/config', methods=['GET'])
 def get_config():
     return Response(status=500,
-                    response=json.dumps({'errors': ['mock 500 get_config error']}),
+                    response=json.dumps(
+                        {'errors': ['mock 500 get_config error']}),
                     headers={'Content-Type': 'application/json'})
 
 
 @app.route('/control/transmit', methods=['POST'])
 def set_transmit_state():
     return Response(status=500,
-                    response=json.dumps({'errors': ['mock 500 set_transmit_state error']}),
+                    response=json.dumps(
+                        {'errors': ['mock 500 set_transmit_state error']}),
                     headers={'Content-Type': 'application/json'})
+
 
 @app.route('/control/link', methods=['POST'])
 def set_link_state():
     return Response(status=500,
-                    response=json.dumps({'errors': ['mock 500 set_link_state error']}),
+                    response=json.dumps(
+                        {'errors': ['mock 500 set_link_state error']}),
                     headers={'Content-Type': 'application/json'})
 
 
 @app.route('/results/metrics', methods=['POST'])
 def get_metrics():
     return Response(status=500,
-                    response=json.dumps({'errors': ['mock 500 get_metrics error']}),
+                    response=json.dumps(
+                        {'errors': ['mock 500 get_metrics error']}),
                     headers={'Content-Type': 'application/json'})
+
 
 @app.after_request
 def after_request(resp):

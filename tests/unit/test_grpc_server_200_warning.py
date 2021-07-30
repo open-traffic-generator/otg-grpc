@@ -1,10 +1,10 @@
-import pytest
 import tests.common.utils as utils
 
 
-def test_grpc_server_set_config_with_200_warning(snappiserver, serverlogfile):
+def test_grpc_server_set_config_with_200_warning(snappiserver,
+                                                 serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200, True)
-    
+
     config = {
         "ports": [
             {
@@ -29,14 +29,15 @@ def test_grpc_server_set_config_with_200_warning(snappiserver, serverlogfile):
     assert json_res == exp_res
 
 
-def test_grpc_server_set_transmit_state_with_200_warning(snappiserver, serverlogfile):
+def test_grpc_server_set_transmit_state_with_200_warning(snappiserver,
+                                                         serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200, True)
-    
+
     state = {
         "flow_names": [
             "f1"
         ],
-        "state" : "start"
+        "state": "start"
     }
     json_res = utils.set_transmit_state(grpc_api, state)
 
@@ -53,9 +54,11 @@ def test_grpc_server_set_transmit_state_with_200_warning(snappiserver, serverlog
     }
     assert json_res == exp_res
 
-def test_grpc_server_set_link_state_with_200_warning(snappiserver, serverlogfile):
+
+def test_grpc_server_set_link_state_with_200_warning(snappiserver,
+                                                     serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200, True)
-    
+
     state = {
         "port_names": [
             "string"
@@ -76,4 +79,3 @@ def test_grpc_server_set_link_state_with_200_warning(snappiserver, serverlogfile
         }
     }
     assert json_res == exp_res
-
