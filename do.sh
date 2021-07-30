@@ -1,7 +1,5 @@
 #!/bin/sh
 
-import DOCKER_HUB_USERNAME
-
 OTG_API_VERSION=0.4.10
 
 # Avoid warnings for non-interactive apt-get install
@@ -66,7 +64,7 @@ echo_version() {
 # }
 
 cicd() {
-    echo "Hi ${DOCKER_HUB_USERNAME}"
+    echo "Hi $DOCKER_HUB_USERNAME"
     # docker build -t otgservices/otg-grpc-server .
 
     # echo "Docker Build Done"
