@@ -15,8 +15,8 @@ jobs:
   build_publish:
     runs-on: ubuntu-latest
     steps:
-      # - name: Setup Docker
-      #   uses: docker-practice/actions-setup-docker@master
+      - name: Setup Docker
+        uses: docker-practice/actions-setup-docker@master
       
       - name: Checkout
         uses: actions/checkout@v2
@@ -24,7 +24,7 @@ jobs:
       - name: Building Docker Images & Publishing
         run: |
           sudo chmod u+x ./do.sh
-          sudo DOCKER_HUB_USERNAME='${{ github.actor }}' ./do.sh cicd
+          sudo DOCKER_HUB_USERNAME='${{ secrets.DOCKER_HUB_USERNAME }}' ./do.sh cicd
         env:
           FIRST_NAME: Mona
           middle_name: The
