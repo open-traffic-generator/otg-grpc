@@ -22,5 +22,5 @@ jobs:
       
       - name: testing
         run: |
-          ls
+          docker
       
