@@ -64,7 +64,7 @@ echo_version() {
 # }
 
 cicd() {
-    echo "Hi ${FIRST_NAME}"
+    echo "Hi ${DEPLOYMENT_BASEPATH}"
     # docker build -t otgservices/otg-grpc-server .
 
     # echo "Docker Build Done"

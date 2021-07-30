@@ -23,8 +23,8 @@ jobs:
       
       - name: Building Docker Images & Publishing
         run: |
-          printenv
           export DOCKER_HUB_USERNAME='${{ github.actor }}'
+          printenv | grep DOCKER_HUB_USERNAME
           sudo chmod u+x ./do.sh
           sudo ./do.sh cicd
         env:
