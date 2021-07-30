@@ -1,12 +1,3 @@
-# Build workflow does the following:
-#   - checkout all files
-#   - get the latest version number
-#   - setup python 3.x env
-#   - install python dependencies
-#   - Set up Docker Build
-#   - Build and push to DockerHub
-
-
 name: Build
 
 on: [push, pull_request, workflow_dispatch, repository_dispatch]

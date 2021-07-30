@@ -51,31 +51,19 @@ echo_version() {
     echo "gRPC version : ${version}"
 }
 
-# cicd_publish_to_docker_repo() {
-#     version=${1}
-#     docker tag athena/app-usage-reporter "${ARTIFACTORY_DOCKER_REPO}/app-usage-reporter:${version}"
+cicd_publish_to_docker_repo() {
+    version=${1}
+    docker tag otgservices/otg-grpc-server "otgservices/otg-grpc-server:${version}"
 
-#     # don't post images when on dev-* branch
-#     cicd_is_dev_branch && return 0
-
-#     docker login -p ${ARTIFACTORY_KEY} -u ${ARTIFACTORY_USER} ${ARTIFACTORY_DOCKER_REPO} \
-#     && docker push "${ARTIFACTORY_DOCKER_REPO}/app-usage-reporter:${version}" \
-#     && docker logout ${ARTIFACTORY_DOCKER_REPO}
-# }
+    docker login -p ${DOCKER_HUB_ACCESS_TOKEN} -u ${DOCKER_HUB_USERNAME} \
+    && docker push "otgservices/otg-grpc-server:${version}" \
+    && docker logout ${DOCKER_HUB_USERNAME}
+}
 
 cicd() {
-    echo "${DOCKER_HUB_USERNAME}"
-    echo "${DOCKER_HUB_ACCESS_TOKEN}"
-    # docker build -t otgservices/otg-grpc-server .
-
-    # echo "Docker Build Done"
-
-    # docker ps -a
-
-    # cicd_install_deps
-    # get_new_version
-    # version=${BUILD_VERSION}-${BUILD_REVISION}
-    # echo "Version: ${version}"
+    docker build -t otgservices/otg-grpc-server .
+    version=$(head ./version | cut -d' ' -f1)
+    echo "gRPC version : ${version}"
     # cicd_publish_to_docker_repo ${version}
 }
 
