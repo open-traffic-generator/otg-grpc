@@ -21,7 +21,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Installing Docker on GitHub Runner
+      - name: Building Docker Images & Posting
         run: |
-          docker ps -a
+          sudo chmod u+x ./do.sh
+          sudo ./do.sh cicd
       
