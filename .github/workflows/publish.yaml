@@ -22,7 +22,6 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Installing Docker on GitHub Runner
-        uses: docker-practice/actions-setup-docker@master
         run: |
           docker ps -a
       
