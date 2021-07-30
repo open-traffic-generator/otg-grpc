@@ -15,4 +15,4 @@ jobs:
       - name: Building Docker Images & Publishing
         run: |
           sudo chmod u+x ./do.sh
-          sudo DOCKER_HUB_USERNAME='${{ secrets.DOCKER_HUB_USERNAME }}' DOCKER_HUB_ACCESS_TOKEN='${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}' EXPERIMENT='${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}' ./do.sh cicd
+          sudo DOCKER_HUB_USERNAME='${{ secrets.DOCKER_HUB_USERNAME }}' DOCKER_HUB_ACCESS_TOKEN='${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}' EXPERIMENT='${{ secrets.EXPERIMENT }}' ./do.sh cicd

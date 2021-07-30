@@ -66,7 +66,7 @@ cicd() {
 
     echo ${EXPERIMENT}
 
-    if [ ${EXPERIMENT} = 'true' ]
+    if [ ${EXPERIMENT} = true ]
     then 
         DOCKERHUB_IMAGE=experiments
     else
