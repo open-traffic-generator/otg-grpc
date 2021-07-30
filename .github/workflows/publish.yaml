@@ -23,7 +23,7 @@ jobs:
       
       - name: Building Docker Images & Publishing
         run: |
-          export DOCKER_HUB_USERNAME='${{ secrets.DOCKER_HUB_USERNAME }}' \
+          export DOCKER_HUB_USERNAME='${{ github.actor }}' \
           && sudo chmod u+x ./do.sh \
           && sudo ./do.sh cicd
       
