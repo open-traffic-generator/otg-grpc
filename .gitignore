@@ -1,7 +1,7 @@
 
 **/__pycache__
-
-download
 logs
 .coverage
 **/*,cover
+grpc_server/proto
+grpc_server/autogen/otg_*.py
