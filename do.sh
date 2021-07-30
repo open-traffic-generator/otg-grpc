@@ -64,7 +64,7 @@ echo_version() {
 # }
 
 cicd() {
-    echo "${{ secrets.DOCKER_HUB_USERNAME }}"
+    echo "${secrets.DOCKER_HUB_USERNAME}"
     # docker build -t otgservices/otg-grpc-server .
 
     # echo "Docker Build Done"
