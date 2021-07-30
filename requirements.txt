@@ -4,7 +4,5 @@ protobuf==3.15.0
 snappi==0.4.23
 snappi_ixnetwork
 grpclib==0.4.1
-pytest==6.2.3
-pytest-grpc==0.8.0
 flask==1.1.2
 grpcio-reflection==1.35.0
