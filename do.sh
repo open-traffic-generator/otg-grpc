@@ -2,6 +2,8 @@
 
 OTG_API_VERSION=0.4.10
 
+DOCKERHUB_IMAGE=""
+
 # Avoid warnings for non-interactive apt-get install
 export DEBIAN_FRONTEND=noninteractive
 
@@ -61,9 +63,18 @@ cicd_publish_to_docker_repo() {
 }
 
 cicd() {
-    docker build -t otgservices/otg-grpc-server .
-    version=$(head ./version | cut -d' ' -f1)
-    echo "gRPC version : ${version}"
+
+    if [[ ${EXPERIMENT} == TRUE ]]
+    then 
+        DOCKERHUB_IMAGE=experiments
+    else
+        DOCKERHUB_IMAGE=otg-grpc-server
+    fi
+
+    echo "${DOCKERHUB_IMAGE}"
+    # docker build -t otgservices/otg-grpc-server .
+    # version=$(head ./version | cut -d' ' -f1)
+    # echo "gRPC version : ${version}"
     # cicd_publish_to_docker_repo ${version}
 }
 
