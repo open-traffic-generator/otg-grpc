@@ -23,7 +23,7 @@ install_ext_deps() {
 get_otg_proto() {
     echo "Fetching OTG proto for ${OTG_API_VERSION} ..."
     rm -rf grpc_server/proto> /dev/null 2>&1 || true
-    mkdir -p grpc_server/proto \
+    mkdir grpc_server/proto \
     && curl -kL https://github.com/open-traffic-generator/models/releases/download/v${OTG_API_VERSION}/otg.proto> ./grpc_server/proto
 }
 
