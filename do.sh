@@ -2,7 +2,10 @@
 
 OTG_API_VERSION=0.4.10
 
+DOCKER_HUB_USERNAME=""
+DOCKER_HUB_ACCESS_TOKEN=""
 DOCKERHUB_IMAGE=""
+EXPERIMENT=""
 
 # Avoid warnings for non-interactive apt-get install
 export DEBIAN_FRONTEND=noninteractive
@@ -64,7 +67,9 @@ cicd_publish_to_docker_repo() {
 
 cicd() {
 
-    echo ${EXPERIMENT}
+    DOCKER_HUB_USERNAME=${1}
+    DOCKER_HUB_ACCESS_TOKEN=${2}
+    EXPERIMENT=${3}
 
     if [ ${EXPERIMENT} = true ]
     then 
@@ -108,7 +113,7 @@ case $1 in
         run_unit_test
         ;;
     cicd    )
-        cicd
+        cicd ${@}
         ;;
     version )
         echo_version
