@@ -2,6 +2,8 @@
 
 OTG_API_VERSION=0.4.10
 
+export DOCKER_HUB_USERNAME
+
 # Avoid warnings for non-interactive apt-get install
 export DEBIAN_FRONTEND=noninteractive
 
