@@ -64,7 +64,7 @@ echo_version() {
 # }
 
 cicd() {
-    echo -e "${DOCKER_HUB_USERNAME}"
+    echo "Hi ${DOCKER_HUB_USERNAME}"
     # docker build -t otgservices/otg-grpc-server .
 
     # echo "Docker Build Done"
