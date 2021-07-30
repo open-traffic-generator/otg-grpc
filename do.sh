@@ -64,7 +64,9 @@ cicd_publish_to_docker_repo() {
 
 cicd() {
 
-    if [ ${EXPERIMENT} = *** ]
+    echo ${EXPERIMENT}
+
+    if [ ${EXPERIMENT} = 'true' ]
     then 
         DOCKERHUB_IMAGE=experiments
     else
