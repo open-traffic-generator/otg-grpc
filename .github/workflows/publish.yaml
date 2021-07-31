@@ -19,4 +19,4 @@ jobs:
           EXPERIMENT: ${{ secrets.EXPERIMENT }}
         run: |
           sudo chmod u+x ./do.sh
-          sudo ./do.sh cicd "$DOCKER_HUB_USERNAME $DOCKER_HUB_ACCESS_TOKEN $EXPERIMENT"
+          sudo ./do.sh cicd "$EXPERIMENT"
