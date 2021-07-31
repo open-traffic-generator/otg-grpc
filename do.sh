@@ -67,9 +67,9 @@ cicd_publish_to_docker_repo() {
 
 cicd() {
 
-    # DOCKER_HUB_USERNAME=${1}
-    # DOCKER_HUB_ACCESS_TOKEN=${2}
-    EXPERIMENT=${2}
+    DOCKER_HUB_USERNAME=${1}
+    DOCKER_HUB_ACCESS_TOKEN=${2}
+    EXPERIMENT=${3}
 
     echo ${EXPERIMENT}
 
@@ -115,6 +115,8 @@ case $1 in
         run_unit_test
         ;;
     cicd    )
+        # pass all args (except $1) to run
+        shift 1
         cicd ${@}
         ;;
     version )
