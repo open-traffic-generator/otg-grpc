@@ -11,7 +11,7 @@ EXPERIMENT=""
 export DEBIAN_FRONTEND=noninteractive
 
 install_deps() {
-	echo "Dependencies required by this project"
+	echo "Installing dependencies required by this project"
     apt-get update \
 	&& apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
     && apt-get -y install python-is-python3 python3-pip \
@@ -20,6 +20,7 @@ install_deps() {
 }
 
 install_ext_deps() {
+    echo "Installing extra dependencies required by this project"
     apt-get -y install curl vim git \
     && python -m pip install --default-timeout=100 flake8 requests pytest pytest-cov pytest_dependency \
     && apt-get -y clean all
@@ -40,10 +41,12 @@ gen_py_stubs() {
 }
 
 run() {
+    echo "Running gRPC server ..."
     python -m grpc_server ${@}
 }
 
 run_unit_test() {
+    echo "Running unit tests ..."
     python -m pytest ./tests -p no:cacheprovider --cov=./grpc_server
     rm -rf ./grpc_server/__pycache__
     rm -rf ./tests/__pycache__
@@ -58,20 +61,21 @@ echo_version() {
 
 cicd_publish_to_docker_repo() {
     version=${1}
-    docker tag otgservices/otg-grpc-server "otgservices/otg-grpc-server:${version}"
+    echo "Publishing image to DockerHub..."
+    docker tag otg-grpc-server "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}"
 
     docker login -p ${DOCKER_HUB_ACCESS_TOKEN} -u ${DOCKER_HUB_USERNAME} \
-    && docker push "otgservices/otg-grpc-server:${version}" \
+    && docker push "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}" \
     && docker logout ${DOCKER_HUB_USERNAME}
+    echo "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version} published in DockerHub..."
 }
 
 cicd() {
+    echo "Running CICD build & publish..."
 
     DOCKER_HUB_USERNAME=${1}
     DOCKER_HUB_ACCESS_TOKEN=${2}
     EXPERIMENT=${3}
-
-    echo ${EXPERIMENT}
 
     if [ ${EXPERIMENT} = true ]
     then 
@@ -80,11 +84,11 @@ cicd() {
         DOCKERHUB_IMAGE=otg-grpc-server
     fi
 
-    echo "${DOCKERHUB_IMAGE}"
-    # docker build -t otgservices/otg-grpc-server .
-    # version=$(head ./version | cut -d' ' -f1)
-    # echo "gRPC version : ${version}"
-    # cicd_publish_to_docker_repo ${version}
+    echo "Building production docker image..."
+    docker build -t otg-grpc-server .
+    version=$(head ./version | cut -d' ' -f1)
+    echo "gRPC - Server version : ${version}"
+    cicd_publish_to_docker_repo ${version}
 }
 
 
