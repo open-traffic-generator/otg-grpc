@@ -69,7 +69,7 @@ cicd() {
 
     # DOCKER_HUB_USERNAME=${1}
     # DOCKER_HUB_ACCESS_TOKEN=${2}
-    EXPERIMENT=${1}
+    EXPERIMENT=${2}
 
     echo ${EXPERIMENT}
 
