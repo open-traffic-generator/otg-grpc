@@ -71,6 +71,8 @@ cicd() {
     DOCKER_HUB_ACCESS_TOKEN=${2}
     EXPERIMENT=${3}
 
+    echo ${EXPERIMENT}
+
     if [ ${EXPERIMENT} = true ]
     then 
         DOCKERHUB_IMAGE=experiments
