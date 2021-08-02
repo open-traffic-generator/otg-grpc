@@ -12,10 +12,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
-      # - name: Building Docker Image
-      #   run: |
-      #     sudo chmod u+x ./do.sh
-      #     sudo ./do.sh build
+      - name: Building Docker Image
+        run: |
+          sudo chmod u+x ./do.sh
+          sudo ./do.sh build
 
       - name: Publishing & Verifying Docker Image
         env:
