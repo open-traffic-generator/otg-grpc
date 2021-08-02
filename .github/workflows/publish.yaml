@@ -12,12 +12,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Building Docker Image
-        run: |
-          sudo chmod u+x ./do.sh
-          sudo ./do.sh build
+      # - name: Building Docker Image
+      #   run: |
+      #     sudo chmod u+x ./do.sh
+      #     sudo ./do.sh build
 
-      - name: Publishing & Verifying Docker Image
+      # - name: Publishing & Verifying Docker Image
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}

@@ -9,6 +9,20 @@ EXPERIMENT=""
 export DEBIAN_FRONTEND=noninteractive
 
 
+dockerhub_image_exists() {
+    image=${1}
+
+    docker login -p ${DOCKER_HUB_ACCESS_TOKEN} -u ${DOCKER_HUB_USERNAME}
+
+    if DOCKER_CLI_EXPERIMENTAL=enabled docker manifest inspect $image >/dev/null; then
+        echo "Image already exists"
+        exit 1
+    fi
+
+    docker logout ${DOCKER_HUB_USERNAME}
+}
+
+
 publish() {
     DOCKER_HUB_USERNAME=${1}
     DOCKER_HUB_ACCESS_TOKEN=${2}
@@ -17,26 +31,27 @@ publish() {
     if [ ${EXPERIMENT} = true ]
     then 
         DOCKERHUB_IMAGE=experiments
+        dockerhub_image_exists "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}"
     else
         DOCKERHUB_IMAGE=otg-grpc-server
     fi
 
-    version=$(head ./version | cut -d' ' -f1)
+    # version=$(head ./version | cut -d' ' -f1)
 
-    echo "Publishing image to DockerHub..."
-    docker tag otg-grpc-server "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}"
+    # echo "Publishing image to DockerHub..."
+    # docker tag otg-grpc-server "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}"
 
-    docker login -p ${DOCKER_HUB_ACCESS_TOKEN} -u ${DOCKER_HUB_USERNAME} \
-    && docker push "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}" \
-    && docker logout ${DOCKER_HUB_USERNAME}
-    echo "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version} published in DockerHub..."
+    # docker login -p ${DOCKER_HUB_ACCESS_TOKEN} -u ${DOCKER_HUB_USERNAME} \
+    # && docker push "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}" \
+    # && docker logout ${DOCKER_HUB_USERNAME}
+    # echo "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version} published in DockerHub..."
 
 
-    echo "Deleting local docker images..."
-    docker rmi -f "otg-grpc-server" "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}"> /dev/null 2>&1 || true
+    # echo "Deleting local docker images..."
+    # docker rmi -f "otg-grpc-server" "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}"> /dev/null 2>&1 || true
 
-    echo "Verifying image from DockerHub..."
-    verify_dockerhub_images "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}"
+    # echo "Verifying image from DockerHub..."
+    # verify_dockerhub_images "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}"
 }
 
 verify_dockerhub_images() {
