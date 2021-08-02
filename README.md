@@ -62,4 +62,6 @@ Gitlab is not reachable from within lab network, hence please make sure that the
 ./do.sh unit
 # get unit test deps, generate stubs, run tests
 ./do.sh art
+# build otg grpc server docker image
+./do.sh build
 ```
