@@ -28,6 +28,8 @@ publish() {
     DOCKER_HUB_ACCESS_TOKEN=${2}
     EXPERIMENT=${3}
 
+    version=$(head ./version | cut -d' ' -f1)
+
     if [ ${EXPERIMENT} = true ]
     then 
         DOCKERHUB_IMAGE=experiments
@@ -35,8 +37,6 @@ publish() {
     else
         DOCKERHUB_IMAGE=otg-grpc-server
     fi
-
-    # version=$(head ./version | cut -d' ' -f1)
 
     # echo "Publishing image to DockerHub..."
     # docker tag otg-grpc-server "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}"
