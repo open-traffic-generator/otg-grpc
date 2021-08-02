@@ -11,7 +11,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 dockerhub_image_exists() {
     image=${1}
-    echo "Checking $image already exists in DockerHub or not..."
+    echo "Checking ${image} already exists in DockerHub or not..."
     docker login -p ${DOCKER_HUB_ACCESS_TOKEN} -u ${DOCKER_HUB_USERNAME}
     if DOCKER_CLI_EXPERIMENTAL=enabled docker manifest inspect $image >/dev/null; then
         echo "${image} already exists in DockerHub, Please use different tag!!!"
