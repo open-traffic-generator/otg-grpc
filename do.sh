@@ -55,7 +55,7 @@ echo_version() {
 }
 
 build() {
-    docker rmi "otg-grpc-server"> /dev/null 2>&1 || true
+    docker rmi -f "otg-grpc-server"> /dev/null 2>&1 || true
     echo "Building production docker image..."
     docker build -t otg-grpc-server .
     version=$(head ./version | cut -d' ' -f1)

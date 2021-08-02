@@ -30,6 +30,30 @@ publish() {
     && docker push "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}" \
     && docker logout ${DOCKER_HUB_USERNAME}
     echo "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version} published in DockerHub..."
+
+
+    echo "Deleting local docker images..."
+    docker rmi -f "otg-grpc-server" "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}"> /dev/null 2>&1 || true
+
+    echo "Verifying image from DockerHub..."
+    verify_dockerhub_images "${DOCKER_HUB_USERNAME}/${DOCKERHUB_IMAGE}:${version}"
+}
+
+verify_dockerhub_images() {
+    for var in "$@"
+    do
+        image=${var}
+        echo "pulling ${image} from DockerHub"
+        docker pull $image
+        if docker image inspect ${image} >/dev/null 2>&1; then
+            echo "${image} pulled successfully from DockerHub"
+            docker rmi -f $image > /dev/null 2>&1 || true
+        else
+            echo "${image} not found locally!!!"
+            docker rmi -f $image > /dev/null 2>&1 || true
+            exit 1
+        fi
+    done
 }
 
 case $1 in
