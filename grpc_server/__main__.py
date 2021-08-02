@@ -31,7 +31,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
         )
         self.api_initialized = False
 
-        self.snappi_log_level = logging.info
+        self.snappi_log_level = logging.INFO
         if args.log_debug:
             self.snappi_log_level = logging.DEBUG
 

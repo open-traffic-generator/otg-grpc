@@ -40,6 +40,9 @@
                     "packets": 100000
                 }
             },
+            "metrics": {
+                "enable": true
+            },
             "packet": [
                 {
                     "choice": "ethernet",
