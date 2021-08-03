@@ -1,5 +1,6 @@
 # STAGE 1 (DEVELOPMENT)
 FROM ubuntu:20.04 AS dev
+LABEL OTG_API_Version="0.4.10"
 ENV SRC_ROOT=/home/keysight/ixia-c/otg-grpc
 RUN mkdir -p ${SRC_ROOT}
 # Get project source, install dependencies and build it
@@ -12,6 +13,7 @@ CMD ["/bin/bash"]
 
 # STAGE 2 (PRODUCTION)
 FROM ubuntu:20.04 as prod
+LABEL OTG_API_Version="0.4.10"
 # Ports to be published
 ENV SRC_ROOT=/home/keysight/ixia-c/otg-grpc
 EXPOSE 40051
