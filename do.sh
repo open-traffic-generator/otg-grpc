@@ -46,6 +46,7 @@ run_unit_test() {
     rm -rf ./grpc_server/__pycache__
     rm -rf ./tests/__pycache__
     rm -rf ./tests/.pytest_cache
+    rm -rf ./tests/mockstatus.txt 2>&1 || true
     rm .coverage
 }
 

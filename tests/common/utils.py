@@ -90,21 +90,43 @@ def get_parsed_args(op_val):
     return args
 
 
-def get_mock_server_settings(error_code=200, with_warning=False):
+def get_mockserver_status():
+    tests_dir = os.getcwd()
+    if 'tests' not in tests_dir:
+        tests_dir = os.path.join(tests_dir, 'tests')
+    else:
+        tests_dir = os.path.split('tests')[0]
+
+    mockstatus_file = os.path.join(tests_dir, 'mockstatus.txt')
+    f = open(mockstatus_file, 'r')
+    status = f.read()
+    f.close()
+    print("Current MockServer Status: {}".format(status))
+    return status.strip()
+
+
+def change_mockserver_status(error_code=200, with_warning=False):
+    status = str(error_code)
+    if with_warning:
+        status += "-warning"
+    tests_dir = os.getcwd()
+    if 'tests' not in tests_dir:
+        tests_dir = os.path.join(tests_dir, 'tests')
+    else:
+        tests_dir = os.path.split('tests')[0]
+
+    mockstatus_file = os.path.join(tests_dir, 'mockstatus.txt')
+    f = open(mockstatus_file, 'w')
+    f.write(status)
+    f.close()
+    print("MockServer Status Set To: {}".format(status))
+
+
+def get_mockserver_settings():
+    print('Fetching Mock Config from settings.json')
     file_path = get_settings_file_path()
     with open(file_path, 'r') as fp:
-        ut_settings = json.load(fp)
-
-    port_type = "{}".format(error_code)
-    if with_warning:
-        port_type += "-warning"
-
-    mock_config = {
-        "app-mode": ut_settings["app-mode"],
-        "target-host": ut_settings["target-host"],
-        "target-port": ut_settings["target-port"][port_type]
-    }
-
+        mock_config = json.load(fp)
     return mock_config
 
 
@@ -112,7 +134,8 @@ def init_grpc_with_mock_server(server_logfile,
                                error_code=200,
                                with_warning=False):
     print('Intializing grpc server api......')
-    mock_config = get_mock_server_settings(error_code, with_warning)
+    change_mockserver_status(error_code, with_warning)
+    mock_config = get_mockserver_settings()
     mock_config['logfile'] = server_logfile
     mock_config_args = get_parsed_args(mock_config)
     grpc_api = Openapi(mock_config_args)

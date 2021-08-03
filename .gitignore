@@ -5,3 +5,4 @@ logs
 **/*,cover
 grpc_server/proto
 grpc_server/autogen/otg_*.py
+tests/mockstatus.txt
