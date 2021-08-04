@@ -1,6 +1,7 @@
 #!/bin/sh
 
 OTG_API_VERSION=0.4.10
+UT_REPORT=ut-report.html
 
 # Avoid warnings for non-interactive apt-get install
 export DEBIAN_FRONTEND=noninteractive
@@ -17,7 +18,7 @@ install_deps() {
 install_ext_deps() {
     echo "Installing extra dependencies required by this project"
     apt-get -y install curl vim git \
-    && python -m pip install --default-timeout=100 flake8 requests pytest pytest-cov pytest_dependency \
+    && python -m pip install --default-timeout=100 flake8 requests pytest pytest-cov pytest_dependency pytest-html \
     && apt-get -y clean all
 }
 
@@ -42,12 +43,27 @@ run() {
 
 run_unit_test() {
     echo "Running unit tests ..."
-    python -m pytest ./tests -p no:cacheprovider --cov=./grpc_server
+    python -m pytest --html=${UT_REPORT} --self-contained-html ./tests -p no:cacheprovider --cov=./grpc_server
     rm -rf ./grpc_server/__pycache__
     rm -rf ./tests/__pycache__
     rm -rf ./tests/.pytest_cache
     rm -rf ./tests/mockstatus.txt 2>&1 || true
     rm .coverage
+}
+
+analyze_unit_test_result() {
+    total=$(cat ${UT_REPORT} | grep -o -P '(?<=(<p>)).*(?=( tests))')
+    echo "Number of Total Unit Tests: ${total}"
+    passed=$(cat ${UT_REPORT} | grep -o -P '(?<=(<span class="passed">)).*(?=( passed</span>))')
+    echo "Number of Passed Unit Tests: ${passed}"
+    if [ ${passed} = ${total} ]
+    then 
+        echo "All unit tests are passed..."
+    else
+        echo "All unit tests are passed, Please check locally!"
+        exit 1
+    fi
+    rm -rf ./${UT_REPORT} 2>&1 || true
 }
 
 echo_version() {
@@ -85,7 +101,7 @@ case $1 in
 		run ${@}
 		;;
 	art	    )
-		install_ext_deps && get_otg_proto && gen_py_stubs && run_unit_test
+		install_ext_deps && get_otg_proto && gen_py_stubs && run_unit_test && analyze_unit_test_result
 		;;
     unit    )
         run_unit_test

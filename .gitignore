@@ -1,6 +1,7 @@
 
 **/__pycache__
 logs
+ut-report.html
 .coverage
 **/*,cover
 grpc_server/proto
