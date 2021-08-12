@@ -405,6 +405,93 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             else:
                 raise NotImplementedError()
 
+    def SetCaptureState(self, request, context):
+        jsonObj = json_format.MessageToJson(
+            request.capture_state,
+            preserving_proto_field_name=True
+        )
+        self.logger.debug(
+            "Received request.capture_state (JSON)(default=False) = {}".format(
+                jsonObj
+            )
+        )
+
+        self.InitSanppi()
+
+        self.logger.info("Requesting SetCaptureState ...")
+        try:
+            response = self.api.set_capture_state(jsonObj)
+            response_200 = """
+            {
+                "status_code_200" : {
+                    "success" : {
+                        "response_warning" : {
+                            "warnings" : []
+                        }
+                    }
+                }
+            }
+            """
+            capture_response = json_format.Parse(
+                response_200,
+                otg_pb2.SetCaptureStateResponse()
+            )
+            if len(response.warnings) > 0:
+                capture_response.status_code_200.success.response_warning.warnings.extend(response.warnings) # noqa
+                self.logger.debug(
+                    "Snappi_api SetCaptureState Returned Warnings: {}".format(
+                        response.warnings
+                    )
+                )
+            self.logger.debug("Returning status_code_200 to client ...")
+            return capture_response
+
+        except Exception as e:
+            response_400 = """
+            {
+                "status_code_400" : {
+                    "bad_request" : {
+                        "response_error" : {
+                            "errors" : []
+                        }
+                    }
+                }
+            }
+            """
+            response_500 = """
+            {
+                "status_code_500" : {
+                    "internal_server_error" : {
+                        "response_error" : {
+                            "errors" : []
+                        }
+                    }
+                }
+            }
+            """
+            self.logger.error(
+                "Snappi_api SetCaptureState Returned Exception : {}".format(
+                    repr(e)
+                )
+            )
+            error_code, error_details = get_error_details(e)
+            if error_code == 400:
+                capture_response = json_format.Parse(
+                    response_400,
+                    otg_pb2.SetCaptureStateResponse()
+                )
+                capture_response.status_code_400.bad_request.response_error.errors.extend(error_details) # noqa
+                return capture_response
+            elif error_code == 500:
+                capture_response = json_format.Parse(
+                    response_500,
+                    otg_pb2.SetCaptureStateResponse()
+                )
+                capture_response.status_code_500.internal_server_error.response_error.errors.extend(error_details) # noqa
+                return capture_response
+            else:
+                raise NotImplementedError()
+
     def GetMetrics(self, request, context):
 
         jsonObj = json_format.MessageToJson(
@@ -447,6 +534,94 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 )
             )
             raise e
+
+    def GetCapture(self, request, context):
+
+        jsonObj = json_format.MessageToJson(
+            request.capture_request,
+            preserving_proto_field_name=True
+        )
+
+        self.logger.debug(
+            "Received request.capture_request (JSON)(default=False) = {}".format( # noqa
+                jsonObj
+            )
+        )
+
+        self.InitSanppi()
+
+        self.logger.info("Requesting GetCapture ...")
+        try:
+            response = self.api.get_capture(jsonObj)
+            self.logger.debug(
+                "Snappi_api GetCapture Returned : {}".format(
+                    response
+                )
+            )
+
+            # print(response.getvalue())
+
+            # get_capture_response = otg_pb2.GetCaptureResponse(
+            #     status_code_200=otg_pb2.GetCaptureResponse.StatusCode200(
+            #         capture_response=response
+            #     )
+            # )
+
+            get_capture_response = response.getvalue()
+            self.logger.debug("Returning Capture to client ...")
+            yield get_capture_response
+
+        except Exception as e:
+            self.logger.error(
+                "Snappi_api GetMetrics Returned Exception :  {}".format(
+                    repr(e)
+                )
+            )
+
+            response_400 = """
+            {
+                "status_code_400" : {
+                    "bad_request" : {
+                        "response_error" : {
+                            "errors" : []
+                        }
+                    }
+                }
+            }
+            """
+            response_500 = """
+            {
+                "status_code_500" : {
+                    "internal_server_error" : {
+                        "response_error" : {
+                            "errors" : []
+                        }
+                    }
+                }
+            }
+            """
+            self.logger.error(
+                "Snappi_api GetCapture Returned Exception : {}".format(
+                    repr(e)
+                )
+            )
+            error_code, error_details = get_error_details(e)
+            if error_code == 400:
+                capture_response = json_format.Parse(
+                    response_400,
+                    otg_pb2.GetCaptureResponse()
+                )
+                capture_response.status_code_400.bad_request.response_error.errors.extend(error_details) # noqa
+                yield capture_response
+            elif error_code == 500:
+                capture_response = json_format.Parse(
+                    response_500,
+                    otg_pb2.GetCaptureResponse()
+                )
+                capture_response.status_code_500.internal_server_error.response_error.errors.extend(error_details) # noqa
+                yield capture_response
+            else:
+                raise NotImplementedError()
 
 
 def serve(args):
