@@ -533,7 +533,51 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     repr(e)
                 )
             )
-            raise e
+
+            response_400 = """
+            {
+                "status_code_400" : {
+                    "bad_request" : {
+                        "response_error" : {
+                            "errors" : []
+                        }
+                    }
+                }
+            }
+            """
+            response_500 = """
+            {
+                "status_code_500" : {
+                    "internal_server_error" : {
+                        "response_error" : {
+                            "errors" : []
+                        }
+                    }
+                }
+            }
+            """
+            self.logger.error(
+                "Snappi_api GetMetrics Returned Exception : {}".format(
+                    repr(e)
+                )
+            )
+            error_code, error_details = get_error_details(e)
+            if error_code == 400:
+                metric_response = json_format.Parse(
+                    response_400,
+                    otg_pb2.GetMetricsResponse()
+                )
+                metric_response.status_code_400.bad_request.response_error.errors.extend(error_details) # noqa
+                return metric_response
+            elif error_code == 500:
+                metric_response = json_format.Parse(
+                    response_500,
+                    otg_pb2.GetMetricsResponse()
+                )
+                metric_response.status_code_500.internal_server_error.response_error.errors.extend(error_details) # noqa
+                return metric_response
+            else:
+                raise NotImplementedError()
 
     def GetCapture(self, request, context):
 
@@ -559,21 +603,18 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 )
             )
 
-            # print(response.getvalue())
+            get_capture_response = otg_pb2.GetCaptureResponse(
+                status_code_200=otg_pb2.GetCaptureResponse.StatusCode200(
+                    bytes=response.getvalue()
+                )
+            )
 
-            # get_capture_response = otg_pb2.GetCaptureResponse(
-            #     status_code_200=otg_pb2.GetCaptureResponse.StatusCode200(
-            #         capture_response=response
-            #     )
-            # )
-
-            get_capture_response = response.getvalue()
             self.logger.debug("Returning Capture to client ...")
             yield get_capture_response
 
         except Exception as e:
             self.logger.error(
-                "Snappi_api GetMetrics Returned Exception :  {}".format(
+                "Snappi_api GetCapture Returned Exception :  {}".format(
                     repr(e)
                 )
             )

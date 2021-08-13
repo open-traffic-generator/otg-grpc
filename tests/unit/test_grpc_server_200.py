@@ -137,7 +137,7 @@ def test_grpc_server_get_port_metrics_with_200(snappiserver,
     }
     assert json_res == exp_res
 
-    metrc_req = {
+    metric_req = {
         "choice": "port",
         "port": {
             "port_names": [
@@ -146,7 +146,7 @@ def test_grpc_server_get_port_metrics_with_200(snappiserver,
         }
     }
 
-    json_res = utils.get_metrics(grpc_api, metrc_req)
+    json_res = utils.get_metrics(grpc_api, metric_req)
 
     exp_res = {
         'status_code_200': {
@@ -199,7 +199,7 @@ def test_grpc_server_get_flow_metrics_with_200(snappiserver,
     }
     assert json_res == exp_res
 
-    metrc_req = {
+    metric_req = {
         "choice": "flow",
         "flow": {
             "flow_names": [
@@ -208,7 +208,7 @@ def test_grpc_server_get_flow_metrics_with_200(snappiserver,
         }
     }
 
-    json_res = utils.get_metrics(grpc_api, metrc_req)
+    json_res = utils.get_metrics(grpc_api, metric_req)
 
     exp_res = {
         'status_code_200': {
@@ -224,4 +224,43 @@ def test_grpc_server_get_flow_metrics_with_200(snappiserver,
             }
         }
     }
+    assert json_res == exp_res
+
+
+def test_grpc_server_set_capture_state_with_200(snappiserver,
+                                                serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
+
+    state = {
+        "port_names": [
+            "string"
+        ],
+        "state": "start"
+    }
+    json_res = utils.set_capture_state(grpc_api, state)
+
+    exp_res = {
+        "status_code_200": {
+            "success": {
+                "response_warning": {}
+            }
+        }
+    }
+    assert json_res == exp_res
+
+
+def test_grpc_server_get_capture_with_200(snappiserver,
+                                          serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
+
+    capture_req = {
+        "port_name": "rx"
+    }
+    json_res = utils.get_capture(grpc_api, capture_req)
+
+    exp_res = {
+        'status_code_200': {
+            'bytes': 'Ynl0ZXM='
+            }
+        }
     assert json_res == exp_res

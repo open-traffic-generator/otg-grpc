@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 # import datetime
 import time
+from io import BytesIO
+import dpkt
 
 # gRPC stuffs
 import grpc
@@ -20,6 +22,17 @@ from grpc_server.common.utils import init_logging
 
 # set API version
 OTG_API_Version = "0.4.10"
+
+
+def mac_addr(address):
+    """Convert a MAC address to a readable/printable string
+
+       Args:
+           address (str): a MAC address in hex form (e.g. '\x01\x02\x03\x04\x05\x06') # noqa
+       Returns:
+           str: Printable/readable MAC address
+    """
+    return ':'.join('%02x' % dpkt.compat.compat_ord(b) for b in address)
 
 
 class OtgClient():
@@ -417,14 +430,11 @@ class OtgClient():
             )
 
             try:
-                response = stub.GetCapture(
+                responses = stub.GetCapture(
                     otg_pb2.GetCaptureRequest(
                         capture_request=protoRequest
                     )
                 )
-
-                for res in response:
-                    print(res)
             except grpc.RpcError as e:
                 self.logger.error(
                     "gRPC Exception Code: {}, Details: {}".format(
@@ -433,15 +443,38 @@ class OtgClient():
                     )
                 )
             else:
-                # self.logger.info("Received Response: {}".format(
-                #     list(response)
-                #     )
-                # )
 
-                # for res in response:
-                #     print(res)
-
-                pass
+                for response in responses:
+                    self.logger.info("Received Response: {}".format(
+                            response
+                        )
+                    )
+                    pacp_bytes = BytesIO(response.status_code_200.bytes)
+                    packet_count = 0
+                    for ts, buf in dpkt.pcap.Reader(pacp_bytes):
+                        packet_count += 1
+                        self.logger.info(
+                            "Packet {} : TIMESTAMP - {}".format(
+                                packet_count,
+                                ts
+                            )
+                        )
+                        eth = dpkt.ethernet.Ethernet(buf)
+                        self.logger.info(
+                            "Packet {} : Ethernet SRC - {}".format(
+                                packet_count,
+                                mac_addr(eth.src)
+                            )
+                        )
+                        self.logger.info(
+                            "Packet {} : Ethernet DST - {}".format(
+                                packet_count,
+                                mac_addr(eth.dst)
+                            )
+                        )
+                    self.logger.info("Total received packets: {}".format(
+                        packet_count
+                    ))
 
     def GetStateMetrics(self):
 
@@ -504,10 +537,9 @@ def serve(args):
         client_logger.info("Do Stop Transmit")
         client.SetTransmitState(False)
 
-        client_logger.info("Do Get Capture")
-        client.GetCapture()
-
-        # client.GetStateMetrics()
+        if args.config_mode == "traffic":
+            client_logger.info("Do Get Capture")
+            client.GetCapture()
 
     else:
         client_logger.info("Do LinkState Up/Down")
