@@ -1,0 +1,203 @@
+{
+    "ports": [
+      {
+        "location": "10.39.35.122:30001+10.39.35.122:30002",
+        "name": "p1"
+      },
+      {
+        "location": "10.39.35.122:30004+10.39.35.122:30003",
+        "name": "p2"
+      }
+    ],
+    "devices": [
+      {
+        "container_name": "p1",
+        "name": "p1d1",
+        "ethernet": {
+          "mac": "00:00:01:01:01:01",
+          "mtu": 1500,
+          "name": "p1d1eth",
+          "ipv4": {
+            "address": "1.1.1.1",
+            "gateway": "1.1.1.2",
+            "prefix": 24,
+            "name": "p1d1ipv4",
+            "bgpv4": {
+              "dut_address": "1.1.1.2",
+              "router_id": "1.1.1.1",
+              "as_type": "ebgp",
+              "as_number": 2222,
+              "bgpv4_routes": [
+                {
+                  "next_hop_address": "1.1.1.1",
+                  "name": "p1d1peer1rrv4",
+                  "addresses": [
+                    {
+                      "address": "10.10.10.1",
+                      "prefix": 32,
+                      "count": 5,
+                      "step": 1
+                    }
+                  ],
+                  "communities": [
+                    {
+                      "community_type": "manual_as_number",
+                      "as_number": 1,
+                      "as_custom": 2
+                    }
+                  ],
+                  "as_path": {
+                    "override_peer_as_set_mode": true,
+                    "as_set_mode": "include_as_set",
+                    "as_path_segments": [
+                      {
+                        "segment_type": "as_seq",
+                        "as_numbers": [
+                          1112,
+                          1113
+                        ]
+                      }
+                    ]
+                  },
+                  "advanced": {
+                    "multi_exit_discriminator": 50,
+                    "origin": "egp"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "container_name": "p2",
+        "name": "p2d1",
+        "ethernet": {
+          "mac": "00:00:02:02:02:02",
+          "mtu": 1500,
+          "name": "p2d1eth",
+          "ipv4": {
+            "address": "1.1.1.2",
+            "gateway": "1.1.1.1",
+            "prefix": 24,
+            "name": "p2d1ipv4",
+            "bgpv4": {
+              "dut_address": "1.1.1.1",
+              "router_id": "1.1.1.2",
+              "as_type": "ebgp",
+              "as_number": 3333,
+              "bgpv4_routes": [
+                {
+                  "next_hop_address": "1.1.1.2",
+                  "name": "p2d1peer1rrv4",
+                  "addresses": [
+                    {
+                      "address": "20.20.20.1",
+                      "prefix": 32,
+                      "count": 5,
+                      "step": 1
+                    }
+                  ],
+                  "communities": [
+                    {
+                      "community_type": "manual_as_number",
+                      "as_number": 100,
+                      "as_custom": 2
+                    }
+                  ],
+                  "as_path": {
+                    "override_peer_as_set_mode": true,
+                    "as_set_mode": "include_as_set",
+                    "as_path_segments": [
+                      {
+                        "segment_type": "as_seq",
+                        "as_numbers": [
+                          2223,
+                          2224,
+                          2225
+                        ]
+                      }
+                    ]
+                  },
+                  "advanced": {
+                    "multi_exit_discriminator": 40,
+                    "origin": "egp"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "captures": [
+        {
+            "name": "c1",
+            "port_names": [
+                "p2"
+            ]
+        }
+    ],
+    "flows": [
+      {
+        "name": "p1->p2",
+        "duration": {
+          "choice": "fixed_packets",
+          "fixed_packets": {
+            "packets": 10
+          }
+        },
+        "tx_rx": {
+          "choice": "port",
+          "port": {
+            "tx_name": "p1",
+            "rx_name": "p2"
+          }
+        },
+        "rate": {
+          "choice": "pps",
+          "pps": 500
+        },
+        "metrics": {
+          "enable": true
+        },
+        "packet": [
+          {
+            "choice": "ethernet",
+            "ethernet": {
+              "dst": {
+                "choice": "value",
+                "value": "00:00:02:02:02:02"
+              },
+              "src": {
+                "choice": "value",
+                "value": "00:00:01:01:01:01"
+              }
+            }
+          },
+          {
+            "choice": "ipv4",
+            "ipv4": {
+              "src": {
+                "choice": "increment",
+                "increment": {
+                  "start": "10.10.10.1",
+                  "step": "0.0.0.1",
+                  "count": 5
+                }
+              },
+              "dst": {
+                "choice": "increment",
+                "increment": {
+                  "start": "20.20.20.1",
+                  "step": "0.0.0.1",
+                  "count": 5
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  
