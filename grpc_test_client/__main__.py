@@ -450,6 +450,10 @@ class OtgClient():
                         )
                     )
                     pacp_bytes = BytesIO(response.status_code_200.bytes)
+
+                    with open('capture.pcap', 'wb') as f:
+                        f.write(response.status_code_200.bytes)
+
                     packet_count = 0
                     for ts, buf in dpkt.pcap.Reader(pacp_bytes):
                         packet_count += 1
@@ -537,7 +541,10 @@ def serve(args):
         client_logger.info("Do Stop Transmit")
         client.SetTransmitState(False)
 
-        if args.config_mode == "traffic":
+        if args.config_mode in [
+            "traffic",
+            "protocol_b2b"
+        ]:
             client_logger.info("Do Get Capture")
             client.GetCapture()
 
@@ -580,9 +587,10 @@ if __name__ == '__main__':
                             'protocol',
                             'traffic',
                             'combined',
-                            'minimal'
+                            'minimal',
+                            'protocol_b2b'
                         ],
-                        default='traffic',
+                        default='protocol_b2b',
                         type=str)
     parser.add_argument('--logfile',
                         help='logfile name [date and time auto appended]',
