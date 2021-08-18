@@ -186,6 +186,18 @@ def set_link_state(api, payload):
     return json_res
 
 
+def set_capture_state(api, payload):
+    print('Setting Capture State......')
+    if not isinstance(payload, str):
+        # accept both string and dict
+        payload = json.dumps(payload, indent=4)
+    proto_state_req = json_format.Parse(payload, otg_pb2.CaptureState())
+    req_obj = otg_pb2.SetCaptureStateRequest(capture_state=proto_state_req)
+    proto_res = api.SetCaptureState(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(proto_res)
+    return json_res
+
+
 def get_metrics(api, payload):
     print('Fetching Metrices......')
     if not isinstance(payload, str):
@@ -196,3 +208,19 @@ def get_metrics(api, payload):
     proto_res = api.GetMetrics(req_obj, MOCK_GRPC_SERVER_CONTEXT)
     json_res = convert_proto_to_json(proto_res)
     return json_res
+
+
+def get_capture(api, payload):
+    print('Fetching Capture......')
+    if not isinstance(payload, str):
+        # accept both string and dict
+        payload = json.dumps(payload, indent=4)
+    proto_capture_req = json_format.Parse(payload, otg_pb2.CaptureRequest())
+    req_obj = otg_pb2.GetCaptureRequest(capture_request=proto_capture_req)
+    proto_responses = api.GetCapture(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+
+    for proto_response in proto_responses:
+        json_res = convert_proto_to_json(
+            proto_response
+        )
+        return json_res

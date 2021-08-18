@@ -19,7 +19,7 @@ ENV SRC_ROOT=/home/keysight/ixia-c/otg-grpc
 EXPOSE 40051
 RUN mkdir -p ${SRC_ROOT}/grpc_server
 COPY --from=dev ${SRC_ROOT}/grpc_server ${SRC_ROOT}/grpc_server/
-COPY --from=dev ${SRC_ROOT}/setup.py ${SRC_ROOT}/grpc_server/
+COPY --from=dev ${SRC_ROOT}/setup.py ${SRC_ROOT}/
 COPY --from=dev ${SRC_ROOT}/do.sh ${SRC_ROOT}/
 COPY --from=dev ${SRC_ROOT}/requirements.txt ${SRC_ROOT}/
 RUN cd ${SRC_ROOT} && chmod +x ./do.sh && ./do.sh deps 2>&1 && rm ./do.sh && rm ./requirements.txt

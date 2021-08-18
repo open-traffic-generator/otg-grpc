@@ -33,7 +33,7 @@ Gitlab is not reachable from within lab network, hence please make sure that the
     # hence, to build dev image, you need to explicitly specify target `stage`
     docker build --target=dev -t otg-grpc-server:dev .
     # Start container and you'll be placed inside the project dir
-    docker run -it --net=host otg-grpc-server:dev --app-mode athena --target-host localhost --target-port 443
+    docker run -it --net=host otg-grpc-server:dev
     # [checkout more options]
     docker run -d --net=host otg-grpc-server:dev help
     ```

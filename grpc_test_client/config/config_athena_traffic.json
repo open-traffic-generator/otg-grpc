@@ -2,11 +2,11 @@
     "ports": [
         {
             "name": "p1",
-            "location": "localhost:5555"
+            "location": "10.74.47.215:5555"
         },
         {
             "name": "p2",
-            "location": "localhost:5556"
+            "location": "10.74.47.215:5556"
         }
     ],
     "layer1": [
@@ -14,6 +14,14 @@
             "name": "l1",
             "port_names": ["p1", "p2"],
             "speed": "speed_1_gbps"
+        }
+    ],
+    "captures": [
+        {
+            "name": "c1",
+            "port_names": [
+                "p2"
+            ]
         }
     ],
     "flows": [
@@ -31,13 +39,13 @@
                 "fixed": 1518
             },
             "rate": {
-                "choice": "percentage",
-                "percentage": 10
+                "choice": "pps",
+                "pps": 10
             },
             "duration": {
                 "choice": "fixed_packets",
                 "fixed_packets": {
-                    "packets": 100000
+                    "packets": 1
                 }
             },
             "metrics": {
@@ -54,51 +62,6 @@
                         "src": {
                             "choice": "value",
                             "value": "00:CD:DC:CD:DC:CD"
-                        }
-                    }
-                },
-                {
-                    "choice": "custom",
-                    "custom": {
-                        "bytes": "00112233445566778899AABBCCDDEEFF"
-                    }
-                }
-            ]
-        },
-        {
-            "name": "p2->p1",
-            "tx_rx": {
-                "choice": "port",
-                "port": {
-                    "tx_name": "p2",
-                    "rx_name": "p1"
-                }
-            },
-            "size": {
-                "choice": "fixed",
-                "fixed": 1518
-            },
-            "rate": {
-                "choice": "percentage",
-                "percentage": 10
-            },
-            "duration": {
-                "choice": "fixed_packets",
-                "fixed_packets": {
-                    "packets": 100000
-                }
-            },
-            "packet": [
-                {
-                    "choice": "ethernet",
-                    "ethernet": {
-                        "dst": {
-                            "choice": "value",
-                            "value": "00:CD:DC:CD:DC:CD"
-                        },
-                        "src": {
-                            "choice": "value",
-                            "value": "00:AB:BC:AB:BC:AB"
                         }
                     }
                 },

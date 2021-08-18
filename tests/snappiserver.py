@@ -152,6 +152,46 @@ def set_transmit_state():
                         headers={'Content-Type': 'application/json'})
 
 
+@app.route('/control/capture', methods=['POST'])
+def set_capture_state():
+    global CONFIG
+    status = utils.get_mockserver_status()
+    if status == "200":
+        return Response(status=200,
+                        response=json.dumps({'warnings': []}),
+                        headers={'Content-Type': 'application/json'})
+    elif status == "200-warning":
+        return Response(status=200,
+                        response=json.dumps(
+                            {
+                                'warnings': [
+                                    'mock 200 set_capture_state warning'
+                                ]
+                            }
+                        ),
+                        headers={'Content-Type': 'application/json'})
+    elif status == "400":
+        return Response(status=400,
+                        response=json.dumps(
+                            {'errors': ['mock 400 set_capture_state error']}),
+                        headers={'Content-Type': 'application/json'})
+    elif status == "500":
+        return Response(status=500,
+                        response=json.dumps(
+                            {'errors': ['mock 500 set_capture_state error']}),
+                        headers={'Content-Type': 'application/json'})
+    else:
+        return Response(status=501,
+                        response=json.dumps(
+                            {
+                                'errors': [
+                                    'set_capture_state is not implemented'
+                                ]
+                            }
+                        ),
+                        headers={'Content-Type': 'application/json'})
+
+
 @app.route('/results/metrics', methods=['POST'])
 def get_metrics():
     status = utils.get_mockserver_status()
@@ -189,6 +229,35 @@ def get_metrics():
         return Response(status=501,
                         response=json.dumps(
                             {'errors': ['get_metrics is not implemented']}),
+                        headers={'Content-Type': 'application/json'})
+
+
+@app.route('/results/capture', methods=['POST'])
+def get_capture():
+    status = utils.get_mockserver_status()
+    global CONFIG
+    if status in ["200", "200-warning"]:
+        capture_response = {
+            "bytes": b'mock 200 get_capture response'
+        }
+
+        return Response(capture_response,
+                        mimetype='application/octet-stream',
+                        status=200)
+    elif status == "400":
+        return Response(status=400,
+                        response=json.dumps(
+                            {'errors': ['mock 400 get_capture error']}),
+                        headers={'Content-Type': 'application/json'})
+    elif status == "500":
+        return Response(status=500,
+                        response=json.dumps(
+                            {'errors': ['mock 500 get_capture error']}),
+                        headers={'Content-Type': 'application/json'})
+    else:
+        return Response(status=501,
+                        response=json.dumps(
+                            {'errors': ['get_capture is not implemented']}),
                         headers={'Content-Type': 'application/json'})
 
 

@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 # import datetime
 import time
+from io import BytesIO
+import dpkt
 
 # gRPC stuffs
 import grpc
@@ -20,6 +22,17 @@ from grpc_server.common.utils import init_logging
 
 # set API version
 OTG_API_Version = "0.4.10"
+
+
+def mac_addr(address):
+    """Convert a MAC address to a readable/printable string
+
+       Args:
+           address (str): a MAC address in hex form (e.g. '\x01\x02\x03\x04\x05\x06') # noqa
+       Returns:
+           str: Printable/readable MAC address
+    """
+    return ':'.join('%02x' % dpkt.compat.compat_ord(b) for b in address)
 
 
 class OtgClient():
@@ -210,6 +223,80 @@ class OtgClient():
                     )
                 )
 
+    def SetCaptureState(self, start):
+
+        protoRequest = None
+
+        if start:
+            # create from json
+            jsonRequest = """
+            {
+                "port_names": null,
+                "state" : "start"
+            }
+            """
+            self.logger.debug(
+                "SetCaptureState :: CaptureState (JSON) = {}".format(
+                    jsonRequest
+                )
+            )
+            protoRequest = json_format.Parse(
+                jsonRequest,
+                otg_pb2.CaptureState()
+            )
+        else:
+            # create from json
+            jsonRequest = """
+            {
+                "port_names": null,
+                "state" : "stop"
+            }
+            """
+            self.logger.debug(
+                "SetCaptureState :: CaptureState (JSON) = {}".format(
+                    jsonRequest
+                )
+            )
+            protoRequest = json_format.Parse(
+                jsonRequest,
+                otg_pb2.CaptureState()
+            )
+
+        with grpc.insecure_channel(self.server_address) as channel:
+            stub = otg_pb2_grpc.OpenapiStub(channel)
+
+            self.logger.debug(
+                "SetCaptureState :: CaptureState (protobuf) = {}".format(
+                    protoRequest
+                )
+            )
+
+            self.logger.debug(
+                "Sending Start/Stop request and waiting for response ..."
+            )
+            try:
+                response = stub.SetCaptureState(
+                    otg_pb2.SetCaptureStateRequest(
+                        capture_state=protoRequest
+                    )
+                )
+            except grpc.RpcError as e:
+                self.logger.error(
+                    "gRPC Exception Code: {}, Details: {}".format(
+                        e.code(),
+                        e.details()
+                    )
+                )
+            else:
+                self.logger.info(
+                    "Received Response: {}, Success: {}".format(
+                        response,
+                        response.HasField(
+                            "status_code_200"
+                        )
+                    )
+                )
+
     def SetLinkState(self, up):
 
         protoRequest = None
@@ -319,6 +406,80 @@ class OtgClient():
             else:
                 self.logger.info("Received Response: {}".format(response))
 
+    def GetCapture(self):
+        protoRequest = None
+
+        # create from json
+        jsonRequest = """
+        {
+            "port_name": "p2"
+        }
+        """
+        self.logger.debug(
+            "GetCapture :: CaptureRequest (JSON) = {}".format(
+                jsonRequest
+            )
+        )
+        protoRequest = json_format.Parse(jsonRequest, otg_pb2.CaptureRequest())
+
+        with grpc.insecure_channel(self.server_address) as channel:
+            stub = otg_pb2_grpc.OpenapiStub(channel)
+
+            self.logger.debug(
+                "Sending GetCapture request and waiting for response ..."
+            )
+
+            try:
+                responses = stub.GetCapture(
+                    otg_pb2.GetCaptureRequest(
+                        capture_request=protoRequest
+                    )
+                )
+            except grpc.RpcError as e:
+                self.logger.error(
+                    "gRPC Exception Code: {}, Details: {}".format(
+                        e.code(),
+                        e.details()
+                    )
+                )
+            else:
+
+                for response in responses:
+                    self.logger.info("Received Response: {}".format(
+                            response
+                        )
+                    )
+                    pacp_bytes = BytesIO(response.status_code_200.bytes)
+
+                    with open('capture.pcap', 'wb') as f:
+                        f.write(response.status_code_200.bytes)
+
+                    packet_count = 0
+                    for ts, buf in dpkt.pcap.Reader(pacp_bytes):
+                        packet_count += 1
+                        self.logger.info(
+                            "Packet {} : TIMESTAMP - {}".format(
+                                packet_count,
+                                ts
+                            )
+                        )
+                        eth = dpkt.ethernet.Ethernet(buf)
+                        self.logger.info(
+                            "Packet {} : Ethernet SRC - {}".format(
+                                packet_count,
+                                mac_addr(eth.src)
+                            )
+                        )
+                        self.logger.info(
+                            "Packet {} : Ethernet DST - {}".format(
+                                packet_count,
+                                mac_addr(eth.dst)
+                            )
+                        )
+                    self.logger.info("Total received packets: {}".format(
+                        packet_count
+                    ))
+
     def GetStateMetrics(self):
 
         with grpc.insecure_channel(self.server_address) as channel:
@@ -364,17 +525,28 @@ def serve(args):
         client_logger.info("Do GetConfig")
         client.GetConfig()
 
+        client_logger.info("Do Start Capture")
+        client.SetCaptureState(True)
+
         client_logger.info("Do Start Transmit")
         client.SetTransmitState(True)
 
         for count in range(2):
+            client_logger.info("Do Get Metrics - {}".format(
+                count
+            ))
             time.sleep(1)
             client.GetMetrics()
 
         client_logger.info("Do Stop Transmit")
         client.SetTransmitState(False)
 
-        # client.GetStateMetrics()
+        if args.config_mode in [
+            "traffic",
+            "protocol_b2b"
+        ]:
+            client_logger.info("Do Get Capture")
+            client.GetCapture()
 
     else:
         client_logger.info("Do LinkState Up/Down")
@@ -401,12 +573,12 @@ if __name__ == '__main__':
                         type=str)
     parser.add_argument('--target-port',
                         help='target gRPC server port number',
-                        default=40071,
+                        default=40051,
                         type=int)
     parser.add_argument('--app-mode',
                         help='target Application mode)',
                         choices=['ixnetwork', 'athena'],
-                        default='ixnetwork',
+                        default='athena',
                         type=str)
     parser.add_argument('--config-mode',
                         help='target Configuration mode)',
@@ -415,9 +587,10 @@ if __name__ == '__main__':
                             'protocol',
                             'traffic',
                             'combined',
-                            'minimal'
+                            'minimal',
+                            'protocol_b2b'
                         ],
-                        default='default',
+                        default='protocol_b2b',
                         type=str)
     parser.add_argument('--logfile',
                         help='logfile name [date and time auto appended]',
@@ -425,11 +598,11 @@ if __name__ == '__main__':
                         type=str)
     parser.add_argument('--log-stdout',
                         help='show log on stdout, in addition to file',
-                        default=False,
+                        default=True,
                         action='store_true')
     parser.add_argument('--log-debug',
                         help='enable debug level logging',
-                        default=False,
+                        default=True,
                         action='store_true')
     args = parser.parse_args()
 
