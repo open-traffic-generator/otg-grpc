@@ -30,7 +30,7 @@ publish() {
 
     if [ ${EXPERIMENT} = true ]
     then 
-        DOCKERHUB_IMAGE="${DOCKER_HUB_USERNAME}/experiments:${TAG}"
+        DOCKERHUB_IMAGE="${DOCKER_HUB_USERNAME}/experiments-grpc:${TAG}"
     else
         DOCKERHUB_IMAGE="${DOCKER_HUB_USERNAME}/otg-grpc-server:${TAG}"
         dockerhub_image_exists "${DOCKERHUB_IMAGE}"
