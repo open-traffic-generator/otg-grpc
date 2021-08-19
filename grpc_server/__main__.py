@@ -48,7 +48,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 )
                 self.logger.info(
                     "Snappi Remote Server address = {} in IxNetwork mode".format(target)) # noqa
-            if self.app_mode == "athena-insecure":
+            if self.app_mode == "ixia-c-insecure":
                 target = "http://{}".format(self.target_address)
                 self.api = snappi.api(
                     location=target,
@@ -725,7 +725,7 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('--app-mode',
                         help='target Application mode',
-                        choices=['ixnetwork', 'athena', 'athena-insecure'],
+                        choices=['ixnetwork', 'ixia-c', 'ixia-c-insecure'],
                         default='ixnetwork',
                         type=str)
     parser.add_argument('--target-host', help='target host address',

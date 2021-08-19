@@ -1,5 +1,5 @@
 {
-    "app-mode": "athena-insecure",
+    "app-mode": "ixia-c-insecure",
     "target-host": "127.0.0.1",
     "target-port": "80"
 }

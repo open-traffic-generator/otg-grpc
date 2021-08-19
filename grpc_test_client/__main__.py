@@ -521,7 +521,7 @@ def serve(args):
     client_logger.info("Do SetConfig")
     client.SetConfig()
 
-    if args.app_mode == "athena":
+    if args.app_mode == "ixia-c":
         client_logger.info("Do GetConfig")
         client.GetConfig()
 
@@ -577,8 +577,8 @@ if __name__ == '__main__':
                         type=int)
     parser.add_argument('--app-mode',
                         help='target Application mode)',
-                        choices=['ixnetwork', 'athena'],
-                        default='athena',
+                        choices=['ixnetwork', 'ixia-c', 'ixia-c-insecure'],
+                        default='ixia-c',
                         type=str)
     parser.add_argument('--config-mode',
                         help='target Configuration mode)',

@@ -20,7 +20,7 @@ Gitlab is not reachable from within lab network, hence please make sure that the
     # this stage will create an intermediate, untagged image; feel free to get rid of it afterwards
     docker build -t otg-grpc-server .
     # start container
-    docker run -d --net=host otg-grpc-server --app-mode athena --target-host localhost --target-port 443
+    docker run -d --net=host otg-grpc-server --app-mode ixia-c --target-host localhost --target-port 443
     # [checkout more options]
     docker run -d --net=host otg-grpc-server help
     ```

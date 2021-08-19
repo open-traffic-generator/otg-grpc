@@ -45,7 +45,7 @@ def get_parsed_args(op_val):
                         type=int)
     parser.add_argument('--app-mode',
                         help='target Application mode',
-                        choices=['ixnetwork', 'athena', 'athena-insecure'],
+                        choices=['ixnetwork', 'ixia-c', 'ixia-c-insecure'],
                         default='ixnetwork',
                         type=str)
     parser.add_argument('--target-host',
