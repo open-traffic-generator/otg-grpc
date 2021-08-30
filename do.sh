@@ -1,6 +1,6 @@
 #!/bin/sh
 
-OTG_API_VERSION=0.4.12
+OTG_API_VERSION=0.5.2
 UT_REPORT=ut-report.html
 
 # Avoid warnings for non-interactive apt-get install
