@@ -26,14 +26,18 @@ get_otg_proto() {
     echo "Fetching OTG proto for ${OTG_API_VERSION} ..."
     rm -rf grpc_server/proto/> /dev/null 2>&1 || true
     mkdir grpc_server/proto/ \
-    && curl -kL https://github.com/open-traffic-generator/models/releases/download/v${OTG_API_VERSION}/otg.proto> ./grpc_server/proto/otg.proto
+    && curl -kL https://github.com/open-traffic-generator/models/releases/download/v${OTG_API_VERSION}/otg.proto> ./grpc_server/proto/otg.proto \
+    && sed -i "s/package otg;/package snappipb;/g" grpc_server/proto/otg.proto \
+    && cp grpc_server/proto/otg.proto grpc_server/proto/snappipb.proto \
+    && rm -rf grpc_server/proto/otg.proto
+
 }
 
 gen_py_stubs() {
     echo "Generating python stubs ..." \
     rm -rf grpc_server/autogen/*.py> /dev/null 2>&1 || true
-    python -m grpc_tools.protoc --experimental_allow_proto3_optional -I./grpc_server/proto --python_out=./grpc_server/autogen --grpc_python_out=./grpc_server/autogen ./grpc_server/proto/otg.proto \
-    && sed -i "s/import otg_pb2/from . import otg_pb2/g" grpc_server/autogen/*_grpc.py
+    python -m grpc_tools.protoc --experimental_allow_proto3_optional --python_out=./grpc_server/autogen --grpc_python_out=./grpc_server/autogen --proto_path=./grpc_server/proto snappipb.proto \
+    && sed -i "s/import snappipb_pb2/from . import snappipb_pb2/g" grpc_server/autogen/*_grpc.py
 }
 
 run() {

@@ -12,7 +12,7 @@ import dpkt
 
 # gRPC stuffs
 import grpc
-from grpc_server.autogen import otg_pb2, otg_pb2_grpc
+from grpc_server.autogen import snappipb_pb2, snappipb_pb2_grpc
 # from google.protobuf import empty_pb2
 
 # Json
@@ -81,11 +81,11 @@ class OtgClient():
             )
             protoRequest = json_format.Parse(
                 jsonRequest,
-                otg_pb2.Config()
+                snappipb_pb2.Config()
             )
 
         with grpc.insecure_channel(self.server_address) as channel:
-            stub = otg_pb2_grpc.OpenapiStub(channel)
+            stub = snappipb_pb2_grpc.OpenapiStub(channel)
 
             self.logger.debug(
                 "SetConfig :: SetConfigRequest (protobuf) = {}".format(
@@ -99,7 +99,7 @@ class OtgClient():
 
             try:
                 response = stub.SetConfig(
-                    otg_pb2.SetConfigRequest(
+                    snappipb_pb2.SetConfigRequest(
                         config=protoRequest
                     )
                 )
@@ -123,14 +123,14 @@ class OtgClient():
     def GetConfig(self):
 
         with grpc.insecure_channel(self.server_address) as channel:
-            stub = otg_pb2_grpc.OpenapiStub(channel)
+            stub = snappipb_pb2_grpc.OpenapiStub(channel)
 
             self.logger.debug(
                 "Sending GetConfigRequest request and waiting for response ..."
             )
 
             try:
-                empty = otg_pb2.google_dot_protobuf_dot_empty__pb2.Empty()
+                empty = snappipb_pb2.google_dot_protobuf_dot_empty__pb2.Empty()
                 response = stub.GetConfig(empty)
             except grpc.RpcError as e:
                 self.logger.error(
@@ -168,7 +168,7 @@ class OtgClient():
             )
             protoRequest = json_format.Parse(
                 jsonRequest,
-                otg_pb2.TransmitState()
+                snappipb_pb2.TransmitState()
             )
         else:
             # create from json
@@ -185,11 +185,11 @@ class OtgClient():
             )
             protoRequest = json_format.Parse(
                 jsonRequest,
-                otg_pb2.TransmitState()
+                snappipb_pb2.TransmitState()
             )
 
         with grpc.insecure_channel(self.server_address) as channel:
-            stub = otg_pb2_grpc.OpenapiStub(channel)
+            stub = snappipb_pb2_grpc.OpenapiStub(channel)
 
             self.logger.debug(
                 "SetTransmitState :: TransmitState (protobuf) = {}".format(
@@ -202,7 +202,7 @@ class OtgClient():
             )
             try:
                 response = stub.SetTransmitState(
-                    otg_pb2.SetTransmitStateRequest(
+                    snappipb_pb2.SetTransmitStateRequest(
                         transmit_state=protoRequest
                     )
                 )
@@ -242,7 +242,7 @@ class OtgClient():
             )
             protoRequest = json_format.Parse(
                 jsonRequest,
-                otg_pb2.CaptureState()
+                snappipb_pb2.CaptureState()
             )
         else:
             # create from json
@@ -259,11 +259,11 @@ class OtgClient():
             )
             protoRequest = json_format.Parse(
                 jsonRequest,
-                otg_pb2.CaptureState()
+                snappipb_pb2.CaptureState()
             )
 
         with grpc.insecure_channel(self.server_address) as channel:
-            stub = otg_pb2_grpc.OpenapiStub(channel)
+            stub = snappipb_pb2_grpc.OpenapiStub(channel)
 
             self.logger.debug(
                 "SetCaptureState :: CaptureState (protobuf) = {}".format(
@@ -276,7 +276,7 @@ class OtgClient():
             )
             try:
                 response = stub.SetCaptureState(
-                    otg_pb2.SetCaptureStateRequest(
+                    snappipb_pb2.SetCaptureStateRequest(
                         capture_state=protoRequest
                     )
                 )
@@ -313,7 +313,7 @@ class OtgClient():
                     jsonRequest
                 )
             )
-            protoRequest = json_format.Parse(jsonRequest, otg_pb2.LinkState())
+            protoRequest = json_format.Parse(jsonRequest, snappipb_pb2.LinkState())
         else:
             # create from json
             jsonRequest = """
@@ -326,10 +326,10 @@ class OtgClient():
                     jsonRequest
                 )
             )
-            protoRequest = json_format.Parse(jsonRequest, otg_pb2.LinkState())
+            protoRequest = json_format.Parse(jsonRequest, snappipb_pb2.LinkState())
 
         with grpc.insecure_channel(self.server_address) as channel:
-            stub = otg_pb2_grpc.OpenapiStub(channel)
+            stub = snappipb_pb2_grpc.OpenapiStub(channel)
 
             self.logger.debug(
                 "SetLinkState :: LinkState (protobuf) = {}".format(
@@ -342,7 +342,7 @@ class OtgClient():
             )
             try:
                 response = stub.SetLinkState(
-                    otg_pb2.SetLinkStateRequest(
+                    snappipb_pb2.SetLinkStateRequest(
                         link_state=protoRequest
                     )
                 )
@@ -381,10 +381,10 @@ class OtgClient():
                 jsonRequest
             )
         )
-        protoRequest = json_format.Parse(jsonRequest, otg_pb2.MetricsRequest())
+        protoRequest = json_format.Parse(jsonRequest, snappipb_pb2.MetricsRequest())
 
         with grpc.insecure_channel(self.server_address) as channel:
-            stub = otg_pb2_grpc.OpenapiStub(channel)
+            stub = snappipb_pb2_grpc.OpenapiStub(channel)
 
             self.logger.debug(
                 "Sending GetMetrics request and waiting for response ..."
@@ -392,7 +392,7 @@ class OtgClient():
 
             try:
                 response = stub.GetMetrics(
-                    otg_pb2.GetMetricsRequest(
+                    snappipb_pb2.GetMetricsRequest(
                         metrics_request=protoRequest
                     )
                 )
@@ -420,10 +420,10 @@ class OtgClient():
                 jsonRequest
             )
         )
-        protoRequest = json_format.Parse(jsonRequest, otg_pb2.CaptureRequest())
+        protoRequest = json_format.Parse(jsonRequest, snappipb_pb2.CaptureRequest())
 
         with grpc.insecure_channel(self.server_address) as channel:
-            stub = otg_pb2_grpc.OpenapiStub(channel)
+            stub = snappipb_pb2_grpc.OpenapiStub(channel)
 
             self.logger.debug(
                 "Sending GetCapture request and waiting for response ..."
@@ -431,7 +431,7 @@ class OtgClient():
 
             try:
                 responses = stub.GetCapture(
-                    otg_pb2.GetCaptureRequest(
+                    snappipb_pb2.GetCaptureRequest(
                         capture_request=protoRequest
                     )
                 )
@@ -483,14 +483,14 @@ class OtgClient():
     def GetStateMetrics(self):
 
         with grpc.insecure_channel(self.server_address) as channel:
-            stub = otg_pb2_grpc.OpenapiStub(channel)
+            stub = snappipb_pb2_grpc.OpenapiStub(channel)
 
             self.logger.debug(
                 "Sending GetStateMetrics request and waiting for response ..."
             )
 
             try:
-                empty = otg_pb2.google_dot_protobuf_dot_empty__pb2.Empty()
+                empty = snappipb_pb2.google_dot_protobuf_dot_empty__pb2.Empty()
                 response = stub.GetStateMetrics(empty)
             except grpc.RpcError as e:
                 self.logger.error(
