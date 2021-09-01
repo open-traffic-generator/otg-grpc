@@ -168,7 +168,8 @@ def set_transmit_state(api, payload):
         # accept both string and dict
         payload = json.dumps(payload, indent=4)
     proto_state_req = json_format.Parse(payload, snappipb_pb2.TransmitState())
-    req_obj = snappipb_pb2.SetTransmitStateRequest(transmit_state=proto_state_req)
+    req_obj = snappipb_pb2.SetTransmitStateRequest(
+        transmit_state=proto_state_req)
     proto_res = api.SetTransmitState(req_obj, MOCK_GRPC_SERVER_CONTEXT)
     json_res = convert_proto_to_json(proto_res)
     return json_res
@@ -192,7 +193,8 @@ def set_capture_state(api, payload):
         # accept both string and dict
         payload = json.dumps(payload, indent=4)
     proto_state_req = json_format.Parse(payload, snappipb_pb2.CaptureState())
-    req_obj = snappipb_pb2.SetCaptureStateRequest(capture_state=proto_state_req)
+    req_obj = snappipb_pb2.SetCaptureStateRequest(
+        capture_state=proto_state_req)
     proto_res = api.SetCaptureState(req_obj, MOCK_GRPC_SERVER_CONTEXT)
     json_res = convert_proto_to_json(proto_res)
     return json_res
@@ -215,12 +217,11 @@ def get_capture(api, payload):
     if not isinstance(payload, str):
         # accept both string and dict
         payload = json.dumps(payload, indent=4)
-    proto_capture_req = json_format.Parse(payload, snappipb_pb2.CaptureRequest())
+    proto_capture_req = json_format.Parse(
+        payload, snappipb_pb2.CaptureRequest())
     req_obj = snappipb_pb2.GetCaptureRequest(capture_request=proto_capture_req)
-    proto_responses = api.GetCapture(req_obj, MOCK_GRPC_SERVER_CONTEXT)
-
-    for proto_response in proto_responses:
-        json_res = convert_proto_to_json(
-            proto_response
-        )
-        return json_res
+    proto_response = api.GetCapture(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(
+        proto_response
+    )
+    return json_res

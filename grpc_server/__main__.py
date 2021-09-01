@@ -610,7 +610,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             )
 
             self.logger.debug("Returning Capture to client ...")
-            yield get_capture_response
+            return get_capture_response
 
         except Exception as e:
             self.logger.error(
@@ -653,14 +653,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                     snappipb_pb2.GetCaptureResponse()
                 )
                 capture_response.status_code_400.bad_request.response_error.errors.extend(error_details) # noqa
-                yield capture_response
+                return capture_response
             elif error_code == 500:
                 capture_response = json_format.Parse(
                     response_500,
                     snappipb_pb2.GetCaptureResponse()
                 )
                 capture_response.status_code_500.internal_server_error.response_error.errors.extend(error_details) # noqa
-                yield capture_response
+                return capture_response
             else:
                 raise NotImplementedError()
 
