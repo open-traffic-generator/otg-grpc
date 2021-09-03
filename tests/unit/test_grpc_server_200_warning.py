@@ -17,13 +17,9 @@ def test_grpc_server_set_config_with_200_warning(snappiserver,
 
     exp_res = {
         'status_code_200': {
-            'success': {
-                'response_warning': {
-                    'warnings': [
-                        'mock 200 set_config warning'
-                    ]
-                }
-            }
+            'warnings': [
+                'mock 200 set_config warning'
+            ]
         }
     }
     assert json_res == exp_res
@@ -43,13 +39,9 @@ def test_grpc_server_set_transmit_state_with_200_warning(snappiserver,
 
     exp_res = {
         'status_code_200': {
-            'success': {
-                'response_warning': {
-                    'warnings': [
-                        'mock 200 set_transmit_state warning'
-                    ]
-                }
-            }
+            'warnings': [
+                'mock 200 set_transmit_state warning'
+            ]
         }
     }
     assert json_res == exp_res
@@ -69,13 +61,9 @@ def test_grpc_server_set_link_state_with_200_warning(snappiserver,
 
     exp_res = {
         'status_code_200': {
-            'success': {
-                'response_warning': {
-                    'warnings': [
-                        'mock 200 set_link_state warning'
-                    ]
-                }
-            }
+            'warnings': [
+                'mock 200 set_link_state warning'
+            ]
         }
     }
     assert json_res == exp_res
@@ -95,13 +83,9 @@ def test_grpc_server_set_capture_state_with_200_warning(snappiserver,
 
     exp_res = {
         'status_code_200': {
-            'success': {
-                'response_warning': {
-                    'warnings': [
-                        'mock 200 set_capture_state warning'
-                    ]
-                }
-            }
+            'warnings': [
+                'mock 200 set_capture_state warning'
+            ]
         }
     }
     assert json_res == exp_res

@@ -1,3 +1,4 @@
+import json
 import tests.common.utils as utils
 
 
@@ -14,16 +15,12 @@ def test_grpc_server_set_config_with_400(snappiserver,
         ]
     }
     json_res = utils.set_config(grpc_api, config)
-
+    
     exp_res = {
         'status_code_400': {
-            'bad_request': {
-                'response_error': {
-                    'errors': [
-                        'mock 400 set_config error'
-                    ]
-                }
-            }
+            'errors': [
+                'mock 400 set_config error'
+            ]
         }
     }
     assert json_res == exp_res
@@ -37,13 +34,9 @@ def test_grpc_server_get_config_with_400(snappiserver,
 
     exp_res = {
         'status_code_400': {
-            'bad_request': {
-                'response_error': {
-                    'errors': [
-                        'mock 400 get_config error'
-                    ]
-                }
-            }
+            'errors': [
+                'mock 400 get_config error'
+            ]
         }
     }
     assert json_res == exp_res
@@ -63,13 +56,9 @@ def test_grpc_server_set_transmit_state_with_400(snappiserver,
 
     exp_res = {
         'status_code_400': {
-            'bad_request': {
-                'response_error': {
-                    'errors': [
-                        'mock 400 set_transmit_state error'
-                    ]
-                }
-            }
+            'errors': [
+                'mock 400 set_transmit_state error'
+            ]
         }
     }
     assert json_res == exp_res
@@ -89,13 +78,9 @@ def test_grpc_server_set_link_state_with_400(snappiserver,
 
     exp_res = {
         'status_code_400': {
-            'bad_request': {
-                'response_error': {
-                    'errors': [
-                        'mock 400 set_link_state error'
-                    ]
-                }
-            }
+            'errors': [
+                'mock 400 set_link_state error'
+            ]
         }
     }
     assert json_res == exp_res
@@ -118,13 +103,9 @@ def test_grpc_server_get_port_metrics_with_400(snappiserver,
 
     exp_res = {
         'status_code_400': {
-            'bad_request': {
-                'response_error': {
-                    'errors': [
-                        'mock 400 get_metrics error'
-                        ]
-                    }
-                }
+            'errors': [
+                'mock 400 get_metrics error'
+                ]
             }
         }
     assert json_res == exp_res
@@ -144,13 +125,9 @@ def test_grpc_server_set_capture_state_with_400(snappiserver,
 
     exp_res = {
         'status_code_400': {
-            'bad_request': {
-                'response_error': {
-                    'errors': [
-                        'mock 400 set_capture_state error'
-                        ]
-                    }
-                }
+            'errors': [
+                'mock 400 set_capture_state error'
+                ]
             }
         }
     assert json_res == exp_res
@@ -167,13 +144,9 @@ def test_grpc_server_get_capture_with_400(snappiserver,
 
     exp_res = {
         'status_code_400': {
-            'bad_request': {
-                'response_error': {
-                    'errors': [
-                        'mock 400 get_capture error'
-                        ]
-                    }
-                }
+            'errors': [
+                'mock 400 get_capture error'
+                ]
             }
         }
     assert json_res == exp_res
