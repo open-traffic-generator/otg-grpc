@@ -48,7 +48,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 )
                 self.logger.info(
                     "Snappi Remote Server address = {} in IxNetwork mode".format(target)) # noqa
-            if self.app_mode == "athena-insecure":
+            elif self.app_mode == "athena-insecure":
                 target = "http://{}".format(self.target_address)
                 self.api = snappi.api(
                     location=target,
