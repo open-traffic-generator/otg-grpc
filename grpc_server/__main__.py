@@ -5,6 +5,8 @@ from concurrent import futures
 
 # gRPC stuffs
 import grpc
+# signal for SIGTERM
+import signal
 # snappi
 import snappi
 # Json
@@ -16,6 +18,7 @@ from .common.utils import get_error_details, init_logging
 # set API version
 OTG_API_Version = "0.4.10"
 
+server = None
 
 class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
@@ -587,7 +590,17 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 raise NotImplementedError()
 
 
+def sighandler(signum, frame):
+    global server
+
+    if server is not None:
+        server.stop(5)
+        server = None
+        print("Server shutdown gracefully")
+
 def serve(args):
+    global server
+
     log_level = logging.INFO
     if args.log_debug:
         log_level = logging.DEBUG
@@ -600,6 +613,8 @@ def serve(args):
             OTG_API_Version
         )
     )
+
+    signal.signal(signal.SIGTERM, sighandler)
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     snappipb_pb2_grpc.add_OpenapiServicer_to_server(Openapi(args), server)
@@ -634,6 +649,7 @@ def serve(args):
         server.wait_for_termination()
     except KeyboardInterrupt:
         server.stop(5)
+        server = None
         print("Server shutdown gracefully")
 
 
