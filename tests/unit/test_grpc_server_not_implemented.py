@@ -155,3 +155,20 @@ def test_grpc_server_get_capture_with_501(snappiserver,
         found_err = True
 
     assert found_err, 'Exception should be raised'
+
+
+def test_grpc_server_set_protocol_state_with_501(snappiserver,
+                                                 serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
+
+    state = {
+        "state": "start"
+    }
+
+    found_err = False
+    try:
+        utils.set_protocol_state(grpc_api, state)
+    except Exception:
+        found_err = True
+
+    assert found_err, 'Exception should be raised'

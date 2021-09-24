@@ -175,6 +175,19 @@ def set_transmit_state(api, payload):
     return json_res
 
 
+def set_protocol_state(api, payload):
+    print('Setting Protocol State......')
+    if not isinstance(payload, str):
+        # accept both string and dict
+        payload = json.dumps(payload, indent=4)
+    proto_state_req = json_format.Parse(payload, snappipb_pb2.ProtocolState())
+    req_obj = snappipb_pb2.SetProtocolStateRequest(
+        protocol_state=proto_state_req)
+    proto_res = api.SetProtocolState(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(proto_res)
+    return json_res
+
+
 def set_link_state(api, payload):
     print('Setting Link State......')
     if not isinstance(payload, str):

@@ -1,4 +1,3 @@
-import json
 import tests.common.utils as utils
 
 
@@ -15,7 +14,7 @@ def test_grpc_server_set_config_with_400(snappiserver,
         ]
     }
     json_res = utils.set_config(grpc_api, config)
-    
+
     exp_res = {
         'status_code_400': {
             'errors': [
@@ -149,4 +148,23 @@ def test_grpc_server_get_capture_with_400(snappiserver,
                 ]
             }
         }
+    assert json_res == exp_res
+
+
+def test_grpc_server_set_protocol_state_with_400(snappiserver,
+                                                 serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 400)
+
+    state = {
+        "state": "start"
+    }
+    json_res = utils.set_protocol_state(grpc_api, state)
+
+    exp_res = {
+        'status_code_400': {
+            'errors': [
+                'mock 400 set_protocol_state error'
+            ]
+        }
+    }
     assert json_res == exp_res

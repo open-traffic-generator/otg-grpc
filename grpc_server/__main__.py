@@ -16,9 +16,10 @@ from .autogen import snappipb_pb2, snappipb_pb2_grpc
 from .common.utils import get_error_details, init_logging
 
 # set API version
-OTG_API_Version = "0.4.10"
+OTG_API_Version = "0.6.1"
 
 server = None
+
 
 class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
@@ -362,6 +363,81 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             else:
                 raise NotImplementedError()
 
+    def SetProtocolState(self, request, context):
+        jsonObj = json_format.MessageToJson(
+            request.protocol_state,
+            preserving_proto_field_name=True
+        )
+        self.logger.debug(
+            "Received request.protocolstate (JSON)(default=False) = {}".format(
+                jsonObj
+            )
+        )
+
+        self.InitSanppi()
+
+        self.logger.info("Requesting SetProtocolState ...")
+        try:
+            response = self.api.set_protocol_state(jsonObj)
+            response_200 = """
+            {
+                "status_code_200" : {
+                    "warnings" : []
+                }
+            }
+            """
+            protocol_response = json_format.Parse(
+                response_200,
+                snappipb_pb2.SetProtocolStateResponse()
+            )
+            if len(response.warnings) > 0:
+                protocol_response.status_code_200.warnings.extend(response.warnings) # noqa
+                self.logger.debug(
+                    "Snappi_api SetProtocolState Returned Warnings: {}".format(
+                        response.warnings
+                    )
+                )
+            self.logger.debug("Returning status_code_200 to client ...")
+            return protocol_response
+
+        except Exception as e:
+            response_400 = """
+            {
+                "status_code_400" : {
+                    "errors" : []
+                }
+            }
+            """
+            response_500 = """
+            {
+                "status_code_500" : {
+                    "errors" : []
+                }
+            }
+            """
+            self.logger.error(
+                "Snappi_api SetProtocolState Returned Exception : {}".format(
+                    repr(e)
+                )
+            )
+            error_code, error_details = get_error_details(e)
+            if error_code == 400:
+                protocol_response = json_format.Parse(
+                    response_400,
+                    snappipb_pb2.SetProtocolStateResponse()
+                )
+                protocol_response.status_code_400.errors.extend(error_details) # noqa
+                return protocol_response
+            elif error_code == 500:
+                protocol_response = json_format.Parse(
+                    response_500,
+                    snappipb_pb2.SetProtocolStateResponse()
+                )
+                protocol_response.status_code_500.errors.extend(error_details) # noqa
+                return protocol_response
+            else:
+                raise NotImplementedError()
+
     def SetCaptureState(self, request, context):
         jsonObj = json_format.MessageToJson(
             request.capture_state,
@@ -597,6 +673,7 @@ def sighandler(signum, frame):
         server.stop(5)
         server = None
         print("Server shutdown gracefully")
+
 
 def serve(args):
     global server
