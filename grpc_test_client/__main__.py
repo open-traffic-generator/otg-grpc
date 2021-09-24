@@ -21,7 +21,7 @@ from google.protobuf import json_format
 from grpc_server.common.utils import init_logging
 
 # set API version
-OTG_API_Version = "0.4.10"
+OTG_API_Version = "0.6.1"
 
 
 def mac_addr(address):
