@@ -16,7 +16,7 @@ from .autogen import snappipb_pb2, snappipb_pb2_grpc
 from .common.utils import get_error_details, init_logging
 
 # set API version
-OTG_API_Version = "0.6.1"
+OTG_API_Version = "0.6.5"
 
 server = None
 
