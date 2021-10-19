@@ -33,7 +33,7 @@ publish() {
         DOCKERHUB_IMAGE="${DOCKER_HUB_USERNAME}/experiments:${TAG}"
     else
         DOCKERHUB_IMAGE="${DOCKER_HUB_USERNAME}/otg-grpc-server:${TAG}"
-        dockerhub_image_exists "${DOCKERHUB_IMAGE}"
+        # dockerhub_image_exists "${DOCKERHUB_IMAGE}"
     fi
 
     echo "Publishing image to DockerHub..."

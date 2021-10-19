@@ -108,3 +108,25 @@ def test_grpc_server_set_protocol_state_with_200_warning(snappiserver,
         }
     }
     assert json_res == exp_res
+
+
+def test_grpc_server_set_route_state_with_200_warning(snappiserver,
+                                                      serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200, True)
+
+    state = {
+        "names": [
+            "d1"
+        ],
+        "state": "withdraw"
+    }
+    json_res = utils.set_route_state(grpc_api, state)
+
+    exp_res = {
+        'status_code_200': {
+            'warnings': [
+                'mock 200 set_route_state warning'
+            ]
+        }
+    }
+    assert json_res == exp_res

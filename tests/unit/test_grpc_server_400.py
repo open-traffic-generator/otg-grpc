@@ -168,3 +168,25 @@ def test_grpc_server_set_protocol_state_with_400(snappiserver,
         }
     }
     assert json_res == exp_res
+
+
+def test_grpc_server_set_route_state_with_400(snappiserver,
+                                              serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 400)
+
+    state = {
+        "names": [
+            "d1"
+        ],
+        "state": "withdraw"
+    }
+    json_res = utils.set_route_state(grpc_api, state)
+
+    exp_res = {
+        'status_code_400': {
+            'errors': [
+                'mock 400 set_route_state error'
+            ]
+        }
+    }
+    assert json_res == exp_res

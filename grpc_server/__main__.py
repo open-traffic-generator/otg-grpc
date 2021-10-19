@@ -363,6 +363,81 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             else:
                 raise NotImplementedError()
 
+    def SetRouteState(self, request, context):
+        jsonObj = json_format.MessageToJson(
+            request.route_state,
+            preserving_proto_field_name=True
+        )
+        self.logger.debug(
+            "Received request.routestate (JSON)(default=False) = {}".format(
+                jsonObj
+            )
+        )
+
+        self.InitSanppi()
+
+        self.logger.info("Requesting SetRouteState ...")
+        try:
+            response = self.api.set_route_state(jsonObj)
+            response_200 = """
+            {
+                "status_code_200" : {
+                    "warnings" : []
+                }
+            }
+            """
+            route_response = json_format.Parse(
+                response_200,
+                snappipb_pb2.SetRouteStateResponse()
+            )
+            if len(response.warnings) > 0:
+                route_response.status_code_200.warnings.extend(response.warnings) # noqa
+                self.logger.debug(
+                    "Snappi_api SetTransmitState Returned Warnings: {}".format(
+                        response.warnings
+                    )
+                )
+            self.logger.debug("Returning status_code_200 to client ...")
+            return route_response
+
+        except Exception as e:
+            response_400 = """
+            {
+                "status_code_400" : {
+                    "errors" : []
+                }
+            }
+            """
+            response_500 = """
+            {
+                "status_code_500" : {
+                    "errors" : []
+                }
+            }
+            """
+            self.logger.error(
+                "Snappi_api SetRouteState Returned Exception : {}".format(
+                    repr(e)
+                )
+            )
+            error_code, error_details = get_error_details(e)
+            if error_code == 400:
+                route_response = json_format.Parse(
+                    response_400,
+                    snappipb_pb2.SetRouteStateResponse()
+                )
+                route_response.status_code_400.errors.extend(error_details) # noqa
+                return route_response
+            elif error_code == 500:
+                route_response = json_format.Parse(
+                    response_500,
+                    snappipb_pb2.SetRouteStateResponse()
+                )
+                route_response.status_code_500.errors.extend(error_details) # noqa
+                return route_response
+            else:
+                raise NotImplementedError()
+
     def SetProtocolState(self, request, context):
         jsonObj = json_format.MessageToJson(
             request.protocol_state,
