@@ -18,7 +18,13 @@ def init_logging(logger_name, level=logging.DEBUG, log_stdout=False):
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
     logfile = os.path.join(logs_dir, logfile)
-    formatter = logging.Formatter('%(asctime)s : %(message)s')
+    log_format = "{'name': '%(name)s',\
+        'level': '%(levelname)s',\
+        'filename': '%(filename)s',\
+        'function': '%(funcName)s',\
+        'ts':'%(asctime)s',\
+        'message': '%(message)s'}"
+    formatter = logging.Formatter(log_format)
     fileHandler = logging.FileHandler(logfile, mode='w')
     fileHandler.setFormatter(formatter)
     streamHandler = logging.StreamHandler()
@@ -32,3 +38,9 @@ def init_logging(logger_name, level=logging.DEBUG, log_stdout=False):
 
 def get_error_details(exception):
     return exception.args[0], exception.args[1]['errors']
+
+
+def get_time_elapsed(start):
+    end = datetime.datetime.now()
+    elapsed = end - start
+    return elapsed.total_seconds() * 10 ** 9

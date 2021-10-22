@@ -9,14 +9,15 @@ import grpc
 import signal
 # snappi
 import snappi
-# Json
+# datetime
+import datetime
 from google.protobuf import json_format
 
 from .autogen import snappipb_pb2, snappipb_pb2_grpc
-from .common.utils import get_error_details, init_logging
+from .common.utils import get_error_details, init_logging, get_time_elapsed
 
 # set API version
-OTG_API_Version = "0.6.5"
+OTG_API_Version = "0.6.6"
 
 server = None
 
@@ -40,705 +41,888 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             self.snappi_log_level = logging.DEBUG
 
     def InitSanppi(self):
-        # for snappy
-        if not self.api_initialized:
-            if self.app_mode == 'ixnetwork':
-                target = "http://{}".format(self.target_address)
-                self.api = snappi.api(
-                    location=target,
-                    ext=self.app_mode,
-                    verify=False,
-                    loglevel=self.snappi_log_level
-                )
-                self.logger.info(
-                    "Snappi Remote Server address = {} in IxNetwork mode".format(target)) # noqa
-            elif self.app_mode == "athena-insecure":
-                target = "http://{}".format(self.target_address)
-                self.api = snappi.api(
-                    location=target,
-                    verify=False
-                )
-                self.logger.info(
-                    "Snappi Remote Server address = {} in Athena mode".format(target)) # noqa
-            else:
-                target = "https://{}".format(self.target_address)
-                self.api = snappi.api(
-                    location=target,
-                    verify=False,
-                    loglevel=self.snappi_log_level
-                )
-                self.logger.info(
-                    "Snappi Remote Server address = {} in Athena mode".format(target)) # noqa
+        # for snappi
+        init_snappi_start = datetime.datetime.now()
+        try:
+            if not self.api_initialized:
+                if self.app_mode == 'ixnetwork':
+                    target = "http://{}".format(self.target_address)
+                    self.api = snappi.api(
+                        location=target,
+                        ext=self.app_mode,
+                        verify=False,
+                        loglevel=self.snappi_log_level
+                    )
+                    self.logger.info(
+                        "Snappi Remote Server address = {} in IxNetwork mode".format(target)) # noqa
+                elif self.app_mode == "athena-insecure":
+                    target = "http://{}".format(self.target_address)
+                    self.api = snappi.api(
+                        location=target,
+                        verify=False
+                    )
+                    self.logger.info(
+                        "Snappi Remote Server address = {} in Athena mode".format(target)) # noqa
+                else:
+                    target = "https://{}".format(self.target_address)
+                    self.api = snappi.api(
+                        location=target,
+                        verify=False,
+                        loglevel=self.snappi_log_level
+                    )
+                    self.logger.info(
+                        "Snappi Remote Server address = {} in Athena mode".format(target)) # noqa
 
-            self.api_initialized = True
-            self.logger.info('Snappi initialized')
+                self.api_initialized = True
+                self.logger.info('Snappi initialized')
+        finally:
+            self.logger.info(
+                "InitSanppi took {} ns".format(
+                    get_time_elapsed(init_snappi_start)
+                )
+            )
 
     def SetConfig(self, request, context):
-
-        jsonObj = json_format.MessageToJson(
-            request.config,
-            including_default_value_fields=False,
-            preserving_proto_field_name=True
-        )
-        self.logger.debug(
-            "Received request.config (JSON)(default=False) = {}".format(
-                jsonObj
-            )
-        )
-
-        self.InitSanppi()
-
-        self.logger.info("Requesting set_config ...")
+        grpc_api_start = datetime.datetime.now()
         try:
-            response = self.api.set_config(jsonObj)
-            response_200 = """
-            {
-                "status_code_200" : {
-                    "warnings" : []
-                }
-            }
-            """
-            config_response = json_format.Parse(
-                response_200,
-                snappipb_pb2.SetConfigResponse()
+            jsonObj = json_format.MessageToJson(
+                request.config,
+                including_default_value_fields=False,
+                preserving_proto_field_name=True
             )
-            if len(response.warnings) > 0:
-                config_response.status_code_200.warnings.extend(response.warnings) # noqa
-                self.logger.debug(
-                    "Snappi_api Setconfig Returned Warnings: {}".format(
-                        response.warnings))
-            else:
-                self.logger.debug(
-                    "Snappi_api Setconfig Returned without any Warnings")
-            self.logger.debug("Returning status_code_200 to client ...")
-            return config_response
+            self.logger.debug(
+                "Received request.config (JSON)(default=False) = {}".format(
+                    jsonObj
+                )
+            )
 
-        except Exception as e:
-            response_400 = """
-            {
-                "status_code_400" : {
-                    "errors" : []
+            self.InitSanppi()
+
+            self.logger.info("Requesting set_config ...")
+            try:
+                snappi_api_start = datetime.datetime.now()
+                response = self.api.set_config(jsonObj)
+                self.logger.info(
+                    "Snappi_api-SetConfig took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
+                )
+                response_200 = """
+                {
+                    "status_code_200" : {
+                        "warnings" : []
+                    }
                 }
-            }
-            """
-            response_500 = """
-            {
-                "status_code_500" : {
-                    "errors" : []
+                """
+                config_response = json_format.Parse(
+                    response_200,
+                    snappipb_pb2.SetConfigResponse()
+                )
+                if len(response.warnings) > 0:
+                    config_response.status_code_200.warnings.extend(response.warnings) # noqa
+                    self.logger.debug(
+                        "Snappi_api Setconfig Returned Warnings: {}".format(
+                            response.warnings))
+                else:
+                    self.logger.debug(
+                        "Snappi_api Setconfig Returned without any Warnings")
+                self.logger.debug("Returning status_code_200 to client ...")
+                return config_response
+
+            except Exception as e:
+                self.logger.info(
+                    "Snappi_api-SetConfig took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
+                )
+                response_400 = """
+                {
+                    "status_code_400" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            self.logger.error(
-                "Snappi_api Setconfig Returned Exception :  {}".format(
-                    repr(e)))
-            if e is ConnectionError:
-                config_response = json_format.Parse(
-                    response_500, snappipb_pb2.SetConfigResponse())
-                config_response.status_code_500.errors.extend(e.details) # noqa
-                self.logger.debug("Returning status_code_500 to client ...")
-                return config_response
+                """
+                response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+                self.logger.error(
+                    "Snappi_api Setconfig Returned Exception :  {}".format(
+                        repr(e)))
+                if e is ConnectionError:
+                    config_response = json_format.Parse(
+                        response_500, snappipb_pb2.SetConfigResponse())
+                    config_response.status_code_500.errors.extend(e.details) # noqa
+                    self.logger.debug(
+                        "Returning status_code_500 to client ...")
+                    return config_response
 
-            error_code, error_details = get_error_details(e)
+                error_code, error_details = get_error_details(e)
 
-            if error_code == 400:
-                config_response = json_format.Parse(
-                    response_400, snappipb_pb2.SetConfigResponse())
-                config_response.status_code_400.errors.extend(error_details) # noqa
-                self.logger.debug("Returning status_code_400 to client ...")
-                return config_response
-            elif error_code == 500:
-                config_response = json_format.Parse(
-                    response_500, snappipb_pb2.SetConfigResponse())
-                config_response.status_code_500.errors.extend(error_details) # noqa
-                self.logger.debug("Returning status_code_500 to client ...")
-                return config_response
-            else:
-                raise NotImplementedError()
+                if error_code == 400:
+                    config_response = json_format.Parse(
+                        response_400, snappipb_pb2.SetConfigResponse())
+                    config_response.status_code_400.errors.extend(error_details) # noqa
+                    self.logger.debug(
+                        "Returning status_code_400 to client ...")
+                    return config_response
+                elif error_code == 500:
+                    config_response = json_format.Parse(
+                        response_500, snappipb_pb2.SetConfigResponse())
+                    config_response.status_code_500.errors.extend(error_details) # noqa
+                    self.logger.debug(
+                        "Returning status_code_500 to client ...")
+                    return config_response
+                else:
+                    raise NotImplementedError()
+        finally:
+            self.logger.info(
+                "gRPC-SetConfig took {} ns".format(
+                    get_time_elapsed(grpc_api_start)
+                )
+            )
 
     def GetConfig(self, request, context):
-
-        self.InitSanppi()
-
-        self.logger.info("Requesting get_config ...")
+        grpc_api_start = datetime.datetime.now()
         try:
-            response = self.api.get_config()
-            self.logger.debug("Snappi_api GetConfig Returned : {}".format(
-                response))
-
-            config_proto = json_format.Parse(
-                response.serialize(),
-                snappipb_pb2.Config()
-            )
-            config_response = snappipb_pb2.GetConfigResponse(
-                status_code_200=config_proto
-            )
-            self.logger.debug("Returning config to client ...")
-            return config_response
-
-        except Exception as e:
-            response_400 = """
-            {
-                "status_code_400" : {
-                    "errors" : []
-                }
-            }
-            """
-            response_500 = """
-            {
-                "status_code_500" : {
-                    "errors" : []
-                }
-            }
-            """
-            self.logger.error(
-                "Snappi_api Getconfig Returned Exception :  {}".format(
-                    repr(e)))
-            error_code, error_details = get_error_details(e)
-
-            if error_code == 400:
-                config_response = json_format.Parse(
-                    response_400,
-                    snappipb_pb2.GetConfigResponse()
+            self.InitSanppi()
+            self.logger.info("Requesting get_config ...")
+            try:
+                snappi_api_start = datetime.datetime.now()
+                response = self.api.get_config()
+                self.logger.info(
+                    "Snappi_api-GetConfig took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
                 )
-                config_response.status_code_400.errors.extend(error_details) # noqa
-                return config_response
-            elif error_code == 500:
-                config_response = json_format.Parse(
-                    response_500,
-                    snappipb_pb2.GetConfigResponse()
+                self.logger.debug("Snappi_api GetConfig Returned : {}".format(
+                    response))
+
+                config_proto = json_format.Parse(
+                    response.serialize(),
+                    snappipb_pb2.Config()
                 )
-                config_response.status_code_500.errors.extend(error_details) # noqa
+                config_response = snappipb_pb2.GetConfigResponse(
+                    status_code_200=config_proto
+                )
+                self.logger.debug("Returning config to client ...")
                 return config_response
-            else:
-                raise NotImplementedError()
+
+            except Exception as e:
+                self.logger.info(
+                    "Snappi_api-GetConfig took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
+                )
+                response_400 = """
+                {
+                    "status_code_400" : {
+                        "errors" : []
+                    }
+                }
+                """
+                response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+                self.logger.error(
+                    "Snappi_api Getconfig Returned Exception :  {}".format(
+                        repr(e)))
+                error_code, error_details = get_error_details(e)
+
+                if error_code == 400:
+                    config_response = json_format.Parse(
+                        response_400,
+                        snappipb_pb2.GetConfigResponse()
+                    )
+                    config_response.status_code_400.errors.extend(error_details) # noqa
+                    return config_response
+                elif error_code == 500:
+                    config_response = json_format.Parse(
+                        response_500,
+                        snappipb_pb2.GetConfigResponse()
+                    )
+                    config_response.status_code_500.errors.extend(error_details) # noqa
+                    return config_response
+                else:
+                    raise NotImplementedError()
+
+        finally:
+            self.logger.info(
+                "gRPC-GetConfig took {} ns".format(
+                    get_time_elapsed(grpc_api_start)
+                )
+            )
 
     def SetLinkState(self, request, context):
-        jsonObj = json_format.MessageToJson(
-            request.link_state,
-            preserving_proto_field_name=True
-        )
-        self.logger.debug(
-            "Received request.linkstate (JSON) = {}".format(
-                jsonObj
-            )
-        )
-
-        self.InitSanppi()
-
-        self.logger.info("Requesting SetLinkState ...")
+        grpc_api_start = datetime.datetime.now()
         try:
-            response = self.api.set_link_state(jsonObj)
-            response_200 = """
-            {
-                "status_code_200" : {
-                    "warnings" : []
-                }
-            }
-            """
-            link_state_response = json_format.Parse(
-                response_200,
-                snappipb_pb2.SetLinkStateResponse()
+            jsonObj = json_format.MessageToJson(
+                request.link_state,
+                preserving_proto_field_name=True
             )
-            if len(response.warnings) > 0:
-                link_state_response.status_code_200.warnings.extend(response.warnings) # noqa
-                self.logger.debug(
-                    "Snappi_api set_link_state Returned Warnings: {}".format(
-                        response.warnings
+            self.logger.debug(
+                "Received request.linkstate (JSON) = {}".format(
+                    jsonObj
+                )
+            )
+
+            self.InitSanppi()
+
+            self.logger.info("Requesting SetLinkState ...")
+            try:
+                snappi_api_start = datetime.datetime.now()
+                response = self.api.set_link_state(jsonObj)
+                self.logger.info(
+                    "Snappi_api-SetLinkState took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
                     )
                 )
-            self.logger.debug("Returning status_code_200 to client ...")
-            return link_state_response
+                response_200 = """
+                {
+                    "status_code_200" : {
+                        "warnings" : []
+                    }
+                }
+                """
+                link_state_response = json_format.Parse(
+                    response_200,
+                    snappipb_pb2.SetLinkStateResponse()
+                )
+                if len(response.warnings) > 0:
+                    link_state_response.status_code_200.warnings.extend(response.warnings) # noqa
+                    self.logger.debug(
+                        "Snappi_api set_link_state Returned Warnings: {}".format( # noqa
+                            response.warnings
+                        )
+                    )
+                self.logger.debug("Returning status_code_200 to client ...")
+                return link_state_response
 
-        except Exception as e:
-            response_400 = """
-            {
-                "status_code_400" : {
-                    "errors" : []
+            except Exception as e:
+                self.logger.info(
+                    "Snappi_api-SetLinkState took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
+                )
+                response_400 = """
+                {
+                    "status_code_400" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            response_500 = """
-            {
-                "status_code_500" : {
-                    "errors" : []
+                """
+                response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            self.logger.error(
-                "Snappi_api set_link_state Returned Exception :  {}".format(
-                    repr(e)
+                """
+                self.logger.error(
+                    "Snappi_api set_link_state Returned Exception :  {}".format( # noqa
+                        repr(e)
+                    )
+                )
+                error_code, error_details = get_error_details(e)
+
+                if error_code == 400:
+                    link_state_response = json_format.Parse(
+                        response_400,
+                        snappipb_pb2.SetLinkStateResponse()
+                    )
+                    link_state_response.status_code_400.errors.extend(error_details) # noqa
+                    return link_state_response
+                elif error_code == 500:
+                    link_state_response = json_format.Parse(
+                        response_500,
+                        snappipb_pb2.SetLinkStateResponse()
+                    )
+                    link_state_response.status_code_500.errors.extend(error_details) # noqa
+                    return link_state_response
+                else:
+                    raise NotImplementedError()
+        finally:
+            self.logger.info(
+                "gRPC-SetLinkState took {} ns".format(
+                    get_time_elapsed(grpc_api_start)
                 )
             )
-            error_code, error_details = get_error_details(e)
-
-            if error_code == 400:
-                link_state_response = json_format.Parse(
-                    response_400,
-                    snappipb_pb2.SetLinkStateResponse()
-                )
-                link_state_response.status_code_400.errors.extend(error_details) # noqa
-                return link_state_response
-            elif error_code == 500:
-                link_state_response = json_format.Parse(
-                    response_500,
-                    snappipb_pb2.SetLinkStateResponse()
-                )
-                link_state_response.status_code_500.errors.extend(error_details) # noqa
-                return link_state_response
-            else:
-                raise NotImplementedError()
 
     def SetTransmitState(self, request, context):
-        jsonObj = json_format.MessageToJson(
-            request.transmit_state,
-            preserving_proto_field_name=True
-        )
-        self.logger.debug(
-            "Received request.transmitstate (JSON)(default=False) = {}".format(
-                jsonObj
-            )
-        )
-
-        self.InitSanppi()
-
-        self.logger.info("Requesting SetTransmitState ...")
+        grpc_api_start = datetime.datetime.now()
         try:
-            response = self.api.set_transmit_state(jsonObj)
-            response_200 = """
-            {
-                "status_code_200" : {
-                    "warnings" : []
-                }
-            }
-            """
-            transmit_response = json_format.Parse(
-                response_200,
-                snappipb_pb2.SetTransmitStateResponse()
+            jsonObj = json_format.MessageToJson(
+                request.transmit_state,
+                preserving_proto_field_name=True
             )
-            if len(response.warnings) > 0:
-                transmit_response.status_code_200.warnings.extend(response.warnings) # noqa
-                self.logger.debug(
-                    "Snappi_api SetTransmitState Returned Warnings: {}".format(
-                        response.warnings
+            self.logger.debug(
+                "Received request.transmitstate (JSON)(default=False) = {}".format( # noqa
+                    jsonObj
+                )
+            )
+
+            self.InitSanppi()
+
+            self.logger.info("Requesting SetTransmitState ...")
+            try:
+                snappi_api_start = datetime.datetime.now()
+                self.logger.info(
+                    "Snappi_api-SetTransmitState took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
                     )
                 )
-            self.logger.debug("Returning status_code_200 to client ...")
-            return transmit_response
+                response = self.api.set_transmit_state(jsonObj)
+                response_200 = """
+                {
+                    "status_code_200" : {
+                        "warnings" : []
+                    }
+                }
+                """
+                transmit_response = json_format.Parse(
+                    response_200,
+                    snappipb_pb2.SetTransmitStateResponse()
+                )
+                if len(response.warnings) > 0:
+                    transmit_response.status_code_200.warnings.extend(response.warnings) # noqa
+                    self.logger.debug(
+                        "Snappi_api SetTransmitState Returned Warnings: {}".format( # noqa
+                            response.warnings
+                        )
+                    )
+                self.logger.debug("Returning status_code_200 to client ...")
+                return transmit_response
 
-        except Exception as e:
-            response_400 = """
-            {
-                "status_code_400" : {
-                    "errors" : []
+            except Exception as e:
+                self.logger.info(
+                    "Snappi_api-SetTransmitState took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
+                )
+                response_400 = """
+                {
+                    "status_code_400" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            response_500 = """
-            {
-                "status_code_500" : {
-                    "errors" : []
+                """
+                response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            self.logger.error(
-                "Snappi_api SetTransmitState Returned Exception : {}".format(
-                    repr(e)
+                """
+                self.logger.error(
+                    "Snappi_api SetTransmitState Returned Exception : {}".format( # noqa
+                        repr(e)
+                    )
+                )
+                error_code, error_details = get_error_details(e)
+                if error_code == 400:
+                    transmit_response = json_format.Parse(
+                        response_400,
+                        snappipb_pb2.SetTransmitStateResponse()
+                    )
+                    transmit_response.status_code_400.errors.extend(error_details) # noqa
+                    return transmit_response
+                elif error_code == 500:
+                    transmit_response = json_format.Parse(
+                        response_500,
+                        snappipb_pb2.SetTransmitStateResponse()
+                    )
+                    transmit_response.status_code_500.errors.extend(error_details) # noqa
+                    return transmit_response
+                else:
+                    raise NotImplementedError()
+
+        finally:
+            self.logger.info(
+                "gRPC-SetTransmitState took {} ns".format(
+                    get_time_elapsed(grpc_api_start)
                 )
             )
-            error_code, error_details = get_error_details(e)
-            if error_code == 400:
-                transmit_response = json_format.Parse(
-                    response_400,
-                    snappipb_pb2.SetTransmitStateResponse()
-                )
-                transmit_response.status_code_400.errors.extend(error_details) # noqa
-                return transmit_response
-            elif error_code == 500:
-                transmit_response = json_format.Parse(
-                    response_500,
-                    snappipb_pb2.SetTransmitStateResponse()
-                )
-                transmit_response.status_code_500.errors.extend(error_details) # noqa
-                return transmit_response
-            else:
-                raise NotImplementedError()
 
     def SetRouteState(self, request, context):
-        jsonObj = json_format.MessageToJson(
-            request.route_state,
-            preserving_proto_field_name=True
-        )
-        self.logger.debug(
-            "Received request.routestate (JSON)(default=False) = {}".format(
-                jsonObj
-            )
-        )
-
-        self.InitSanppi()
-
-        self.logger.info("Requesting SetRouteState ...")
+        grpc_api_start = datetime.datetime.now()
         try:
-            response = self.api.set_route_state(jsonObj)
-            response_200 = """
-            {
-                "status_code_200" : {
-                    "warnings" : []
-                }
-            }
-            """
-            route_response = json_format.Parse(
-                response_200,
-                snappipb_pb2.SetRouteStateResponse()
+            jsonObj = json_format.MessageToJson(
+                request.route_state,
+                preserving_proto_field_name=True
             )
-            if len(response.warnings) > 0:
-                route_response.status_code_200.warnings.extend(response.warnings) # noqa
-                self.logger.debug(
-                    "Snappi_api SetTransmitState Returned Warnings: {}".format(
-                        response.warnings
+            self.logger.debug(
+                "Received request.routestate (JSON)(default=False) = {}".format( # noqa
+                    jsonObj
+                )
+            )
+
+            self.InitSanppi()
+
+            self.logger.info("Requesting SetRouteState ...")
+            try:
+                snappi_api_start = datetime.datetime.now()
+                response = self.api.set_route_state(jsonObj)
+                self.logger.info(
+                    "Snappi_api-SetRouteState took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
                     )
                 )
-            self.logger.debug("Returning status_code_200 to client ...")
-            return route_response
+                response_200 = """
+                {
+                    "status_code_200" : {
+                        "warnings" : []
+                    }
+                }
+                """
+                route_response = json_format.Parse(
+                    response_200,
+                    snappipb_pb2.SetRouteStateResponse()
+                )
+                if len(response.warnings) > 0:
+                    route_response.status_code_200.warnings.extend(response.warnings) # noqa
+                    self.logger.debug(
+                        "Snappi_api SetTransmitState Returned Warnings: {}".format( # noqa
+                            response.warnings
+                        )
+                    )
+                self.logger.debug("Returning status_code_200 to client ...")
+                return route_response
 
-        except Exception as e:
-            response_400 = """
-            {
-                "status_code_400" : {
-                    "errors" : []
+            except Exception as e:
+                self.logger.info(
+                    "Snappi_api-SetRouteState took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
+                )
+                response_400 = """
+                {
+                    "status_code_400" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            response_500 = """
-            {
-                "status_code_500" : {
-                    "errors" : []
+                """
+                response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            self.logger.error(
-                "Snappi_api SetRouteState Returned Exception : {}".format(
-                    repr(e)
+                """
+                self.logger.error(
+                    "Snappi_api SetRouteState Returned Exception : {}".format(
+                        repr(e)
+                    )
+                )
+                error_code, error_details = get_error_details(e)
+                if error_code == 400:
+                    route_response = json_format.Parse(
+                        response_400,
+                        snappipb_pb2.SetRouteStateResponse()
+                    )
+                    route_response.status_code_400.errors.extend(error_details) # noqa
+                    return route_response
+                elif error_code == 500:
+                    route_response = json_format.Parse(
+                        response_500,
+                        snappipb_pb2.SetRouteStateResponse()
+                    )
+                    route_response.status_code_500.errors.extend(error_details) # noqa
+                    return route_response
+                else:
+                    raise NotImplementedError()
+
+        finally:
+            self.logger.info(
+                "gRPC-SetRouteState took {} ns".format(
+                    get_time_elapsed(grpc_api_start)
                 )
             )
-            error_code, error_details = get_error_details(e)
-            if error_code == 400:
-                route_response = json_format.Parse(
-                    response_400,
-                    snappipb_pb2.SetRouteStateResponse()
-                )
-                route_response.status_code_400.errors.extend(error_details) # noqa
-                return route_response
-            elif error_code == 500:
-                route_response = json_format.Parse(
-                    response_500,
-                    snappipb_pb2.SetRouteStateResponse()
-                )
-                route_response.status_code_500.errors.extend(error_details) # noqa
-                return route_response
-            else:
-                raise NotImplementedError()
 
     def SetProtocolState(self, request, context):
-        jsonObj = json_format.MessageToJson(
-            request.protocol_state,
-            preserving_proto_field_name=True
-        )
-        self.logger.debug(
-            "Received request.protocolstate (JSON)(default=False) = {}".format(
-                jsonObj
-            )
-        )
-
-        self.InitSanppi()
-
-        self.logger.info("Requesting SetProtocolState ...")
+        grpc_api_start = datetime.datetime.now()
         try:
-            response = self.api.set_protocol_state(jsonObj)
-            response_200 = """
-            {
-                "status_code_200" : {
-                    "warnings" : []
-                }
-            }
-            """
-            protocol_response = json_format.Parse(
-                response_200,
-                snappipb_pb2.SetProtocolStateResponse()
+            jsonObj = json_format.MessageToJson(
+                request.protocol_state,
+                preserving_proto_field_name=True
             )
-            if len(response.warnings) > 0:
-                protocol_response.status_code_200.warnings.extend(response.warnings) # noqa
-                self.logger.debug(
-                    "Snappi_api SetProtocolState Returned Warnings: {}".format(
-                        response.warnings
+            self.logger.debug(
+                "Received request.protocolstate (JSON)(default=False) = {}".format( # noqa
+                    jsonObj
+                )
+            )
+
+            self.InitSanppi()
+
+            self.logger.info("Requesting SetProtocolState ...")
+            try:
+                snappi_api_start = datetime.datetime.now()
+                response = self.api.set_protocol_state(jsonObj)
+                self.logger.info(
+                    "Snappi_api-SetProtocolState took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
                     )
                 )
-            self.logger.debug("Returning status_code_200 to client ...")
-            return protocol_response
+                response_200 = """
+                {
+                    "status_code_200" : {
+                        "warnings" : []
+                    }
+                }
+                """
+                protocol_response = json_format.Parse(
+                    response_200,
+                    snappipb_pb2.SetProtocolStateResponse()
+                )
+                if len(response.warnings) > 0:
+                    protocol_response.status_code_200.warnings.extend(response.warnings) # noqa
+                    self.logger.debug(
+                        "Snappi_api SetProtocolState Returned Warnings: {}".format( # noqa
+                            response.warnings
+                        )
+                    )
+                self.logger.debug("Returning status_code_200 to client ...")
+                return protocol_response
 
-        except Exception as e:
-            response_400 = """
-            {
-                "status_code_400" : {
-                    "errors" : []
+            except Exception as e:
+                self.logger.info(
+                    "Snappi_api-SetProtocolState took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
+                )
+                response_400 = """
+                {
+                    "status_code_400" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            response_500 = """
-            {
-                "status_code_500" : {
-                    "errors" : []
+                """
+                response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            self.logger.error(
-                "Snappi_api SetProtocolState Returned Exception : {}".format(
-                    repr(e)
+                """
+                self.logger.error(
+                    "Snappi_api SetProtocolState Returned Exception : {}".format( # noqa
+                        repr(e)
+                    )
+                )
+                error_code, error_details = get_error_details(e)
+                if error_code == 400:
+                    protocol_response = json_format.Parse(
+                        response_400,
+                        snappipb_pb2.SetProtocolStateResponse()
+                    )
+                    protocol_response.status_code_400.errors.extend(error_details) # noqa
+                    return protocol_response
+                elif error_code == 500:
+                    protocol_response = json_format.Parse(
+                        response_500,
+                        snappipb_pb2.SetProtocolStateResponse()
+                    )
+                    protocol_response.status_code_500.errors.extend(error_details) # noqa
+                    return protocol_response
+                else:
+                    raise NotImplementedError()
+        finally:
+            self.logger.info(
+                "gRPC-SetProtocolState took {} ns".format(
+                    get_time_elapsed(grpc_api_start)
                 )
             )
-            error_code, error_details = get_error_details(e)
-            if error_code == 400:
-                protocol_response = json_format.Parse(
-                    response_400,
-                    snappipb_pb2.SetProtocolStateResponse()
-                )
-                protocol_response.status_code_400.errors.extend(error_details) # noqa
-                return protocol_response
-            elif error_code == 500:
-                protocol_response = json_format.Parse(
-                    response_500,
-                    snappipb_pb2.SetProtocolStateResponse()
-                )
-                protocol_response.status_code_500.errors.extend(error_details) # noqa
-                return protocol_response
-            else:
-                raise NotImplementedError()
 
     def SetCaptureState(self, request, context):
-        jsonObj = json_format.MessageToJson(
-            request.capture_state,
-            preserving_proto_field_name=True
-        )
-        self.logger.debug(
-            "Received request.capture_state (JSON)(default=False) = {}".format(
-                jsonObj
-            )
-        )
-
-        self.InitSanppi()
-
-        self.logger.info("Requesting SetCaptureState ...")
+        grpc_api_start = datetime.datetime.now()
         try:
-            response = self.api.set_capture_state(jsonObj)
-            response_200 = """
-            {
-                "status_code_200" : {
-                    "warnings" : []
-                }
-            }
-            """
-            capture_response = json_format.Parse(
-                response_200,
-                snappipb_pb2.SetCaptureStateResponse()
+            jsonObj = json_format.MessageToJson(
+                request.capture_state,
+                preserving_proto_field_name=True
             )
-            if len(response.warnings) > 0:
-                capture_response.status_code_200.warnings.extend(response.warnings) # noqa
-                self.logger.debug(
-                    "Snappi_api SetCaptureState Returned Warnings: {}".format(
-                        response.warnings
+            self.logger.debug(
+                "Received request.capture_state (JSON)(default=False) = {}".format( # noqa
+                    jsonObj
+                )
+            )
+
+            self.InitSanppi()
+
+            self.logger.info("Requesting SetCaptureState ...")
+            try:
+                snappi_api_start = datetime.datetime.now()
+                response = self.api.set_capture_state(jsonObj)
+                self.logger.info(
+                    "Snappi_api-SetCaptureState took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
                     )
                 )
-            self.logger.debug("Returning status_code_200 to client ...")
-            return capture_response
+                response_200 = """
+                {
+                    "status_code_200" : {
+                        "warnings" : []
+                    }
+                }
+                """
+                capture_response = json_format.Parse(
+                    response_200,
+                    snappipb_pb2.SetCaptureStateResponse()
+                )
+                if len(response.warnings) > 0:
+                    capture_response.status_code_200.warnings.extend(response.warnings) # noqa
+                    self.logger.debug(
+                        "Snappi_api SetCaptureState Returned Warnings: {}".format( # noqa
+                            response.warnings
+                        )
+                    )
+                self.logger.debug("Returning status_code_200 to client ...")
+                return capture_response
 
-        except Exception as e:
-            response_400 = """
-            {
-                "status_code_400" : {
-                    "errors" : []
+            except Exception as e:
+                self.logger.info(
+                    "Snappi_api-SetCaptureState took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
+                )
+                response_400 = """
+                {
+                    "status_code_400" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            response_500 = """
-            {
-                "status_code_500" : {
-                    "errors" : []
+                """
+                response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            self.logger.error(
-                "Snappi_api SetCaptureState Returned Exception : {}".format(
-                    repr(e)
+                """
+                self.logger.error(
+                    "Snappi_api SetCaptureState Returned Exception : {}".format( # noqa
+                        repr(e)
+                    )
+                )
+                error_code, error_details = get_error_details(e)
+                if error_code == 400:
+                    capture_response = json_format.Parse(
+                        response_400,
+                        snappipb_pb2.SetCaptureStateResponse()
+                    )
+                    capture_response.status_code_400.errors.extend(error_details) # noqa
+                    return capture_response
+                elif error_code == 500:
+                    capture_response = json_format.Parse(
+                        response_500,
+                        snappipb_pb2.SetCaptureStateResponse()
+                    )
+                    capture_response.status_code_500.errors.extend(error_details) # noqa
+                    return capture_response
+                else:
+                    raise NotImplementedError()
+
+        finally:
+            self.logger.info(
+                "gRPC-SetCaptureState took {} ns".format(
+                    get_time_elapsed(grpc_api_start)
                 )
             )
-            error_code, error_details = get_error_details(e)
-            if error_code == 400:
-                capture_response = json_format.Parse(
-                    response_400,
-                    snappipb_pb2.SetCaptureStateResponse()
-                )
-                capture_response.status_code_400.errors.extend(error_details) # noqa
-                return capture_response
-            elif error_code == 500:
-                capture_response = json_format.Parse(
-                    response_500,
-                    snappipb_pb2.SetCaptureStateResponse()
-                )
-                capture_response.status_code_500.errors.extend(error_details) # noqa
-                return capture_response
-            else:
-                raise NotImplementedError()
 
     def GetMetrics(self, request, context):
-
-        jsonObj = json_format.MessageToJson(
-            request.metrics_request,
-            preserving_proto_field_name=True
-        )
-        self.logger.debug(
-            "Received request.metrics_request (JSON)(default=False) = {}".format( # noqa
-                jsonObj
-            )
-        )
-
-        self.InitSanppi()
-
-        self.logger.info("Requesting GetMetrics ...")
+        grpc_api_start = datetime.datetime.now()
         try:
-            response = self.api.get_metrics(jsonObj)
+            jsonObj = json_format.MessageToJson(
+                request.metrics_request,
+                preserving_proto_field_name=True
+            )
             self.logger.debug(
-                "Snappi_api GetMetrics Returned : {}".format(
-                    response
+                "Received request.metrics_request (JSON)(default=False) = {}".format( # noqa
+                    jsonObj
                 )
             )
 
-            metric_proto = json_format.Parse(
-                response.serialize(),
-                snappipb_pb2.MetricsResponse()
-            )
-            get_metric_response = snappipb_pb2.GetMetricsResponse(
-                status_code_200=metric_proto
-            )
-            self.logger.debug("Returning Metrics to client ...")
-            return get_metric_response
+            self.InitSanppi()
 
-        except Exception as e:
-            self.logger.error(
-                "Snappi_api GetMetrics Returned Exception :  {}".format(
-                    repr(e)
+            self.logger.info("Requesting GetMetrics ...")
+            try:
+                snappi_api_start = datetime.datetime.now()
+                response = self.api.get_metrics(jsonObj)
+                self.logger.info(
+                    "Snappi_api-GetMetrics took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
                 )
-            )
+                self.logger.debug(
+                    "Snappi_api GetMetrics Returned : {}".format(
+                        response
+                    )
+                )
 
-            response_400 = """
-            {
-                "status_code_400" : {
-                    "errors" : []
+                metric_proto = json_format.Parse(
+                    response.serialize(),
+                    snappipb_pb2.MetricsResponse()
+                )
+                get_metric_response = snappipb_pb2.GetMetricsResponse(
+                    status_code_200=metric_proto
+                )
+                self.logger.debug("Returning Metrics to client ...")
+                return get_metric_response
+
+            except Exception as e:
+                self.logger.info(
+                    "Snappi_api-GetMetrics took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
+                )
+                self.logger.error(
+                    "Snappi_api GetMetrics Returned Exception :  {}".format(
+                        repr(e)
+                    )
+                )
+
+                response_400 = """
+                {
+                    "status_code_400" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            response_500 = """
-            {
-                "status_code_500" : {
-                    "errors" : []
+                """
+                response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            self.logger.error(
-                "Snappi_api GetMetrics Returned Exception : {}".format(
-                    repr(e)
+                """
+                self.logger.error(
+                    "Snappi_api GetMetrics Returned Exception : {}".format(
+                        repr(e)
+                    )
+                )
+                error_code, error_details = get_error_details(e)
+                if error_code == 400:
+                    metric_response = json_format.Parse(
+                        response_400,
+                        snappipb_pb2.GetMetricsResponse()
+                    )
+                    metric_response.status_code_400.errors.extend(error_details) # noqa
+                    return metric_response
+                elif error_code == 500:
+                    metric_response = json_format.Parse(
+                        response_500,
+                        snappipb_pb2.GetMetricsResponse()
+                    )
+                    metric_response.status_code_500.errors.extend(error_details) # noqa
+                    return metric_response
+                else:
+                    raise NotImplementedError()
+
+        finally:
+            self.logger.info(
+                "gRPC-GetMetrics took {} ns".format(
+                    get_time_elapsed(grpc_api_start)
                 )
             )
-            error_code, error_details = get_error_details(e)
-            if error_code == 400:
-                metric_response = json_format.Parse(
-                    response_400,
-                    snappipb_pb2.GetMetricsResponse()
-                )
-                metric_response.status_code_400.errors.extend(error_details) # noqa
-                return metric_response
-            elif error_code == 500:
-                metric_response = json_format.Parse(
-                    response_500,
-                    snappipb_pb2.GetMetricsResponse()
-                )
-                metric_response.status_code_500.errors.extend(error_details) # noqa
-                return metric_response
-            else:
-                raise NotImplementedError()
 
     def GetCapture(self, request, context):
-
-        jsonObj = json_format.MessageToJson(
-            request.capture_request,
-            preserving_proto_field_name=True
-        )
-
-        self.logger.debug(
-            "Received request.capture_request (JSON)(default=False) = {}".format( # noqa
-                jsonObj
-            )
-        )
-
-        self.InitSanppi()
-
-        self.logger.info("Requesting GetCapture ...")
+        grpc_api_start = datetime.datetime.now()
         try:
-            response = self.api.get_capture(jsonObj)
+            jsonObj = json_format.MessageToJson(
+                request.capture_request,
+                preserving_proto_field_name=True
+            )
+
             self.logger.debug(
-                "Snappi_api GetCapture Returned : {}".format(
-                    response
+                "Received request.capture_request (JSON)(default=False) = {}".format( # noqa
+                    jsonObj
                 )
             )
 
-            get_capture_response = snappipb_pb2.GetCaptureResponse(
-                status_code_200=response.getvalue()
-            )
+            self.InitSanppi()
 
-            self.logger.debug("Returning Capture to client ...")
-            return get_capture_response
-
-        except Exception as e:
-            self.logger.error(
-                "Snappi_api GetCapture Returned Exception :  {}".format(
-                    repr(e)
+            self.logger.info("Requesting GetCapture ...")
+            try:
+                snappi_api_start = datetime.datetime.now()
+                response = self.api.get_capture(jsonObj)
+                self.logger.info(
+                    "Snappi_api-GetCapture took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
                 )
-            )
+                self.logger.debug(
+                    "Snappi_api GetCapture Returned : {}".format(
+                        response
+                    )
+                )
 
-            response_400 = """
-            {
-                "status_code_400" : {
-                    "errors" : []
+                get_capture_response = snappipb_pb2.GetCaptureResponse(
+                    status_code_200=response.getvalue()
+                )
+
+                self.logger.debug("Returning Capture to client ...")
+                return get_capture_response
+
+            except Exception as e:
+                self.logger.info(
+                    "Snappi_api-GetCapture took {} ns".format(
+                        get_time_elapsed(snappi_api_start)
+                    )
+                )
+                self.logger.error(
+                    "Snappi_api GetCapture Returned Exception :  {}".format(
+                        repr(e)
+                    )
+                )
+
+                response_400 = """
+                {
+                    "status_code_400" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            response_500 = """
-            {
-                "status_code_500" : {
-                    "errors" : []
+                """
+                response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
                 }
-            }
-            """
-            self.logger.error(
-                "Snappi_api GetCapture Returned Exception : {}".format(
-                    repr(e)
+                """
+                self.logger.error(
+                    "Snappi_api GetCapture Returned Exception : {}".format(
+                        repr(e)
+                    )
+                )
+                error_code, error_details = get_error_details(e)
+                if error_code == 400:
+                    capture_response = json_format.Parse(
+                        response_400,
+                        snappipb_pb2.GetCaptureResponse()
+                    )
+                    capture_response.status_code_400.errors.extend(error_details) # noqa
+                    return capture_response
+                elif error_code == 500:
+                    capture_response = json_format.Parse(
+                        response_500,
+                        snappipb_pb2.GetCaptureResponse()
+                    )
+                    capture_response.status_code_500.errors.extend(error_details) # noqa
+                    return capture_response
+                else:
+                    raise NotImplementedError()
+
+        finally:
+            self.logger.info(
+                "gRPC-GetCapture took {} ns".format(
+                    get_time_elapsed(grpc_api_start)
                 )
             )
-            error_code, error_details = get_error_details(e)
-            if error_code == 400:
-                capture_response = json_format.Parse(
-                    response_400,
-                    snappipb_pb2.GetCaptureResponse()
-                )
-                capture_response.status_code_400.errors.extend(error_details) # noqa
-                return capture_response
-            elif error_code == 500:
-                capture_response = json_format.Parse(
-                    response_500,
-                    snappipb_pb2.GetCaptureResponse()
-                )
-                capture_response.status_code_500.errors.extend(error_details) # noqa
-                return capture_response
-            else:
-                raise NotImplementedError()
 
 
 def sighandler(signum, frame):
@@ -816,13 +1000,13 @@ if __name__ == '__main__':
     parser.add_argument('--app-mode',
                         help='target Application mode',
                         choices=['ixnetwork', 'athena', 'athena-insecure'],
-                        default='ixnetwork',
+                        default='athena',
                         type=str)
     parser.add_argument('--target-host', help='target host address',
-                        default='localhost',
+                        default='10.74.47.38',
                         type=str)
     parser.add_argument('--target-port', help='target port number',
-                        default=11009,
+                        default=30729,
                         type=int)
     parser.add_argument('--logfile',
                         help='logfile name [date and time auto appended]',
