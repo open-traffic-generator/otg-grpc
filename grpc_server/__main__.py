@@ -1000,13 +1000,13 @@ if __name__ == '__main__':
     parser.add_argument('--app-mode',
                         help='target Application mode',
                         choices=['ixnetwork', 'athena', 'athena-insecure'],
-                        default='athena',
+                        default='ixnetwork',
                         type=str)
     parser.add_argument('--target-host', help='target host address',
-                        default='10.74.47.38',
+                        default='localhost',
                         type=str)
     parser.add_argument('--target-port', help='target port number',
-                        default=30729,
+                        default=11009,
                         type=int)
     parser.add_argument('--logfile',
                         help='logfile name [date and time auto appended]',
