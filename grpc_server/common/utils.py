@@ -24,32 +24,6 @@ def get_current_time():
     return current_utc
 
 
-# def init_logging(logger_name, level=logging.DEBUG, log_stdout=False):
-#     logger = logging.getLogger(logger_name)
-#     logfile = logger_name+'-'+str(get_current_time())+'.log'
-#     logs_dir = os.path.join(os.path.curdir, 'logs')
-#     if not os.path.exists(logs_dir):
-#         os.makedirs(logs_dir)
-#     logfile = os.path.join(logs_dir, logfile)
-#     log_format = "{'name': '%(name)s',\
-#         'level': '%(levelname)s',\
-#         'ctx': '%(pathname)s',\
-#         'ts':'%(asctime)s',\
-#         'msg': '%(message)s'}"
-#     formatter = logging.Formatter(log_format, "%Y-%m-%dT%H:%M:%SZ")
-#     formatter = CustomFormatter(log_format, "%Y-%m-%dT%H:%M:%S")
-#     # formatter = logging.Formatter(log_format, "%Y-%m-%dT%H:%M:%SZ")
-#     fileHandler = logging.FileHandler(logfile, mode='w')
-#     fileHandler.setFormatter(formatter)
-#     streamHandler = logging.StreamHandler()
-#     streamHandler.setFormatter(formatter)
-#     logger.setLevel(level)
-#     logger.addHandler(fileHandler)
-#     if log_stdout:
-#         logger.addHandler(streamHandler)
-#     return logger_name
-
-
 def init_logging(ctx, scope, logfile, level=logging.DEBUG, log_stdout=False):
     logger_name = ctx + '_' + scope
     logger = logging.getLogger(logger_name)
