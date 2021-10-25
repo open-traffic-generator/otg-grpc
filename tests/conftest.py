@@ -20,5 +20,5 @@ def serverlogfile():
     """
     from grpc_server.common.utils import init_logging
     log_level = logging.INFO
-    serverlogfile = init_logging('test', log_level, False)
+    serverlogfile = init_logging('unit', 'confest', 'test', log_level, False)
     yield serverlogfile

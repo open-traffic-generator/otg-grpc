@@ -14,7 +14,8 @@ import datetime
 from google.protobuf import json_format
 
 from .autogen import snappipb_pb2, snappipb_pb2_grpc
-from .common.utils import get_error_details, init_logging, get_time_elapsed
+from .common.utils import (get_error_details, init_logging, 
+                           get_time_elapsed, get_current_time)
 
 # set API version
 OTG_API_Version = "0.6.6"
@@ -27,7 +28,27 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
     def __init__(self, args):
         super().__init__()
 
-        self.logger = logging.getLogger(args.logfile)
+        # self.logger = logging.getLogger(args.logfile)
+
+        log_level = logging.INFO
+        if args.log_debug:
+            log_level = logging.DEBUG
+
+        self.logger = init_logging(
+            'grpc',
+            'main',
+            args.logfile,
+            log_level,
+            args.log_stdout
+        )
+
+        self.profile_logger = init_logging(
+            'profile',
+            'main',
+            args.logfile,
+            log_level,
+            args.log_stdout
+        )
 
         self.app_mode = args.app_mode
         self.target_address = "{}:{}".format(
@@ -76,10 +97,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 self.api_initialized = True
                 self.logger.info('Snappi initialized')
         finally:
-            self.logger.info(
-                "InitSanppi took {} nanoseconds".format(
-                    get_time_elapsed(init_snappi_start)
-                )
+            self.profile_logger.info(
+                "InitSanppi completed!", extra={
+                    'api': "InitSanppi",
+                    'nanoseconds':  get_time_elapsed(init_snappi_start)
+                }
             )
 
     def SetConfig(self, request, context):
@@ -102,10 +124,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             try:
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.set_config(jsonObj)
-                self.logger.info(
-                    "Snappi_api-SetConfig took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetConfig completed!", extra={
+                        'api': "snappi-SetConfig",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_200 = """
                 {
@@ -130,10 +153,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 return config_response
 
             except Exception as e:
-                self.logger.info(
-                    "Snappi_api-SetConfig took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetConfig completed!", extra={
+                        'api': "snappi-SetConfig",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_400 = """
                 {
@@ -179,10 +203,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 else:
                     raise NotImplementedError()
         finally:
-            self.logger.info(
-                "gRPC-SetConfig took {} nanoseconds".format(
-                    get_time_elapsed(grpc_api_start)
-                )
+            self.profile_logger.info(
+                "gRPC-Setconfig completed!", extra={
+                    'api': "Setconfig",
+                    'nanoseconds':  get_time_elapsed(grpc_api_start)
+                }
             )
 
     def GetConfig(self, request, context):
@@ -193,10 +218,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             try:
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.get_config()
-                self.logger.info(
-                    "Snappi_api-GetConfig took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-GetConfig completed!", extra={
+                        'api': "snappi-GetConfig",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 self.logger.debug("Snappi_api GetConfig Returned : {}".format(
                     response))
@@ -212,10 +238,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 return config_response
 
             except Exception as e:
-                self.logger.info(
-                    "Snappi_api-GetConfig took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-GetConfig completed!", extra={
+                        'api': "snappi-GetConfig",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_400 = """
                 {
@@ -254,10 +281,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                     raise NotImplementedError()
 
         finally:
-            self.logger.info(
-                "gRPC-GetConfig took {} nanoseconds".format(
-                    get_time_elapsed(grpc_api_start)
-                )
+            self.profile_logger.info(
+                "gRPC-GetConfig completed!", extra={
+                    'api': "GetCapture",
+                    'nanoseconds':  get_time_elapsed(grpc_api_start)
+                }
             )
 
     def SetLinkState(self, request, context):
@@ -279,10 +307,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             try:
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.set_link_state(jsonObj)
-                self.logger.info(
-                    "Snappi_api-SetLinkState took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetLinkState completed!", extra={
+                        'api': "snappi-SetLinkState",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_200 = """
                 {
@@ -306,10 +335,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 return link_state_response
 
             except Exception as e:
-                self.logger.info(
-                    "Snappi_api-SetLinkState took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetLinkState completed!", extra={
+                        'api': "snappi-SetLinkState",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_400 = """
                 {
@@ -349,10 +379,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 else:
                     raise NotImplementedError()
         finally:
-            self.logger.info(
-                "gRPC-SetLinkState took {} nanoseconds".format(
-                    get_time_elapsed(grpc_api_start)
-                )
+            self.profile_logger.info(
+                "gRPC-SetLinkState completed!", extra={
+                    'api': "SetLinkState",
+                    'nanoseconds':  get_time_elapsed(grpc_api_start)
+                }
             )
 
     def SetTransmitState(self, request, context):
@@ -373,10 +404,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             self.logger.info("Requesting SetTransmitState ...")
             try:
                 snappi_api_start = datetime.datetime.now()
-                self.logger.info(
-                    "Snappi_api-SetTransmitState took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetTransmitState completed!", extra={
+                        'api': "snappi-SetTransmitState",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response = self.api.set_transmit_state(jsonObj)
                 response_200 = """
@@ -401,10 +433,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 return transmit_response
 
             except Exception as e:
-                self.logger.info(
-                    "Snappi_api-SetTransmitState took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetTransmitState completed!", extra={
+                        'api': "snappi-SetTransmitState",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_400 = """
                 {
@@ -444,10 +477,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                     raise NotImplementedError()
 
         finally:
-            self.logger.info(
-                "gRPC-SetTransmitState took {} nanoseconds".format(
-                    get_time_elapsed(grpc_api_start)
-                )
+            self.profile_logger.info(
+                "gRPC-SetTransmitState completed!", extra={
+                    'api': "SetTransmitState",
+                    'nanoseconds':  get_time_elapsed(grpc_api_start)
+                }
             )
 
     def SetRouteState(self, request, context):
@@ -469,10 +503,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             try:
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.set_route_state(jsonObj)
-                self.logger.info(
-                    "Snappi_api-SetRouteState took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetRouteState completed!", extra={
+                        'api': "snappi-SetRouteState",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_200 = """
                 {
@@ -496,10 +531,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 return route_response
 
             except Exception as e:
-                self.logger.info(
-                    "Snappi_api-SetRouteState took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetRouteState completed!", extra={
+                        'api': "snappi-SetRouteState",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_400 = """
                 {
@@ -539,10 +575,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                     raise NotImplementedError()
 
         finally:
-            self.logger.info(
-                "gRPC-SetRouteState took {} nanoseconds".format(
-                    get_time_elapsed(grpc_api_start)
-                )
+            self.profile_logger.info(
+                "gRPC-SetRouteState completed!", extra={
+                    'api': "SetRouteState",
+                    'nanoseconds':  get_time_elapsed(grpc_api_start)
+                }
             )
 
     def SetProtocolState(self, request, context):
@@ -564,10 +601,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             try:
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.set_protocol_state(jsonObj)
-                self.logger.info(
-                    "Snappi_api-SetProtocolState took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetProtocolState completed!", extra={
+                        'api': "snappi-SetProtocolState",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_200 = """
                 {
@@ -591,10 +629,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 return protocol_response
 
             except Exception as e:
-                self.logger.info(
-                    "Snappi_api-SetProtocolState took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetProtocolState completed!", extra={
+                        'api': "snappi-SetProtocolState",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_400 = """
                 {
@@ -633,10 +672,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 else:
                     raise NotImplementedError()
         finally:
-            self.logger.info(
-                "gRPC-SetProtocolState took {} nanoseconds".format(
-                    get_time_elapsed(grpc_api_start)
-                )
+            self.profile_logger.info(
+                "gRPC-SetProtocolState completed!", extra={
+                    'api': "SetProtocolState",
+                    'nanoseconds':  get_time_elapsed(grpc_api_start)
+                }
             )
 
     def SetCaptureState(self, request, context):
@@ -658,10 +698,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             try:
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.set_capture_state(jsonObj)
-                self.logger.info(
-                    "Snappi_api-SetCaptureState took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetCaptureState completed!", extra={
+                        'api': "snappi-SetCaptureState",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_200 = """
                 {
@@ -685,10 +726,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 return capture_response
 
             except Exception as e:
-                self.logger.info(
-                    "Snappi_api-SetCaptureState took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-SetCaptureState completed!", extra={
+                        'api': "snappi-SetCaptureState",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 response_400 = """
                 {
@@ -728,10 +770,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                     raise NotImplementedError()
 
         finally:
-            self.logger.info(
-                "gRPC-SetCaptureState took {} nanoseconds".format(
-                    get_time_elapsed(grpc_api_start)
-                )
+            self.profile_logger.info(
+                "gRPC-SetCaptureState completed!", extra={
+                    'api': "SetCaptureState",
+                    'nanoseconds':  get_time_elapsed(grpc_api_start)
+                }
             )
 
     def GetMetrics(self, request, context):
@@ -753,11 +796,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             try:
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.get_metrics(jsonObj)
-                self.logger.info(
-                    "Snappi_api-GetMetrics took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
-                )
+                self.profile_logger.info(
+                            "snappi-GetMetrics completed!", extra={
+                                'api': "snappi-GetMetrics",
+                                'nanoseconds':  get_time_elapsed(
+                                    snappi_api_start
+                                )
+                            }
+                        )
                 self.logger.debug(
                     "Snappi_api GetMetrics Returned : {}".format(
                         response
@@ -775,11 +821,12 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 return get_metric_response
 
             except Exception as e:
-                self.logger.info(
-                    "Snappi_api-GetMetrics took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
+                self.profile_logger.info(
+                        "snappi-GetMetrics completed!", extra={
+                            'api': "snappi-GetMetrics",
+                            'nanoseconds':  get_time_elapsed(snappi_api_start)
+                        }
                     )
-                )
                 self.logger.error(
                     "Snappi_api GetMetrics Returned Exception :  {}".format(
                         repr(e)
@@ -824,10 +871,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                     raise NotImplementedError()
 
         finally:
-            self.logger.info(
-                "gRPC-GetMetrics took {} nanoseconds".format(
-                    get_time_elapsed(grpc_api_start)
-                )
+            self.profile_logger.info(
+                "gRPC-GetMetrics completed!", extra={
+                    'api': "GetMetrics",
+                    'nanoseconds':  get_time_elapsed(grpc_api_start)
+                }
             )
 
     def GetCapture(self, request, context):
@@ -850,11 +898,12 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             try:
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.get_capture(jsonObj)
-                self.logger.info(
-                    "Snappi_api-GetCapture took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
+                self.profile_logger.info(
+                        "snappi-GetCapture completed!", extra={
+                            'api': "snappi-GetCapture",
+                            'nanoseconds':  get_time_elapsed(snappi_api_start)
+                        }
                     )
-                )
                 self.logger.debug(
                     "Snappi_api GetCapture Returned : {}".format(
                         response
@@ -869,10 +918,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 return get_capture_response
 
             except Exception as e:
-                self.logger.info(
-                    "Snappi_api-GetCapture took {} nanoseconds".format(
-                        get_time_elapsed(snappi_api_start)
-                    )
+                self.profile_logger.info(
+                    "snappi-GetCapture completed!", extra={
+                        'api': "snappi-GetCapture",
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
                 )
                 self.logger.error(
                     "Snappi_api GetCapture Returned Exception :  {}".format(
@@ -918,10 +968,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                     raise NotImplementedError()
 
         finally:
-            self.logger.info(
-                "gRPC-GetCapture took {} nanoseconds".format(
-                    get_time_elapsed(grpc_api_start)
-                )
+            self.profile_logger.info(
+                "gRPC-GetCapture completed!", extra={
+                    'api': "GetCapture",
+                    'nanoseconds':  get_time_elapsed(grpc_api_start)
+                }
             )
 
 
@@ -940,9 +991,17 @@ def serve(args):
     log_level = logging.INFO
     if args.log_debug:
         log_level = logging.DEBUG
-    args.logfile = init_logging(args.logfile, log_level, args.log_stdout)
 
-    server_logger = logging.getLogger(args.logfile)
+    args.logfile = args.logfile+'-'+str(get_current_time())+'.log'
+    server_logger = init_logging(
+        'grpc',
+        'main',
+        args.logfile,
+        log_level,
+        args.log_stdout
+    )
+
+    # server_logger = logging.getLogger(args.logfile)
 
     server_logger.info(
         "Starting gRPC Server [OTG API Version = {}] ...".format(
