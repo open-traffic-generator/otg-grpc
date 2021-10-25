@@ -77,7 +77,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 self.logger.info('Snappi initialized')
         finally:
             self.logger.info(
-                "InitSanppi took {} ns".format(
+                "InitSanppi took {} nanoseconds".format(
                     get_time_elapsed(init_snappi_start)
                 )
             )
@@ -103,7 +103,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.set_config(jsonObj)
                 self.logger.info(
-                    "Snappi_api-SetConfig took {} ns".format(
+                    "Snappi_api-SetConfig took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -131,7 +131,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
             except Exception as e:
                 self.logger.info(
-                    "Snappi_api-SetConfig took {} ns".format(
+                    "Snappi_api-SetConfig took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -180,7 +180,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                     raise NotImplementedError()
         finally:
             self.logger.info(
-                "gRPC-SetConfig took {} ns".format(
+                "gRPC-SetConfig took {} nanoseconds".format(
                     get_time_elapsed(grpc_api_start)
                 )
             )
@@ -194,7 +194,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.get_config()
                 self.logger.info(
-                    "Snappi_api-GetConfig took {} ns".format(
+                    "Snappi_api-GetConfig took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -213,7 +213,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
             except Exception as e:
                 self.logger.info(
-                    "Snappi_api-GetConfig took {} ns".format(
+                    "Snappi_api-GetConfig took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -255,7 +255,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
         finally:
             self.logger.info(
-                "gRPC-GetConfig took {} ns".format(
+                "gRPC-GetConfig took {} nanoseconds".format(
                     get_time_elapsed(grpc_api_start)
                 )
             )
@@ -280,7 +280,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.set_link_state(jsonObj)
                 self.logger.info(
-                    "Snappi_api-SetLinkState took {} ns".format(
+                    "Snappi_api-SetLinkState took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -307,7 +307,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
             except Exception as e:
                 self.logger.info(
-                    "Snappi_api-SetLinkState took {} ns".format(
+                    "Snappi_api-SetLinkState took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -350,7 +350,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                     raise NotImplementedError()
         finally:
             self.logger.info(
-                "gRPC-SetLinkState took {} ns".format(
+                "gRPC-SetLinkState took {} nanoseconds".format(
                     get_time_elapsed(grpc_api_start)
                 )
             )
@@ -374,7 +374,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             try:
                 snappi_api_start = datetime.datetime.now()
                 self.logger.info(
-                    "Snappi_api-SetTransmitState took {} ns".format(
+                    "Snappi_api-SetTransmitState took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -402,7 +402,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
             except Exception as e:
                 self.logger.info(
-                    "Snappi_api-SetTransmitState took {} ns".format(
+                    "Snappi_api-SetTransmitState took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -445,7 +445,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
         finally:
             self.logger.info(
-                "gRPC-SetTransmitState took {} ns".format(
+                "gRPC-SetTransmitState took {} nanoseconds".format(
                     get_time_elapsed(grpc_api_start)
                 )
             )
@@ -470,7 +470,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.set_route_state(jsonObj)
                 self.logger.info(
-                    "Snappi_api-SetRouteState took {} ns".format(
+                    "Snappi_api-SetRouteState took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -497,7 +497,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
             except Exception as e:
                 self.logger.info(
-                    "Snappi_api-SetRouteState took {} ns".format(
+                    "Snappi_api-SetRouteState took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -540,7 +540,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
         finally:
             self.logger.info(
-                "gRPC-SetRouteState took {} ns".format(
+                "gRPC-SetRouteState took {} nanoseconds".format(
                     get_time_elapsed(grpc_api_start)
                 )
             )
@@ -565,7 +565,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.set_protocol_state(jsonObj)
                 self.logger.info(
-                    "Snappi_api-SetProtocolState took {} ns".format(
+                    "Snappi_api-SetProtocolState took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -592,7 +592,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
             except Exception as e:
                 self.logger.info(
-                    "Snappi_api-SetProtocolState took {} ns".format(
+                    "Snappi_api-SetProtocolState took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -634,7 +634,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                     raise NotImplementedError()
         finally:
             self.logger.info(
-                "gRPC-SetProtocolState took {} ns".format(
+                "gRPC-SetProtocolState took {} nanoseconds".format(
                     get_time_elapsed(grpc_api_start)
                 )
             )
@@ -659,7 +659,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.set_capture_state(jsonObj)
                 self.logger.info(
-                    "Snappi_api-SetCaptureState took {} ns".format(
+                    "Snappi_api-SetCaptureState took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -686,7 +686,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
             except Exception as e:
                 self.logger.info(
-                    "Snappi_api-SetCaptureState took {} ns".format(
+                    "Snappi_api-SetCaptureState took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -729,7 +729,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
         finally:
             self.logger.info(
-                "gRPC-SetCaptureState took {} ns".format(
+                "gRPC-SetCaptureState took {} nanoseconds".format(
                     get_time_elapsed(grpc_api_start)
                 )
             )
@@ -754,7 +754,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.get_metrics(jsonObj)
                 self.logger.info(
-                    "Snappi_api-GetMetrics took {} ns".format(
+                    "Snappi_api-GetMetrics took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -776,7 +776,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
             except Exception as e:
                 self.logger.info(
-                    "Snappi_api-GetMetrics took {} ns".format(
+                    "Snappi_api-GetMetrics took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -825,7 +825,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
         finally:
             self.logger.info(
-                "gRPC-GetMetrics took {} ns".format(
+                "gRPC-GetMetrics took {} nanoseconds".format(
                     get_time_elapsed(grpc_api_start)
                 )
             )
@@ -851,7 +851,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 snappi_api_start = datetime.datetime.now()
                 response = self.api.get_capture(jsonObj)
                 self.logger.info(
-                    "Snappi_api-GetCapture took {} ns".format(
+                    "Snappi_api-GetCapture took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -870,7 +870,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
             except Exception as e:
                 self.logger.info(
-                    "Snappi_api-GetCapture took {} ns".format(
+                    "Snappi_api-GetCapture took {} nanoseconds".format(
                         get_time_elapsed(snappi_api_start)
                     )
                 )
@@ -919,7 +919,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
         finally:
             self.logger.info(
-                "gRPC-GetCapture took {} ns".format(
+                "gRPC-GetCapture took {} nanoseconds".format(
                     get_time_elapsed(grpc_api_start)
                 )
             )
