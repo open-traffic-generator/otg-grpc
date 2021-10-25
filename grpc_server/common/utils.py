@@ -20,11 +20,10 @@ def init_logging(logger_name, level=logging.DEBUG, log_stdout=False):
     logfile = os.path.join(logs_dir, logfile)
     log_format = "{'name': '%(name)s',\
         'level': '%(levelname)s',\
-        'filename': '%(filename)s',\
-        'function': '%(funcName)s',\
+        'ctx': '%(pathname)s',\
         'ts':'%(asctime)s',\
-        'message': '%(message)s'}"
-    formatter = logging.Formatter(log_format)
+        'msg': '%(message)s'}"
+    formatter = logging.Formatter(log_format, "%Y-%m-%dT%H:%M:%SZ")
     fileHandler = logging.FileHandler(logfile, mode='w')
     fileHandler.setFormatter(formatter)
     streamHandler = logging.StreamHandler()
