@@ -14,7 +14,7 @@ import datetime
 from google.protobuf import json_format
 
 from .autogen import snappipb_pb2, snappipb_pb2_grpc
-from .common.utils import (get_error_details, init_logging, 
+from .common.utils import (get_error_details, init_logging,
                            get_time_elapsed, get_current_time)
 
 # set API version
