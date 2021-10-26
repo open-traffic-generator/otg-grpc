@@ -1,6 +1,19 @@
 import os
 import datetime
 import logging
+import re
+
+
+class CustomFormatter(logging.Formatter):
+
+    def format(self, record: logging.LogRecord) -> str:
+        arg_pattern = re.compile(r'%\((\w+)\)')
+        arg_names = [x.group(1) for x in arg_pattern.finditer(self._fmt)]
+        for field in arg_names:
+            if field not in record.__dict__:
+                record.__dict__[field] = None
+
+        return super().format(record)
 
 
 def get_current_time():
@@ -11,15 +24,30 @@ def get_current_time():
     return current_utc
 
 
-def init_logging(logger_name, level=logging.DEBUG, log_stdout=False):
+def init_logging(ctx, scope, logfile, level=logging.DEBUG, log_stdout=False):
+    logger_name = ctx + '_' + scope
     logger = logging.getLogger(logger_name)
-    logfile = logger_name+'-'+str(get_current_time())+'.log'
     logs_dir = os.path.join(os.path.curdir, 'logs')
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
     logfile = os.path.join(logs_dir, logfile)
-    formatter = logging.Formatter('%(asctime)s : %(message)s')
-    fileHandler = logging.FileHandler(logfile, mode='w')
+    if ctx in ['profile']:
+        log_format = "{'level': '%(levelname)s',\
+            'ctx': '" + ctx + "',\
+            'api': '%(api)s', \
+            'scope': '" + scope + "', \
+            'nanoseconds': '%(nanoseconds)s',\
+            'ts':'%(asctime)s.%(msecs)03dZ',\
+            'msg': '%(message)s'}"
+    else:
+        log_format = "{'level': '%(levelname)s',\
+            'ctx': '" + ctx + "',\
+            'scope': '" + scope + "', \
+            'api': '%(funcName)s',\
+            'ts':'%(asctime)s.%(msecs)03dZ',\
+            'msg': '%(message)s'}"
+    formatter = CustomFormatter(log_format, "%Y-%m-%dT%H:%M:%S")
+    fileHandler = logging.FileHandler(logfile, mode='a')
     fileHandler.setFormatter(formatter)
     streamHandler = logging.StreamHandler()
     streamHandler.setFormatter(formatter)
@@ -27,8 +55,14 @@ def init_logging(logger_name, level=logging.DEBUG, log_stdout=False):
     logger.addHandler(fileHandler)
     if log_stdout:
         logger.addHandler(streamHandler)
-    return logger_name
+    return logger
 
 
 def get_error_details(exception):
     return exception.args[0], exception.args[1]['errors']
+
+
+def get_time_elapsed(start):
+    end = datetime.datetime.now()
+    elapsed = end - start
+    return elapsed.total_seconds() * 10 ** 9
