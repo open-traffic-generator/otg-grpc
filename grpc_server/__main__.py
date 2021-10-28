@@ -11,6 +11,9 @@ import signal
 import snappi
 # datetime
 import datetime
+
+import json
+
 from google.protobuf import json_format
 
 from .autogen import snappipb_pb2, snappipb_pb2_grpc
@@ -48,6 +51,15 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
             args.logfile,
             log_level,
             args.log_stdout
+        )
+
+        self.payload_logger = init_logging(
+            'grpc',
+            'main',
+            args.logfile,
+            log_level,
+            args.log_stdout,
+            'payload'
         )
 
         self.app_mode = args.app_mode
@@ -112,10 +124,12 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 including_default_value_fields=False,
                 preserving_proto_field_name=True
             )
-            self.logger.debug(
-                "Received request.config (JSON)(default=False) = {}".format(
-                    jsonObj
-                )
+
+            self.payload_logger.debug(
+                "Received request.config (JSON)(default=False)",
+                extra={
+                    'payload': json.dumps(jsonObj)
+                }
             )
 
             self.InitSanppi()
@@ -224,8 +238,13 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                         'nanoseconds':  get_time_elapsed(snappi_api_start)
                     }
                 )
-                self.logger.debug("Snappi_api GetConfig Returned : {}".format(
-                    response))
+
+                self.payload_logger.debug(
+                    "Snappi_api GetConfig Returned",
+                    extra={
+                        'payload': json.dumps(response.serialize('json'))
+                    }
+                )
 
                 config_proto = json_format.Parse(
                     response.serialize(),
@@ -295,10 +314,12 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 request.link_state,
                 preserving_proto_field_name=True
             )
-            self.logger.debug(
-                "Received request.linkstate (JSON) = {}".format(
-                    jsonObj
-                )
+
+            self.payload_logger.debug(
+                "Received request.linkstate (JSON)",
+                extra={
+                    'payload': json.dumps(jsonObj)
+                }
             )
 
             self.InitSanppi()
@@ -393,10 +414,12 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 request.transmit_state,
                 preserving_proto_field_name=True
             )
-            self.logger.debug(
-                "Received request.transmitstate (JSON)(default=False) = {}".format( # noqa
-                    jsonObj
-                )
+
+            self.payload_logger.debug(
+                "Received request.transmitstate (JSON)(default=False)",
+                extra={
+                    'payload': json.dumps(jsonObj)
+                }
             )
 
             self.InitSanppi()
@@ -491,10 +514,12 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 request.route_state,
                 preserving_proto_field_name=True
             )
-            self.logger.debug(
-                "Received request.routestate (JSON)(default=False) = {}".format( # noqa
-                    jsonObj
-                )
+
+            self.payload_logger.debug(
+                "Received request.routestate (JSON)(default=False)",
+                extra={
+                    'payload': json.dumps(jsonObj)
+                }
             )
 
             self.InitSanppi()
@@ -589,10 +614,12 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 request.protocol_state,
                 preserving_proto_field_name=True
             )
-            self.logger.debug(
-                "Received request.protocolstate (JSON)(default=False) = {}".format( # noqa
-                    jsonObj
-                )
+
+            self.payload_logger.debug(
+                "Received request.protocolstate (JSON)(default=False)",
+                extra={
+                    'payload': json.dumps(jsonObj)
+                }
             )
 
             self.InitSanppi()
@@ -686,10 +713,12 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 request.capture_state,
                 preserving_proto_field_name=True
             )
-            self.logger.debug(
-                "Received request.capture_state (JSON)(default=False) = {}".format( # noqa
-                    jsonObj
-                )
+
+            self.payload_logger.debug(
+                "Received request.capture_state (JSON)(default=False)",
+                extra={
+                    'payload': json.dumps(jsonObj)
+                }
             )
 
             self.InitSanppi()
@@ -784,10 +813,12 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 request.metrics_request,
                 preserving_proto_field_name=True
             )
-            self.logger.debug(
-                "Received request.metrics_request (JSON)(default=False) = {}".format( # noqa
-                    jsonObj
-                )
+
+            self.payload_logger.debug(
+                "Received request.metrics_request (JSON)(default=False)",
+                extra={
+                    'payload': json.dumps(jsonObj)
+                }
             )
 
             self.InitSanppi()
@@ -804,10 +835,12 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                                 )
                             }
                         )
-                self.logger.debug(
-                    "Snappi_api GetMetrics Returned : {}".format(
-                        response
-                    )
+
+                self.payload_logger.debug(
+                    "Snappi_api GetMetrics Returned",
+                    extra={
+                        'payload': json.dumps(response.serialize('json'))
+                    }
                 )
 
                 metric_proto = json_format.Parse(
@@ -886,10 +919,11 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 preserving_proto_field_name=True
             )
 
-            self.logger.debug(
-                "Received request.capture_request (JSON)(default=False) = {}".format( # noqa
-                    jsonObj
-                )
+            self.payload_logger.debug(
+                "Received request.capture_request (JSON)(default=False)",
+                extra={
+                    'payload': json.dumps(jsonObj)
+                }
             )
 
             self.InitSanppi()
@@ -904,10 +938,12 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                             'nanoseconds':  get_time_elapsed(snappi_api_start)
                         }
                     )
-                self.logger.debug(
-                    "Snappi_api GetCapture Returned : {}".format(
-                        response
-                    )
+
+                self.payload_logger.debug(
+                    "Snappi_api GetCapture Returned",
+                    extra={
+                        'payload': json.dumps(response.serialize('json'))
+                    }
                 )
 
                 get_capture_response = snappipb_pb2.GetCaptureResponse(
