@@ -939,12 +939,8 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                         }
                     )
 
-                self.payload_logger.debug(
-                    "Snappi_api GetCapture Returned",
-                    extra={
-                        'payload': json.dumps(response.serialize('json'))
-                    }
-                )
+                self.logger.debug(
+                    "Snappi_api GetCapture Returned")
 
                 get_capture_response = snappipb_pb2.GetCaptureResponse(
                     status_code_200=response.getvalue()
