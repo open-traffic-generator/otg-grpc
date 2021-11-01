@@ -21,7 +21,7 @@ from .common.utils import (get_error_details, init_logging,
                            get_time_elapsed, get_current_time)
 
 # set API version
-OTG_API_Version = "0.6.6"
+OTG_API_Version = "0.6.7"
 
 server = None
 
