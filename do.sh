@@ -77,7 +77,7 @@ echo_version() {
 
 build() {
     git branch
-    branch=$(git branch)
+    branch=$(git rev-parse --abbrev-ref HEAD)
     echo "Hi"
     echo ${branch}
     # docker rmi -f "otg-grpc-server"> /dev/null 2>&1 || true
