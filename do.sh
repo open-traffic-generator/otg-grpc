@@ -76,7 +76,9 @@ echo_version() {
 }
 
 build() {
+    git branch
     branch=$(git branch)
+    echo "Hi"
     echo ${branch}
     # docker rmi -f "otg-grpc-server"> /dev/null 2>&1 || true
     # echo "Building production docker image..."
