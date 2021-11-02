@@ -81,7 +81,7 @@ build() {
     echo "Hi-1"
     echo ${branch}
 
-    if [[ ${branch} = 'main' ]]
+    if [ ${branch} = 'main' ]
     then
         echo "Main"
     else 
@@ -92,7 +92,7 @@ build() {
     echo "Hi-2"
     echo ${branch}
 
-    if [[ ${branch} = 'main' ]]
+    if [ ${branch} = 'main' ]
     then
         echo "Main"
     else 
