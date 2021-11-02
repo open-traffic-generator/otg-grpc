@@ -20,9 +20,6 @@ from .autogen import snappipb_pb2, snappipb_pb2_grpc
 from .common.utils import (get_error_details, init_logging,
                            get_time_elapsed, get_current_time)
 
-# set API version
-OTG_API_Version = "0.6.7"
-
 server = None
 
 
@@ -1031,14 +1028,6 @@ def serve(args):
         args.logfile,
         log_level,
         args.log_stdout
-    )
-
-    # server_logger = logging.getLogger(args.logfile)
-
-    server_logger.info(
-        "Starting gRPC Server [OTG API Version = {}] ...".format(
-            OTG_API_Version
-        )
     )
 
     signal.signal(signal.SIGTERM, sighandler)

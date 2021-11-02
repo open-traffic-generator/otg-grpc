@@ -21,7 +21,6 @@ jobs:
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-          EXPERIMENT: ${{ secrets.EXPERIMENT }}
         run: |
           sudo chmod u+x ./docker-publish.sh
-          sudo ./docker-publish.sh publish ${DOCKER_HUB_USERNAME} ${DOCKER_HUB_ACCESS_TOKEN} ${EXPERIMENT}
+          sudo ./docker-publish.sh publish ${DOCKER_HUB_USERNAME} ${DOCKER_HUB_ACCESS_TOKEN}
