@@ -20,9 +20,6 @@ import json
 from google.protobuf import json_format
 from grpc_server.common.utils import init_logging
 
-# set API version
-OTG_API_Version = "0.6.7"
-
 
 def mac_addr(address):
     """Convert a MAC address to a readable/printable string
@@ -511,11 +508,6 @@ def serve(args):
 
     client_logger = logging.getLogger(args.logfile)
 
-    client_logger.info(
-        "Starting gRPC Client [OTG API Version = {}] ...".format(
-            OTG_API_Version
-        )
-    )
     client = OtgClient(args)
 
     client_logger.info("Do SetConfig")
