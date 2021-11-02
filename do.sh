@@ -78,8 +78,26 @@ echo_version() {
 build() {
     git branch
     branch=$(git rev-parse --abbrev-ref HEAD)
-    echo "Hi"
+    echo "Hi-1"
     echo ${branch}
+
+    if [[ ${branch} = 'main' ]]
+    then
+        echo "Main"
+    else 
+        echo "Non Main"
+    fi
+
+    branch=main
+    echo "Hi-2"
+    echo ${branch}
+
+    if [[ ${branch} = 'main' ]]
+    then
+        echo "Main"
+    else 
+        echo "Non Main"
+    fi
     # docker rmi -f "otg-grpc-server"> /dev/null 2>&1 || true
     # echo "Building production docker image..."
     # docker build -t otg-grpc-server .
