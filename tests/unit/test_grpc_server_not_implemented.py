@@ -192,3 +192,97 @@ def test_grpc_server_set_route_state_with_501(snappiserver,
         found_err = True
 
     assert found_err, 'Exception should be raised'
+
+
+def test_grpc_server_get_ipv4_neighbors_states_with_501(snappiserver,
+                                                        serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
+
+    states_req = {
+        "choice": "ipv4_neighbors",
+        "ipv4_neighbors": {
+            "ethernet_names": [
+                "ipv4_neighbor_eth_1"
+            ]
+        }
+    }
+
+    found_err = False
+    try:
+        utils.get_states(grpc_api, states_req)
+    except Exception:
+        found_err = True
+
+    assert found_err, 'Exception should be raised'
+
+
+def test_grpc_server_get_ipv6_neighbors_states_with_501(snappiserver,
+                                                        serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
+
+    states_req = {
+        "choice": "ipv6_neighbors",
+        "ipv6_neighbors": {
+            "ethernet_names": [
+                "ipv6_neighbor_eth_1"
+            ]
+        }
+    }
+
+    found_err = False
+    try:
+        utils.get_states(grpc_api, states_req)
+    except Exception:
+        found_err = True
+
+    assert found_err, 'Exception should be raised'
+
+
+def test_grpc_server_send_ipv4_ping_with_501(snappiserver,
+                                             serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
+
+    ping_req = {
+        "endpoints": [
+            {
+                "choice": "ipv4",
+                "ipv4": {
+                    "src_name": "ipv4_1",
+                    "dst_ip": "1.1.1.1"
+                }
+            }
+        ],
+    }
+
+    found_err = False
+    try:
+        utils.send_ping(grpc_api, ping_req)
+    except Exception:
+        found_err = True
+
+    assert found_err, 'Exception should be raised'
+
+
+def test_grpc_server_send_ipv6_ping_with_501(snappiserver,
+                                             serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
+
+    ping_req = {
+        "endpoints": [
+            {
+                "choice": "ipv6",
+                "ipv6": {
+                    "src_name": "ipv6_1",
+                    "dst_ip": "a:a:a:a:a:a:a:a"
+                }
+            }
+        ],
+    }
+
+    found_err = False
+    try:
+        utils.send_ping(grpc_api, ping_req)
+    except Exception:
+        found_err = True
+
+    assert found_err, 'Exception should be raised'
