@@ -404,12 +404,14 @@ def get_states():
         states_request.deserialize(request.data.decode('utf-8'))
         states_response = api.states_response()
         if states_request.choice == 'ipv4_neighbors':
+            states_response.choice = "ipv4_neighbors"
             states_response.ipv4_neighbors.state(
                 ethernet_name="ipv4_neighbor_eth_1",
                 ipv4_address="0.0.0.0",
                 link_layer_address="00:00:01:01:01:01"
             )
         elif states_request.choice == 'ipv6_neighbors':
+            states_response.choice = "ipv6_neighbors"
             states_response.ipv6_neighbors.state(
                 ethernet_name="ipv6_neighbor_eth_1",
                 ipv6_address="a:a:a:a:a:a:a:a",
