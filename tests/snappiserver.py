@@ -315,6 +315,45 @@ def send_ping():
                         headers={'Content-Type': 'application/json'})
 
 
+@app.route('/control/flows', methods=['POST'])
+def update_flows():
+    status = utils.get_mockserver_status()
+    global CONFIG
+    if status in ["200", "200-warning"]:
+        api = snappi.api()
+        update_flows_request = api.flows_update()
+        update_flows_request.deserialize(request.data.decode('utf-8'))
+
+        updating_properties = update_flows_request.property_names
+
+        for flow in update_flows_request.flows:
+            for i in range(0, len(CONFIG.flows)):
+                if flow.name == CONFIG.flows[i].name:
+                    if 'size' in updating_properties:
+                        CONFIG.flows[i].size.fixed = flow.size.fixed
+                    if 'rate' in updating_properties:
+                        CONFIG.flows[i].rate.percentage = flow.rate.percentage
+
+        return Response(CONFIG.serialize() if CONFIG is not None else '{}',
+                        mimetype='application/json',
+                        status=200)
+    elif status == "400":
+        return Response(status=400,
+                        response=json.dumps(
+                            {'errors': ['mock 400 update_flows error']}),
+                        headers={'Content-Type': 'application/json'})
+    elif status == "500":
+        return Response(status=500,
+                        response=json.dumps(
+                            {'errors': ['mock 500 update_flows error']}),
+                        headers={'Content-Type': 'application/json'})
+    else:
+        return Response(status=501,
+                        response=json.dumps(
+                            {'errors': ['update_flows is not implemented']}),
+                        headers={'Content-Type': 'application/json'})
+
+
 @app.route('/results/metrics', methods=['POST'])
 def get_metrics():
     status = utils.get_mockserver_status()

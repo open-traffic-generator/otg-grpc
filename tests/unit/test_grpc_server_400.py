@@ -296,3 +296,70 @@ def test_grpc_server_send_ipv6_ping_with_400(snappiserver,
             }
         }
     assert json_res == exp_res
+
+
+def test_grpc_server_update_flows_with_400(snappiserver,
+                                           serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 400)
+
+    update_flow_req = {
+        "property_names": [
+            "rate",
+            "size"
+        ],
+        "flows": [
+            {
+                "name": "f1",
+                "tx_rx": {
+                    "choice": "port",
+                    "port": {
+                        "tx_name": "tx",
+                        "rx_name": "rx"
+                    }
+                },
+                "metrics": {
+                    "enable": True
+                },
+                "size": {
+                    "choice": "fixed",
+                    "fixed": 512
+                },
+                "rate": {
+                    "choice": "percentage",
+                    "percentage": 50
+                },
+                "duration": {
+                    "choice": "fixed_packets",
+                    "fixed_packets": {
+                        "packets": 110
+                    }
+                },
+                "packet": [
+                    {
+                        "choice": "ethernet",
+                        "ethernet": {
+                            "dst": {
+                                "choice": "value",
+                                "value": "00:AB:BC:AB:BC:AB"
+                            },
+                            "src": {
+                                "choice": "value",
+                                "value": "00:CD:DC:CD:DC:CD"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+
+    json_res = utils.update_flows(grpc_api, update_flow_req)
+
+    exp_res = {
+        'status_code_400': {
+            'errors': [
+                'mock 400 update_flows error'
+                ]
+            }
+        }
+    assert json_res == exp_res

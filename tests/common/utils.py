@@ -239,6 +239,19 @@ def send_ping(api, payload):
     return json_res
 
 
+def update_flows(api, payload):
+    print('Sending Update Flows......')
+    if not isinstance(payload, str):
+        # accept both string and dict
+        payload = json.dumps(payload, indent=4)
+    proto_state_req = json_format.Parse(payload, snappipb_pb2.FlowsUpdate())
+    req_obj = snappipb_pb2.UpdateFlowsRequest(
+        flows_update=proto_state_req)
+    proto_res = api.UpdateFlows(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(proto_res)
+    return json_res
+
+
 def get_metrics(api, payload):
     print('Fetching Metrices......')
     if not isinstance(payload, str):

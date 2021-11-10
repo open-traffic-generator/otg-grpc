@@ -908,6 +908,113 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 }
             )
 
+    def UpdateFlows(self, request, context):
+        grpc_api_start = datetime.datetime.now()
+        try:
+            jsonObj = json_format.MessageToJson(
+                request.flows_update,
+                preserving_proto_field_name=True
+            )
+
+            self.payload_logger.debug(
+                "Received request.flows_update (JSON)(default=False)",
+                extra={
+                    'payload': json.dumps(jsonObj)
+                }
+            )
+
+            self.InitSanppi()
+
+            self.logger.info("Requesting UpdateFlows ...")
+            try:
+                snappi_api_start = datetime.datetime.now()
+                response = self.api.update_flows(jsonObj)
+                self.profile_logger.info(
+                            "snappi-UpdateFlows completed!", extra={
+                                'api': "snappi-UpdateFlows",
+                                'nanoseconds':  get_time_elapsed(
+                                    snappi_api_start
+                                )
+                            }
+                        )
+
+                self.payload_logger.debug(
+                    "Snappi_api UpdateFlows Returned",
+                    extra={
+                        'payload': json.dumps(response.serialize('json'))
+                    }
+                )
+
+                update_proto = json_format.Parse(
+                    response.serialize(),
+                    snappipb_pb2.Config()
+                )
+                update_flow_response = snappipb_pb2.UpdateFlowsResponse(
+                    status_code_200=update_proto
+                )
+                self.logger.debug(
+                    "Returning Update Flows Response to client ..."
+                )
+                return update_flow_response
+
+            except Exception as e:
+                self.profile_logger.info(
+                        "snappi-UpdateFlows completed!", extra={
+                            'api': "snappi-UpdateFlows",
+                            'nanoseconds':  get_time_elapsed(snappi_api_start)
+                        }
+                    )
+                self.logger.error(
+                    "Snappi_api UpdateFlows Returned Exception :  {}".format(
+                        repr(e)
+                    )
+                )
+
+                response_400 = """
+                {
+                    "status_code_400" : {
+                        "errors" : []
+                    }
+                }
+                """
+                response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+                self.logger.error(
+                    "Snappi_api UpdateFlows Returned Exception : {}".format(
+                        repr(e)
+                    )
+                )
+                error_code, error_details = get_error_details(e)
+                if error_code == 400:
+                    update_flow_response = json_format.Parse(
+                        response_400,
+                        snappipb_pb2.UpdateFlowsResponse()
+                    )
+                    update_flow_response.status_code_400.errors.extend(error_details) # noqa
+                    return update_flow_response
+                elif error_code == 500:
+                    update_flow_response = json_format.Parse(
+                        response_500,
+                        snappipb_pb2.UpdateFlowsResponse()
+                    )
+                    update_flow_response.status_code_500.errors.extend(error_details) # noqa
+                    return update_flow_response
+                else:
+                    raise NotImplementedError()
+
+        finally:
+            self.profile_logger.info(
+                "gRPC-UpdateFlows completed!", extra={
+                    'api': "UpdateFlows",
+                    'nanoseconds':  get_time_elapsed(grpc_api_start)
+                }
+            )
+
     def GetMetrics(self, request, context):
         grpc_api_start = datetime.datetime.now()
         try:

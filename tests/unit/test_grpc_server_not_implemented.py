@@ -286,3 +286,67 @@ def test_grpc_server_send_ipv6_ping_with_501(snappiserver,
         found_err = True
 
     assert found_err, 'Exception should be raised'
+
+
+def test_grpc_server_update_flows_with_501(snappiserver,
+                                           serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
+
+    update_flow_req = {
+        "property_names": [
+            "rate",
+            "size"
+        ],
+        "flows": [
+            {
+                "name": "f1",
+                "tx_rx": {
+                    "choice": "port",
+                    "port": {
+                        "tx_name": "tx",
+                        "rx_name": "rx"
+                    }
+                },
+                "metrics": {
+                    "enable": True
+                },
+                "size": {
+                    "choice": "fixed",
+                    "fixed": 512
+                },
+                "rate": {
+                    "choice": "percentage",
+                    "percentage": 50
+                },
+                "duration": {
+                    "choice": "fixed_packets",
+                    "fixed_packets": {
+                        "packets": 110
+                    }
+                },
+                "packet": [
+                    {
+                        "choice": "ethernet",
+                        "ethernet": {
+                            "dst": {
+                                "choice": "value",
+                                "value": "00:AB:BC:AB:BC:AB"
+                            },
+                            "src": {
+                                "choice": "value",
+                                "value": "00:CD:DC:CD:DC:CD"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+
+    found_err = False
+    try:
+        utils.update_flows(grpc_api, update_flow_req)
+    except Exception:
+        found_err = True
+
+    assert found_err, 'Exception should be raised'
