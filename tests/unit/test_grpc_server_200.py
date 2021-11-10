@@ -261,3 +261,376 @@ def test_grpc_server_set_route_state_with_200(snappiserver,
         "status_code_200": {}
     }
     assert json_res == exp_res
+
+
+def test_grpc_server_get_ipv4_neighbors_states_with_200(snappiserver,
+                                                        serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
+
+    config = {
+        "ports": [
+            {
+                "name": "tx",
+                "location": "localhost:5555"
+            }
+        ]
+    }
+    json_res = utils.set_config(grpc_api, config)
+
+    exp_res = {
+        "status_code_200": {}
+    }
+    assert json_res == exp_res
+
+    states_req = {
+        "choice": "ipv4_neighbors",
+        "ipv4_neighbors": {
+            "ethernet_names": [
+                "ipv4_neighbor_eth_1"
+            ]
+        }
+    }
+
+    json_res = utils.get_states(grpc_api, states_req)
+
+    exp_res = {
+        'status_code_200': {
+            'choice': 'ipv4_neighbors',
+            'ipv4_neighbors': [
+                {
+                    'ethernet_name': 'ipv4_neighbor_eth_1',
+                    'ipv4_address': '0.0.0.0',
+                    'link_layer_address': '00:00:01:01:01:01'
+                }
+            ]
+        }
+    }
+    assert json_res == exp_res
+
+
+def test_grpc_server_get_ipv6_neighbors_states_with_200(snappiserver,
+                                                        serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
+
+    config = {
+        "ports": [
+            {
+                "name": "tx",
+                "location": "localhost:5555"
+            }
+        ]
+    }
+    json_res = utils.set_config(grpc_api, config)
+
+    exp_res = {
+        "status_code_200": {}
+    }
+    assert json_res == exp_res
+
+    states_req = {
+        "choice": "ipv6_neighbors",
+        "ipv6_neighbors": {
+            "ethernet_names": [
+                "ipv6_neighbor_eth_1"
+            ]
+        }
+    }
+
+    json_res = utils.get_states(grpc_api, states_req)
+
+    exp_res = {
+        'status_code_200': {
+            'choice': 'ipv6_neighbors',
+            'ipv6_neighbors': [
+                {
+                    'ethernet_name': 'ipv6_neighbor_eth_1',
+                    'ipv6_address': "a:a:a:a:a:a:a:a",
+                    'link_layer_address': '00:00:01:01:01:01'
+                }
+            ]
+        }
+    }
+    assert json_res == exp_res
+
+
+def test_grpc_server_send_ipv4_ping_with_200(snappiserver,
+                                             serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
+
+    config = {
+        "ports": [
+            {
+                "name": "tx",
+                "location": "localhost:5555"
+            }
+        ]
+    }
+    json_res = utils.set_config(grpc_api, config)
+
+    exp_res = {
+        "status_code_200": {}
+    }
+    assert json_res == exp_res
+
+    ping_req = {
+        "endpoints": [
+            {
+                "choice": "ipv4",
+                "ipv4": {
+                    "src_name": "ipv4_1",
+                    "dst_ip": "1.1.1.1"
+                }
+            }
+        ],
+    }
+
+    json_res = utils.send_ping(grpc_api, ping_req)
+
+    exp_res = {
+        'status_code_200': {
+            'responses': [
+                {
+                    'src_name': 'ipv4_1',
+                    'dst_ip': '1.1.1.1',
+                    'result': 'success'
+                }
+            ]
+        }
+    }
+    assert json_res == exp_res
+
+
+def test_grpc_server_send_ipv6_ping_with_200(snappiserver,
+                                             serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
+
+    config = {
+        "ports": [
+            {
+                "name": "tx",
+                "location": "localhost:5555"
+            }
+        ]
+    }
+    json_res = utils.set_config(grpc_api, config)
+
+    exp_res = {
+        "status_code_200": {}
+    }
+    assert json_res == exp_res
+
+    ping_req = {
+        "endpoints": [
+            {
+                "choice": "ipv6",
+                "ipv6": {
+                    "src_name": "ipv6_1",
+                    "dst_ip": "a:a:a:a:a:a:a:a"
+                }
+            }
+        ],
+    }
+
+    json_res = utils.send_ping(grpc_api, ping_req)
+
+    exp_res = {
+        'status_code_200': {
+            'responses': [
+                {
+                    'src_name': 'ipv6_1',
+                    'dst_ip': 'a:a:a:a:a:a:a:a',
+                    'result': 'success'
+                }
+            ]
+        }
+    }
+    assert json_res == exp_res
+
+
+def test_grpc_server_update_flows_with_200(snappiserver,
+                                           serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
+
+    config = {
+        "ports": [
+            {
+                "name": "tx",
+                "location": "localhost:5555"
+            },
+            {
+                "name": "rx",
+                "location": "localhost:5556"
+            }
+        ],
+        "flows": [
+            {
+                "name": "f1",
+                "tx_rx": {
+                    "choice": "port",
+                    "port": {
+                        "tx_name": "tx",
+                        "rx_name": "rx"
+                    }
+                },
+                "metrics": {
+                    "enable": True
+                },
+                "size": {
+                    "choice": "fixed",
+                    "fixed": 64
+                },
+                "rate": {
+                    "choice": "percentage",
+                    "percentage": 10
+                },
+                "duration": {
+                    "choice": "fixed_packets",
+                    "fixed_packets": {
+                        "packets": 110
+                    }
+                },
+                "packet": [
+                    {
+                        "choice": "ethernet",
+                        "ethernet": {
+                            "dst": {
+                                "choice": "value",
+                                "value": "00:AB:BC:AB:BC:AB"
+                            },
+                            "src": {
+                                "choice": "value",
+                                "value": "00:CD:DC:CD:DC:CD"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+    json_res = utils.set_config(grpc_api, config)
+
+    exp_res = {
+        "status_code_200": {}
+    }
+    assert json_res == exp_res
+
+    update_flow_req = {
+        "property_names": [
+            "rate",
+            "size"
+        ],
+        "flows": [
+            {
+                "name": "f1",
+                "tx_rx": {
+                    "choice": "port",
+                    "port": {
+                        "tx_name": "tx",
+                        "rx_name": "rx"
+                    }
+                },
+                "metrics": {
+                    "enable": True
+                },
+                "size": {
+                    "choice": "fixed",
+                    "fixed": 512
+                },
+                "rate": {
+                    "choice": "percentage",
+                    "percentage": 50
+                },
+                "duration": {
+                    "choice": "fixed_packets",
+                    "fixed_packets": {
+                        "packets": 110
+                    }
+                },
+                "packet": [
+                    {
+                        "choice": "ethernet",
+                        "ethernet": {
+                            "dst": {
+                                "choice": "value",
+                                "value": "00:AB:BC:AB:BC:AB"
+                            },
+                            "src": {
+                                "choice": "value",
+                                "value": "00:CD:DC:CD:DC:CD"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+
+    json_res = utils.update_flows(grpc_api, update_flow_req)
+
+    exp_res = {
+        'status_code_200': {
+            'ports': [
+                {
+                    'location': 'localhost:5555',
+                    'name': 'tx'
+                },
+                {
+                    'location': 'localhost:5556',
+                    'name': 'rx'
+                }
+            ],
+            'flows': [
+                {
+                    'tx_rx': {
+                        'choice': 'port',
+                        'port': {
+                            'tx_name': 'tx',
+                            'rx_name': 'rx'
+                        }
+                    },
+                    'packet': [
+                        {
+                            'choice': 'ethernet',
+                            'ethernet': {
+                                'dst': {
+                                    'choice': 'value',
+                                    'value': '00:AB:BC:AB:BC:AB'
+                                },
+                                'src': {
+                                    'choice': 'value',
+                                    'value': '00:CD:DC:CD:DC:CD'
+                                }
+                            }
+                        }
+                    ],
+                    'size': {
+                        'choice': 'fixed',
+                        'fixed': 512
+                    },
+                    'rate': {
+                        'choice': 'percentage',
+                        'percentage': 50.0
+                    },
+                    'duration': {
+                        'choice': 'fixed_packets',
+                        'fixed_packets': {
+                            'packets': 110,
+                            'gap': 12
+                        }
+                    },
+                    'metrics': {
+                        'enable': True,
+                        'loss': False,
+                        'timestamps': False
+                    },
+                    'name': 'f1'
+                }
+            ],
+            'options': {
+                'port_options': {
+                    'location_preemption': False
+                }
+            }
+        }
+    }
+    assert json_res == exp_res

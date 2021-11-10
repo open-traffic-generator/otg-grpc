@@ -272,6 +272,88 @@ def set_capture_state():
                         headers={'Content-Type': 'application/json'})
 
 
+@app.route('/control/ping', methods=['POST'])
+def send_ping():
+    status = utils.get_mockserver_status()
+    global CONFIG
+    if status in ["200", "200-warning"]:
+        api = snappi.api()
+        ping_request = api.ping_request()
+        ping_request.deserialize(request.data.decode('utf-8'))
+        ping_response = api.ping_response()
+
+        if ping_request.endpoints[0]._parent.choice == 'ipv4':
+            ping_response.responses.response(
+                src_name="ipv4_1",
+                dst_ip="1.1.1.1",
+                result="success"
+            )
+        elif ping_request.endpoints[0]._parent.choice == 'ipv6':
+            ping_response.responses.response(
+                src_name="ipv6_1",
+                dst_ip="a:a:a:a:a:a:a:a",
+                result="success"
+            )
+
+        return Response(ping_response.serialize(),
+                        mimetype='application/json',
+                        status=200)
+    elif status == "400":
+        return Response(status=400,
+                        response=json.dumps(
+                            {'errors': ['mock 400 send_ping error']}),
+                        headers={'Content-Type': 'application/json'})
+    elif status == "500":
+        return Response(status=500,
+                        response=json.dumps(
+                            {'errors': ['mock 500 send_ping error']}),
+                        headers={'Content-Type': 'application/json'})
+    else:
+        return Response(status=501,
+                        response=json.dumps(
+                            {'errors': ['send_ping is not implemented']}),
+                        headers={'Content-Type': 'application/json'})
+
+
+@app.route('/control/flows', methods=['POST'])
+def update_flows():
+    status = utils.get_mockserver_status()
+    global CONFIG
+    if status in ["200", "200-warning"]:
+        api = snappi.api()
+        update_flows_request = api.flows_update()
+        update_flows_request.deserialize(request.data.decode('utf-8'))
+
+        updating_properties = update_flows_request.property_names
+
+        for flow in update_flows_request.flows:
+            for i in range(0, len(CONFIG.flows)):
+                if flow.name == CONFIG.flows[i].name:
+                    if 'size' in updating_properties:
+                        CONFIG.flows[i].size.fixed = flow.size.fixed
+                    if 'rate' in updating_properties:
+                        CONFIG.flows[i].rate.percentage = flow.rate.percentage
+
+        return Response(CONFIG.serialize() if CONFIG is not None else '{}',
+                        mimetype='application/json',
+                        status=200)
+    elif status == "400":
+        return Response(status=400,
+                        response=json.dumps(
+                            {'errors': ['mock 400 update_flows error']}),
+                        headers={'Content-Type': 'application/json'})
+    elif status == "500":
+        return Response(status=500,
+                        response=json.dumps(
+                            {'errors': ['mock 500 update_flows error']}),
+                        headers={'Content-Type': 'application/json'})
+    else:
+        return Response(status=501,
+                        response=json.dumps(
+                            {'errors': ['update_flows is not implemented']}),
+                        headers={'Content-Type': 'application/json'})
+
+
 @app.route('/results/metrics', methods=['POST'])
 def get_metrics():
     status = utils.get_mockserver_status()
@@ -309,6 +391,50 @@ def get_metrics():
         return Response(status=501,
                         response=json.dumps(
                             {'errors': ['get_metrics is not implemented']}),
+                        headers={'Content-Type': 'application/json'})
+
+
+@app.route('/results/states', methods=['POST'])
+def get_states():
+    status = utils.get_mockserver_status()
+    global CONFIG
+    if status in ["200", "200-warning"]:
+        api = snappi.api()
+        states_request = api.states_request()
+        states_request.deserialize(request.data.decode('utf-8'))
+        states_response = api.states_response()
+        if states_request.choice == 'ipv4_neighbors':
+            states_response.choice = "ipv4_neighbors"
+            states_response.ipv4_neighbors.state(
+                ethernet_name="ipv4_neighbor_eth_1",
+                ipv4_address="0.0.0.0",
+                link_layer_address="00:00:01:01:01:01"
+            )
+        elif states_request.choice == 'ipv6_neighbors':
+            states_response.choice = "ipv6_neighbors"
+            states_response.ipv6_neighbors.state(
+                ethernet_name="ipv6_neighbor_eth_1",
+                ipv6_address="a:a:a:a:a:a:a:a",
+                link_layer_address="00:00:01:01:01:01"
+            )
+
+        return Response(states_response.serialize(),
+                        mimetype='application/json',
+                        status=200)
+    elif status == "400":
+        return Response(status=400,
+                        response=json.dumps(
+                            {'errors': ['mock 400 get_states error']}),
+                        headers={'Content-Type': 'application/json'})
+    elif status == "500":
+        return Response(status=500,
+                        response=json.dumps(
+                            {'errors': ['mock 500 get_states error']}),
+                        headers={'Content-Type': 'application/json'})
+    else:
+        return Response(status=501,
+                        response=json.dumps(
+                            {'errors': ['get_states is not implemented']}),
                         headers={'Content-Type': 'application/json'})
 
 

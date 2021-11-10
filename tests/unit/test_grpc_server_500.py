@@ -190,3 +190,176 @@ def test_grpc_server_set_route_state_with_500(snappiserver,
         }
     }
     assert json_res == exp_res
+
+
+def test_grpc_server_get_ipv4_neighbors_states_with_500(snappiserver,
+                                                        serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 500)
+
+    states_req = {
+        "choice": "ipv4_neighbors",
+        "ipv4_neighbors": {
+            "ethernet_names": [
+                "ipv4_neighbor_eth_1"
+            ]
+        }
+    }
+
+    json_res = utils.get_states(grpc_api, states_req)
+
+    exp_res = {
+        'status_code_500': {
+            'errors': [
+                'mock 500 get_states error'
+                ]
+            }
+        }
+    assert json_res == exp_res
+
+
+def test_grpc_server_get_ipv6_neighbors_states_with_500(snappiserver,
+                                                        serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 500)
+
+    states_req = {
+        "choice": "ipv6_neighbors",
+        "ipv6_neighbors": {
+            "ethernet_names": [
+                "ipv6_neighbor_eth_1"
+            ]
+        }
+    }
+
+    json_res = utils.get_states(grpc_api, states_req)
+
+    exp_res = {
+        'status_code_500': {
+            'errors': [
+                'mock 500 get_states error'
+                ]
+            }
+        }
+    assert json_res == exp_res
+
+
+def test_grpc_server_send_ipv4_ping_with_500(snappiserver,
+                                             serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 500)
+
+    ping_req = {
+        "endpoints": [
+            {
+                "choice": "ipv4",
+                "ipv4": {
+                    "src_name": "ipv4_1",
+                    "dst_ip": "1.1.1.1"
+                }
+            }
+        ],
+    }
+
+    json_res = utils.send_ping(grpc_api, ping_req)
+
+    exp_res = {
+        'status_code_500': {
+            'errors': [
+                'mock 500 send_ping error'
+                ]
+            }
+        }
+    assert json_res == exp_res
+
+
+def test_grpc_server_send_ipv6_ping_with_500(snappiserver,
+                                             serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 500)
+
+    ping_req = {
+        "endpoints": [
+            {
+                "choice": "ipv6",
+                "ipv6": {
+                    "src_name": "ipv6_1",
+                    "dst_ip": "a:a:a:a:a:a:a:a"
+                }
+            }
+        ],
+    }
+
+    json_res = utils.send_ping(grpc_api, ping_req)
+
+    exp_res = {
+        'status_code_500': {
+            'errors': [
+                'mock 500 send_ping error'
+                ]
+            }
+        }
+    assert json_res == exp_res
+
+
+def test_grpc_server_update_flows_with_500(snappiserver,
+                                           serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 500)
+
+    update_flow_req = {
+        "property_names": [
+            "rate",
+            "size"
+        ],
+        "flows": [
+            {
+                "name": "f1",
+                "tx_rx": {
+                    "choice": "port",
+                    "port": {
+                        "tx_name": "tx",
+                        "rx_name": "rx"
+                    }
+                },
+                "metrics": {
+                    "enable": True
+                },
+                "size": {
+                    "choice": "fixed",
+                    "fixed": 512
+                },
+                "rate": {
+                    "choice": "percentage",
+                    "percentage": 50
+                },
+                "duration": {
+                    "choice": "fixed_packets",
+                    "fixed_packets": {
+                        "packets": 110
+                    }
+                },
+                "packet": [
+                    {
+                        "choice": "ethernet",
+                        "ethernet": {
+                            "dst": {
+                                "choice": "value",
+                                "value": "00:AB:BC:AB:BC:AB"
+                            },
+                            "src": {
+                                "choice": "value",
+                                "value": "00:CD:DC:CD:DC:CD"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+
+    json_res = utils.update_flows(grpc_api, update_flow_req)
+
+    exp_res = {
+        'status_code_500': {
+            'errors': [
+                'mock 500 update_flows error'
+                ]
+            }
+        }
+    assert json_res == exp_res

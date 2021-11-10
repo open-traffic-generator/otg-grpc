@@ -226,6 +226,32 @@ def set_capture_state(api, payload):
     return json_res
 
 
+def send_ping(api, payload):
+    print('Sending Ping......')
+    if not isinstance(payload, str):
+        # accept both string and dict
+        payload = json.dumps(payload, indent=4)
+    proto_state_req = json_format.Parse(payload, snappipb_pb2.PingRequest())
+    req_obj = snappipb_pb2.SendPingRequest(
+        ping_request=proto_state_req)
+    proto_res = api.SendPing(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(proto_res)
+    return json_res
+
+
+def update_flows(api, payload):
+    print('Sending Update Flows......')
+    if not isinstance(payload, str):
+        # accept both string and dict
+        payload = json.dumps(payload, indent=4)
+    proto_state_req = json_format.Parse(payload, snappipb_pb2.FlowsUpdate())
+    req_obj = snappipb_pb2.UpdateFlowsRequest(
+        flows_update=proto_state_req)
+    proto_res = api.UpdateFlows(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(proto_res)
+    return json_res
+
+
 def get_metrics(api, payload):
     print('Fetching Metrices......')
     if not isinstance(payload, str):
@@ -234,6 +260,18 @@ def get_metrics(api, payload):
     proto_state_req = json_format.Parse(payload, snappipb_pb2.MetricsRequest())
     req_obj = snappipb_pb2.GetMetricsRequest(metrics_request=proto_state_req)
     proto_res = api.GetMetrics(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(proto_res)
+    return json_res
+
+
+def get_states(api, payload):
+    print('Fetching States......')
+    if not isinstance(payload, str):
+        # accept both string and dict
+        payload = json.dumps(payload, indent=4)
+    proto_state_req = json_format.Parse(payload, snappipb_pb2.StatesRequest())
+    req_obj = snappipb_pb2.GetStatesRequest(states_request=proto_state_req)
+    proto_res = api.GetStates(req_obj, MOCK_GRPC_SERVER_CONTEXT)
     json_res = convert_proto_to_json(proto_res)
     return json_res
 
