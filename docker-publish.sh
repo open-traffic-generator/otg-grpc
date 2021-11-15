@@ -1,9 +1,5 @@
 #!/bin/sh
 
-DOCKER_HUB_USERNAME=""
-DOCKER_HUB_ACCESS_TOKEN=""
-DOCKERHUB_IMAGE=""
-
 # Avoid warnings for non-interactive apt-get install
 export DEBIAN_FRONTEND=noninteractive
 
@@ -21,38 +17,26 @@ dockerhub_image_exists() {
 
 
 publish() {
-    DOCKER_HUB_USERNAME=${1}
-    DOCKER_HUB_ACCESS_TOKEN=${2}
 
     TAG=$(head ./version | cut -d' ' -f1)
-    BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    echo "Main Branch ..."
+    DOCKERHUB_IMAGE="${DOCKERHUB_REPO}/ixia-c-grpc-server:${TAG}"
+    dockerhub_image_exists "${DOCKERHUB_IMAGE}"
+    echo "Publishing image to DockerHub..."
+    docker tag ixia-c-grpc-server "${DOCKERHUB_IMAGE}"
 
-    if [ ${BRANCH} = 'main' ]
-    then
-        echo "Main Branch ..."
-        DOCKERHUB_IMAGE="${DOCKER_HUB_USERNAME}/otg-grpc-server:${TAG}"
-        dockerhub_image_exists "${DOCKERHUB_IMAGE}"
-        echo "Publishing image to DockerHub..."
-        docker tag otg-grpc-server "${DOCKERHUB_IMAGE}"
-
-        docker login -p ${DOCKER_HUB_ACCESS_TOKEN} -u ${DOCKER_HUB_USERNAME} \
-        && docker push "${DOCKERHUB_IMAGE}" \
-        && docker logout ${DOCKER_HUB_USERNAME}
-        echo "${DOCKERHUB_IMAGE} published in DockerHub..."
+    docker login -p ${DOCKERHUB_KEY} -u ${DOCKERHUB_USER} \
+    && docker push "${DOCKERHUB_IMAGE}" \
+    && docker logout ${DOCKERHUB_USER}
+    echo "${DOCKERHUB_IMAGE} published in DockerHub..."
 
 
-        echo "Deleting local docker images..."
-        docker rmi -f "otg-grpc-server" "${DOCKERHUB_IMAGE}"> /dev/null 2>&1 || true
+    echo "Deleting local docker images..."
+    docker rmi -f "ixia-c-grpc-server" "${DOCKERHUB_IMAGE}"> /dev/null 2>&1 || true
 
-        echo "Verifying image from DockerHub..."
-        verify_dockerhub_images "${DOCKERHUB_IMAGE}"
-    else 
-        echo "Non Main Branch - ${BRANCH} ..."
-
-        echo "Deleting local docker images..."
-        docker rmi -f "otg-grpc-server"> /dev/null 2>&1 || true
-    fi
-
+    echo "Verifying image from DockerHub..."
+    verify_dockerhub_images "${DOCKERHUB_IMAGE}"
+    docker rmi -f "ixia-c-grpc-server"> /dev/null 2>&1 || true
 }
 
 verify_dockerhub_images() {
@@ -74,9 +58,7 @@ verify_dockerhub_images() {
 
 case $1 in
     publish    )
-        # pass all args (except $1) to run
-        shift 1
-        publish ${@}
+        publish
         ;;
 	*   )
         $1 || echo "usage: $0 [publish]"

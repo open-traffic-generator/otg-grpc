@@ -17,10 +17,34 @@ jobs:
           sudo chmod u+x ./do.sh
           sudo ./do.sh build
 
-      - name: Publishing & Verifying Docker Image
+      - name: Get Branch
+        id: get_branch
+        run: |
+          echo "::set-output name=branch::$(git rev-parse --abbrev-ref HEAD)"
+
+      - name: Get Version
+        id: get_version
+        run: |
+          echo "::set-output name=version::v$(head ./version | cut -d' ' -f1)"
+
+      - name: Check tag for current version
+        uses: mukunku/tag-exists-action@v1.0.0
+        id: check_tag
+        with:
+          tag: ${{ steps.get_version.outputs.version }}
         env:
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publishing Artifacts
+        if: steps.check_tag.outputs.exists == 'false' && steps.get_branch.outputs.branch == 'main'
         run: |
           sudo chmod u+x ./docker-publish.sh
-          sudo ./docker-publish.sh publish ${DOCKER_HUB_USERNAME} ${DOCKER_HUB_ACCESS_TOKEN}
+          sudo DOCKERHUB_KEY=${{ secrets.DOCKERHUB_KEY }} DOCKERHUB_REPO=${{ secrets.DOCKERHUB_REPO }} DOCKERHUB_USER=${{ secrets.DOCKERHUB_USER }} ./docker-publish.sh publish
+
+      - name: Creating Release
+        if: steps.check_tag.outputs.exists == 'false' && steps.get_branch.outputs.branch == 'main'
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "release/*"
+          tag: ${{ steps.get_version.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
