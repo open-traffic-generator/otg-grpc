@@ -16,14 +16,14 @@ import json
 
 from google.protobuf import json_format
 
-from .autogen import snappipb_pb2, snappipb_pb2_grpc
+from .autogen import otg_pb2, otg_pb2_grpc
 from .common.utils import (get_error_details, init_logging,
                            get_time_elapsed, get_current_time)
 
 server = None
 
 
-class Openapi(snappipb_pb2_grpc.OpenapiServicer):
+class Openapi(otg_pb2_grpc.OpenapiServicer):
 
     def __init__(self, args):
         super().__init__()
@@ -150,7 +150,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 """
                 config_response = json_format.Parse(
                     response_200,
-                    snappipb_pb2.SetConfigResponse()
+                    otg_pb2.SetConfigResponse()
                 )
                 if len(response.warnings) > 0:
                     config_response.status_code_200.warnings.extend(response.warnings) # noqa
@@ -189,7 +189,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                         repr(e)))
                 if e is ConnectionError:
                     config_response = json_format.Parse(
-                        response_500, snappipb_pb2.SetConfigResponse())
+                        response_500, otg_pb2.SetConfigResponse())
                     config_response.status_code_500.errors.extend(e.details) # noqa
                     self.logger.debug(
                         "Returning status_code_500 to client ...")
@@ -199,14 +199,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
                 if error_code == 400:
                     config_response = json_format.Parse(
-                        response_400, snappipb_pb2.SetConfigResponse())
+                        response_400, otg_pb2.SetConfigResponse())
                     config_response.status_code_400.errors.extend(error_details) # noqa
                     self.logger.debug(
                         "Returning status_code_400 to client ...")
                     return config_response
                 elif error_code == 500:
                     config_response = json_format.Parse(
-                        response_500, snappipb_pb2.SetConfigResponse())
+                        response_500, otg_pb2.SetConfigResponse())
                     config_response.status_code_500.errors.extend(error_details) # noqa
                     self.logger.debug(
                         "Returning status_code_500 to client ...")
@@ -245,9 +245,9 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
                 config_proto = json_format.Parse(
                     response.serialize(),
-                    snappipb_pb2.Config()
+                    otg_pb2.Config()
                 )
-                config_response = snappipb_pb2.GetConfigResponse(
+                config_response = otg_pb2.GetConfigResponse(
                     status_code_200=config_proto
                 )
                 self.logger.debug("Returning config to client ...")
@@ -282,14 +282,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 if error_code == 400:
                     config_response = json_format.Parse(
                         response_400,
-                        snappipb_pb2.GetConfigResponse()
+                        otg_pb2.GetConfigResponse()
                     )
                     config_response.status_code_400.errors.extend(error_details) # noqa
                     return config_response
                 elif error_code == 500:
                     config_response = json_format.Parse(
                         response_500,
-                        snappipb_pb2.GetConfigResponse()
+                        otg_pb2.GetConfigResponse()
                     )
                     config_response.status_code_500.errors.extend(error_details) # noqa
                     return config_response
@@ -340,7 +340,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 """
                 link_state_response = json_format.Parse(
                     response_200,
-                    snappipb_pb2.SetLinkStateResponse()
+                    otg_pb2.SetLinkStateResponse()
                 )
                 if len(response.warnings) > 0:
                     link_state_response.status_code_200.warnings.extend(response.warnings) # noqa
@@ -383,14 +383,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 if error_code == 400:
                     link_state_response = json_format.Parse(
                         response_400,
-                        snappipb_pb2.SetLinkStateResponse()
+                        otg_pb2.SetLinkStateResponse()
                     )
                     link_state_response.status_code_400.errors.extend(error_details) # noqa
                     return link_state_response
                 elif error_code == 500:
                     link_state_response = json_format.Parse(
                         response_500,
-                        snappipb_pb2.SetLinkStateResponse()
+                        otg_pb2.SetLinkStateResponse()
                     )
                     link_state_response.status_code_500.errors.extend(error_details) # noqa
                     return link_state_response
@@ -440,7 +440,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 """
                 transmit_response = json_format.Parse(
                     response_200,
-                    snappipb_pb2.SetTransmitStateResponse()
+                    otg_pb2.SetTransmitStateResponse()
                 )
                 if len(response.warnings) > 0:
                     transmit_response.status_code_200.warnings.extend(response.warnings) # noqa
@@ -482,14 +482,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 if error_code == 400:
                     transmit_response = json_format.Parse(
                         response_400,
-                        snappipb_pb2.SetTransmitStateResponse()
+                        otg_pb2.SetTransmitStateResponse()
                     )
                     transmit_response.status_code_400.errors.extend(error_details) # noqa
                     return transmit_response
                 elif error_code == 500:
                     transmit_response = json_format.Parse(
                         response_500,
-                        snappipb_pb2.SetTransmitStateResponse()
+                        otg_pb2.SetTransmitStateResponse()
                     )
                     transmit_response.status_code_500.errors.extend(error_details) # noqa
                     return transmit_response
@@ -540,7 +540,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 """
                 route_response = json_format.Parse(
                     response_200,
-                    snappipb_pb2.SetRouteStateResponse()
+                    otg_pb2.SetRouteStateResponse()
                 )
                 if len(response.warnings) > 0:
                     route_response.status_code_200.warnings.extend(response.warnings) # noqa
@@ -582,14 +582,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 if error_code == 400:
                     route_response = json_format.Parse(
                         response_400,
-                        snappipb_pb2.SetRouteStateResponse()
+                        otg_pb2.SetRouteStateResponse()
                     )
                     route_response.status_code_400.errors.extend(error_details) # noqa
                     return route_response
                 elif error_code == 500:
                     route_response = json_format.Parse(
                         response_500,
-                        snappipb_pb2.SetRouteStateResponse()
+                        otg_pb2.SetRouteStateResponse()
                     )
                     route_response.status_code_500.errors.extend(error_details) # noqa
                     return route_response
@@ -640,7 +640,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 """
                 protocol_response = json_format.Parse(
                     response_200,
-                    snappipb_pb2.SetProtocolStateResponse()
+                    otg_pb2.SetProtocolStateResponse()
                 )
                 if len(response.warnings) > 0:
                     protocol_response.status_code_200.warnings.extend(response.warnings) # noqa
@@ -682,14 +682,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 if error_code == 400:
                     protocol_response = json_format.Parse(
                         response_400,
-                        snappipb_pb2.SetProtocolStateResponse()
+                        otg_pb2.SetProtocolStateResponse()
                     )
                     protocol_response.status_code_400.errors.extend(error_details) # noqa
                     return protocol_response
                 elif error_code == 500:
                     protocol_response = json_format.Parse(
                         response_500,
-                        snappipb_pb2.SetProtocolStateResponse()
+                        otg_pb2.SetProtocolStateResponse()
                     )
                     protocol_response.status_code_500.errors.extend(error_details) # noqa
                     return protocol_response
@@ -739,7 +739,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 """
                 capture_response = json_format.Parse(
                     response_200,
-                    snappipb_pb2.SetCaptureStateResponse()
+                    otg_pb2.SetCaptureStateResponse()
                 )
                 if len(response.warnings) > 0:
                     capture_response.status_code_200.warnings.extend(response.warnings) # noqa
@@ -781,14 +781,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 if error_code == 400:
                     capture_response = json_format.Parse(
                         response_400,
-                        snappipb_pb2.SetCaptureStateResponse()
+                        otg_pb2.SetCaptureStateResponse()
                     )
                     capture_response.status_code_400.errors.extend(error_details) # noqa
                     return capture_response
                 elif error_code == 500:
                     capture_response = json_format.Parse(
                         response_500,
-                        snappipb_pb2.SetCaptureStateResponse()
+                        otg_pb2.SetCaptureStateResponse()
                     )
                     capture_response.status_code_500.errors.extend(error_details) # noqa
                     return capture_response
@@ -842,9 +842,9 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
                 ping_proto = json_format.Parse(
                     response.serialize(),
-                    snappipb_pb2.PingResponse()
+                    otg_pb2.PingResponse()
                 )
-                send_ping_response = snappipb_pb2.SendPingResponse(
+                send_ping_response = otg_pb2.SendPingResponse(
                     status_code_200=ping_proto
                 )
                 self.logger.debug("Returning Ping Response to client ...")
@@ -886,14 +886,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 if error_code == 400:
                     ping_response = json_format.Parse(
                         response_400,
-                        snappipb_pb2.SendPingResponse()
+                        otg_pb2.SendPingResponse()
                     )
                     ping_response.status_code_400.errors.extend(error_details) # noqa
                     return ping_response
                 elif error_code == 500:
                     ping_response = json_format.Parse(
                         response_500,
-                        snappipb_pb2.SendPingResponse()
+                        otg_pb2.SendPingResponse()
                     )
                     ping_response.status_code_500.errors.extend(error_details) # noqa
                     return ping_response
@@ -947,9 +947,9 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
                 update_proto = json_format.Parse(
                     response.serialize(),
-                    snappipb_pb2.Config()
+                    otg_pb2.Config()
                 )
-                update_flow_response = snappipb_pb2.UpdateFlowsResponse(
+                update_flow_response = otg_pb2.UpdateFlowsResponse(
                     status_code_200=update_proto
                 )
                 self.logger.debug(
@@ -993,14 +993,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 if error_code == 400:
                     update_flow_response = json_format.Parse(
                         response_400,
-                        snappipb_pb2.UpdateFlowsResponse()
+                        otg_pb2.UpdateFlowsResponse()
                     )
                     update_flow_response.status_code_400.errors.extend(error_details) # noqa
                     return update_flow_response
                 elif error_code == 500:
                     update_flow_response = json_format.Parse(
                         response_500,
-                        snappipb_pb2.UpdateFlowsResponse()
+                        otg_pb2.UpdateFlowsResponse()
                     )
                     update_flow_response.status_code_500.errors.extend(error_details) # noqa
                     return update_flow_response
@@ -1054,9 +1054,9 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
                 metric_proto = json_format.Parse(
                     response.serialize(),
-                    snappipb_pb2.MetricsResponse()
+                    otg_pb2.MetricsResponse()
                 )
-                get_metric_response = snappipb_pb2.GetMetricsResponse(
+                get_metric_response = otg_pb2.GetMetricsResponse(
                     status_code_200=metric_proto
                 )
                 self.logger.debug("Returning Metrics to client ...")
@@ -1098,14 +1098,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 if error_code == 400:
                     metric_response = json_format.Parse(
                         response_400,
-                        snappipb_pb2.GetMetricsResponse()
+                        otg_pb2.GetMetricsResponse()
                     )
                     metric_response.status_code_400.errors.extend(error_details) # noqa
                     return metric_response
                 elif error_code == 500:
                     metric_response = json_format.Parse(
                         response_500,
-                        snappipb_pb2.GetMetricsResponse()
+                        otg_pb2.GetMetricsResponse()
                     )
                     metric_response.status_code_500.errors.extend(error_details) # noqa
                     return metric_response
@@ -1151,7 +1151,7 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 self.logger.debug(
                     "Snappi_api GetCapture Returned")
 
-                get_capture_response = snappipb_pb2.GetCaptureResponse(
+                get_capture_response = otg_pb2.GetCaptureResponse(
                     status_code_200=response.getvalue()
                 )
 
@@ -1194,14 +1194,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 if error_code == 400:
                     capture_response = json_format.Parse(
                         response_400,
-                        snappipb_pb2.GetCaptureResponse()
+                        otg_pb2.GetCaptureResponse()
                     )
                     capture_response.status_code_400.errors.extend(error_details) # noqa
                     return capture_response
                 elif error_code == 500:
                     capture_response = json_format.Parse(
                         response_500,
-                        snappipb_pb2.GetCaptureResponse()
+                        otg_pb2.GetCaptureResponse()
                     )
                     capture_response.status_code_500.errors.extend(error_details) # noqa
                     return capture_response
@@ -1255,9 +1255,9 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
 
                 state_proto = json_format.Parse(
                     response.serialize(),
-                    snappipb_pb2.StatesResponse()
+                    otg_pb2.StatesResponse()
                 )
-                get_state_response = snappipb_pb2.GetStatesResponse(
+                get_state_response = otg_pb2.GetStatesResponse(
                     status_code_200=state_proto
                 )
                 self.logger.debug("Returning States to client ...")
@@ -1299,14 +1299,14 @@ class Openapi(snappipb_pb2_grpc.OpenapiServicer):
                 if error_code == 400:
                     state_response = json_format.Parse(
                         response_400,
-                        snappipb_pb2.GetStatesResponse()
+                        otg_pb2.GetStatesResponse()
                     )
                     state_response.status_code_400.errors.extend(error_details) # noqa
                     return state_response
                 elif error_code == 500:
                     state_response = json_format.Parse(
                         response_500,
-                        snappipb_pb2.GetStatesResponse()
+                        otg_pb2.GetStatesResponse()
                     )
                     state_response.status_code_500.errors.extend(error_details) # noqa
                     return state_response
@@ -1350,7 +1350,7 @@ def serve(args):
     signal.signal(signal.SIGTERM, sighandler)
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    snappipb_pb2_grpc.add_OpenapiServicer_to_server(Openapi(args), server)
+    otg_pb2_grpc.add_OpenapiServicer_to_server(Openapi(args), server)
 
     server_address = "[::]:{}".format(args.server_port)
 

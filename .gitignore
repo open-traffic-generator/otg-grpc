@@ -5,6 +5,6 @@ ut-report.html
 .coverage
 **/*,cover
 grpc_server/proto
-grpc_server/autogen/snappipb_*.py
+grpc_server/autogen/otg_pb2*.py
 tests/mockstatus.txt
 *.pcap

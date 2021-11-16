@@ -1,7 +1,6 @@
 grpcio==1.35.0
 grpcio-tools==1.35.0
 protobuf==3.15.0
-snappi[ixnetwork]==0.6.15
 grpclib==0.4.1
 flask==1.1.2
 grpcio-reflection==1.35.0
