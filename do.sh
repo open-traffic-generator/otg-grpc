@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SNAPPI_VERSION=0.6.19
+SNAPPI_VERSION=0.6.21
 UT_REPORT=ut-report.html
 
 # Avoid warnings for non-interactive apt-get install
