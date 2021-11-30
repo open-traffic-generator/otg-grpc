@@ -132,8 +132,8 @@ def test_grpc_server_get_port_metrics_with_200(snappiserver,
             'port_metrics': [
                 {
                     'name': 'tx',
-                    'frames_tx': 10000,
-                    'frames_rx': 10000
+                    'frames_tx': "10000",
+                    'frames_rx': "10000"
                 }
             ]
         }
@@ -188,8 +188,8 @@ def test_grpc_server_get_flow_metrics_with_200(snappiserver,
             'flow_metrics': [
                 {
                     'name': 'f1',
-                    'frames_tx': 10000,
-                    'frames_rx': 10000
+                    'frames_tx': "10000",
+                    'frames_rx': "10000"
                 }
             ]
         }
