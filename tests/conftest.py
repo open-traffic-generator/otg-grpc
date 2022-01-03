@@ -1,6 +1,7 @@
 import pytest
 import sys
 import logging
+from grpc_server.common.utils import (get_current_time)
 sys.path.append('.')
 
 
@@ -20,5 +21,6 @@ def serverlogfile():
     """
     from grpc_server.common.utils import init_logging
     log_level = logging.INFO
-    serverlogfile = init_logging('unit', 'confest', 'test', log_level, False)
+    log_file = 'test-'+str(get_current_time())+'.log'
+    serverlogfile = init_logging('unit', 'confest', log_file, log_level, False)
     yield serverlogfile

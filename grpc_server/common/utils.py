@@ -2,6 +2,7 @@ import os
 import datetime
 import logging
 import re
+from logging.handlers import RotatingFileHandler
 
 
 class CustomFormatter(logging.Formatter):
@@ -34,7 +35,7 @@ def init_logging(
         level=logging.DEBUG,
         log_stdout=False,
         type=None):
-    logger_name = ctx + '_' + scope
+    logger_name = ctx + '_' + scope # noqa
     logger = logging.getLogger(logger_name)
     logs_dir = os.path.join(os.path.curdir, 'logs')
     if not os.path.exists(logs_dir):
@@ -48,7 +49,14 @@ def init_logging(
         else:
             log_format = '{"level":"%(levelname)s","ctx":"' + ctx + '","scope":"' + scope + '","api":"%(funcName)s","ts":"%(asctime)s.%(msecs)03dZ","msg":"%(message)s"}' # noqa
     formatter = CustomFormatter(log_format, "%Y-%m-%dT%H:%M:%S")
-    fileHandler = logging.FileHandler(logfile, mode='a')
+    fileHandler = RotatingFileHandler(
+        logfile,
+        mode='a',
+        maxBytes=25*1024*1024,
+        backupCount=2,
+        encoding=None,
+        delay=0
+    )
     fileHandler.setFormatter(formatter)
     streamHandler = logging.StreamHandler()
     streamHandler.setFormatter(formatter)
