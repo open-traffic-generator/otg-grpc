@@ -53,7 +53,7 @@ def init_logging(
         logfile,
         mode='a',
         maxBytes=25*1024*1024,
-        backupCount=10,
+        backupCount=5,
         encoding=None,
         delay=0
     )
