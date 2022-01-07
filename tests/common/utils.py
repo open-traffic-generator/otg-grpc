@@ -136,7 +136,8 @@ def init_grpc_with_mock_server(server_logfile,
     print('Intializing grpc server api......')
     change_mockserver_status(error_code, with_warning)
     mock_config = get_mockserver_settings()
-    mock_config['logfile'] = server_logfile
+    server_logfile_path = server_logfile.handlers[0].baseFilename
+    mock_config['logfile'] = server_logfile_path.split(os.path.sep)[-1]
     mock_config_args = get_parsed_args(mock_config)
     grpc_api = Openapi(mock_config_args)
     return grpc_api
