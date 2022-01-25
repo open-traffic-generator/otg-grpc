@@ -1,11 +1,16 @@
 # OTG gRPC
 
+![Build](https://github.com/open-traffic-generator/otg-grpc/actions/workflows/publish.yaml/badge.svg)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![license](https://img.shields.io/badge/license-MIT-green.svg)](https://en.wikipedia.org/wiki/MIT_License)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/open-traffic-generator/otg-grpc.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/open-traffic-generator/otg-grpc/alerts/)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/open-traffic-generator/otg-grpc.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/open-traffic-generator/otg-gprc/context:python)
+
 gRPC interface to configure and run Ixia-C traffic generator
 
 ## Build
 
 Gitlab is not reachable from within lab network, hence please make sure that the intended system is outside lab network (for build to succeed).
-
 
 - **Clone this project**
 
@@ -49,7 +54,6 @@ Gitlab is not reachable from within lab network, hence please make sure that the
       ```
     - If you see the intended container listed, attach to it and change working directory to `/home/keysight/ixia-c/otg-grpc`
     - Allow it to install extensions and other tools when prompted
-
 
 ## Quick Tour
 
