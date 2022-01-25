@@ -35,7 +35,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             log_level = logging.DEBUG
 
         self.logger = init_logging(
-            'grpc',
+            'Openapi',
             'main',
             args.logfile,
             log_level,
@@ -51,7 +51,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
         )
 
         self.payload_logger = init_logging(
-            'grpc',
+            'Openapi',
             'main',
             args.logfile,
             log_level,

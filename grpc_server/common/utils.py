@@ -35,7 +35,9 @@ def init_logging(
         level=logging.DEBUG,
         log_stdout=False,
         type=None):
-    logger_name = ctx + '_' + scope # noqa
+    logger_name = ctx + '_' + scope
+    if type:
+        logger_name = logger_name + '_' + type
     logger = logging.getLogger(logger_name)
     logs_dir = os.path.join(os.path.curdir, 'logs')
     if not os.path.exists(logs_dir):
