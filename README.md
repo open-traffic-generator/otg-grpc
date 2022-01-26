@@ -1,10 +1,11 @@
 # OTG gRPC
 
-![Build](https://github.com/open-traffic-generator/otg-grpc/actions/workflows/publish.yaml/badge.svg)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](https://en.wikipedia.org/wiki/MIT_License)
+[![release)](https://img.shields.io/github/v/release/open-traffic-generator/otg-grpc)](https://github.com/open-traffic-generator/otg-grpc/releases/latest)
+[![Build](https://github.com/open-traffic-generator/otg-grpc/actions/workflows/publish.yaml/badge.svg)](https://github.com/open-traffic-generator/otg-grpc/actions/workflows/publish.yaml)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/open-traffic-generator/otg-grpc.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/open-traffic-generator/otg-grpc/alerts/)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/open-traffic-generator/otg-grpc.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/open-traffic-generator/otg-gprc/context:python)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/open-traffic-generator/otg-grpc.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/open-traffic-generator/otg-grpc/context:python)
 
 gRPC interface to configure and run Ixia-C traffic generator
 
