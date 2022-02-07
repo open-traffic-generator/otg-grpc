@@ -16,7 +16,8 @@ import json
 
 from google.protobuf import json_format
 
-from .autogen import otg_pb2, otg_pb2_grpc
+# snappi grpc stubs
+from snappi import otg_pb2, otg_pb2_grpc
 from .common.utils import (get_error_details, init_logging,
                            get_time_elapsed, get_current_time)
 
@@ -1397,13 +1398,13 @@ if __name__ == '__main__':
     parser.add_argument('--app-mode',
                         help='target Application mode',
                         choices=['ixnetwork', 'athena', 'athena-insecure'],
-                        default='ixnetwork',
+                        default='athena',
                         type=str)
     parser.add_argument('--target-host', help='target host address',
-                        default='localhost',
+                        default='10.74.45.85',
                         type=str)
     parser.add_argument('--target-port', help='target port number',
-                        default=11009,
+                        default=30098,
                         type=int)
     parser.add_argument('--logfile',
                         help='logfile name [date and time auto appended]',
