@@ -4,7 +4,7 @@ import json
 from google.protobuf import json_format
 
 from grpc_server.__main__ import Openapi
-from grpc_server.autogen import otg_pb2
+from snappi import otg_pb2
 
 
 SETTINGS_FILE = 'settings.json'

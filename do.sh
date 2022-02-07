@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SNAPPI_VERSION=0.7.6
+SNAPPI_VERSION=0.7.13
 UT_REPORT=ut-report.html
 
 # Avoid warnings for non-interactive apt-get install
@@ -21,21 +21,6 @@ install_ext_deps() {
     apt-get -y install curl vim git \
     && python -m pip install --default-timeout=100 flake8 requests pytest pytest-cov pytest_dependency pytest-html \
     && apt-get -y clean all
-}
-
-get_otg_proto() {
-    echo "Fetching OTG proto for snappi  ${SNAPPI_VERSION} ..."
-    rm -rf grpc_server/proto/> /dev/null 2>&1 || true
-    mkdir grpc_server/proto/ \
-    && curl -kL https://github.com/open-traffic-generator/snappi/releases/download/v${SNAPPI_VERSION}/otg.proto> ./grpc_server/proto/otg.proto
-
-}
-
-gen_py_stubs() {
-    echo "Generating python stubs ..." \
-    rm -rf grpc_server/autogen/*.py> /dev/null 2>&1 || true
-    python -m grpc_tools.protoc --experimental_allow_proto3_optional --python_out=./grpc_server/autogen --grpc_python_out=./grpc_server/autogen --proto_path=./grpc_server/proto otg.proto \
-    && sed -i "s/import otg_pb2/from . import otg_pb2/g" grpc_server/autogen/*_grpc.py
 }
 
 run() {
@@ -103,7 +88,7 @@ case $1 in
 		run ${@}
 		;;
 	art	    )
-		install_ext_deps && get_otg_proto && gen_py_stubs && run_unit_test && analyze_unit_test_result
+		install_ext_deps && run_unit_test && analyze_unit_test_result
 		;;
     unit    )
         run_unit_test
