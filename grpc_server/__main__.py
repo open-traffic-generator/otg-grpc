@@ -190,7 +190,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api Setconfig Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
 
                 if error_code == 400:
@@ -274,7 +274,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api Getconfig Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
 
                 if error_code == 400:
@@ -375,7 +375,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api set_link_state Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
 
                 if error_code == 400:
@@ -476,7 +476,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api SetTransmitState Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
                 if error_code == 400:
                     transmit_response = json_format.Parse(
@@ -577,7 +577,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api SetRouteState Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
                 if error_code == 400:
                     route_response = json_format.Parse(
@@ -678,7 +678,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api SetProtocolState Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
                 if error_code == 400:
                     protocol_response = json_format.Parse(
@@ -778,7 +778,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api SetCaptureState Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
                 if error_code == 400:
                     capture_response = json_format.Parse(
@@ -883,7 +883,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api SendPing Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
                 if error_code == 400:
                     ping_response = json_format.Parse(
@@ -985,7 +985,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api UpdateFlows Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
                 if error_code == 400:
                     update_flow_response = json_format.Parse(
@@ -1085,7 +1085,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api GetMetrics Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
                 if error_code == 400:
                     metric_response = json_format.Parse(
@@ -1176,7 +1176,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api GetCapture Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
                 if error_code == 400:
                     capture_response = json_format.Parse(
@@ -1276,7 +1276,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.logger.error(
                     "Snappi_api GetStates Returned "
                     "Exception with {} errors: {}".format(
-                        error_code, error_details)
+                        error_code, str(error_details).replace('"', ''))
                     )
                 if error_code == 400:
                     state_response = json_format.Parse(
