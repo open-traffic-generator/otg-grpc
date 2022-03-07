@@ -70,7 +70,59 @@ def init_logging(
 
 
 def get_error_details(exception):
-    return exception.args[0], exception.args[1]['errors']
+    status_code = 500
+    errors = []
+    if len(exception.args) == 2:
+        if isinstance(exception.args[0], int):
+            status_code = exception.args[0]
+        else:
+            errors.extend(
+                    [
+                        "grpc-server - 1st argument of "
+                        "exception is not interger type.",
+                        str(exception.args[0])
+                    ]
+                )
+        if isinstance(exception.args[1], dict):
+            if 'errors' in exception.args[1].keys():
+                if isinstance(exception.args[1]['errors'], list):
+                    errors.extend(exception.args[1]['errors'])
+                else:
+                    errors.extend(
+                        [
+                            "grpc-server - errors field is not a list",
+                            str(exception.args[1]['errors'])
+                        ]
+                    )
+            else:
+                errors.extend(
+                    [
+                        "grpc-server - errors field is missing in exception",
+                        str(exception.args[1])
+                    ]
+                )
+        else:
+            errors.extend(
+                [
+                    "grpc-server - 2nd argument of "
+                    "exception is not dict type.",
+                    str(exception.args[1])
+                ]
+            )
+
+    else:
+        errors.extend(
+            [
+                "grpc-server - expection arguments is not as expected."
+            ]
+        )
+        for arg in exception.args:
+            errors.extend(
+                [
+                    str(arg)
+                ]
+            )
+    return status_code, errors
 
 
 def get_time_elapsed(start):
