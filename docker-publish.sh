@@ -87,6 +87,7 @@ publish() {
     echo "${DOCKERHUB_IMAGE} published in DockerHub..."
 
     GITHUB_IMAGE="ghcr.io/open-traffic-generator/ixia-c-grpc-server:${TAG}"
+    docker tag ixia-c-grpc-server "${GITHUB_IMAGE}"
 
     echo "${GITHUB_IMAGE} does not exist..."
     push_github_docker_image ${GITHUB_IMAGE}
