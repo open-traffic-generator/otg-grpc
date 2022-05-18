@@ -39,7 +39,7 @@ jobs:
         if: steps.check_tag.outputs.exists == 'false' && steps.get_branch.outputs.branch == 'main'
         run: |
           sudo chmod u+x ./docker-publish.sh
-          sudo DOCKERHUB_KEY=${{ secrets.DOCKERHUB_KEY }} DOCKERHUB_REPO=${{ secrets.DOCKERHUB_REPO }} DOCKERHUB_USER=${{ secrets.DOCKERHUB_USER }} ./docker-publish.sh publish
+          sudo TOKEN_GITHUB=${{ secrets.TOKEN_GITHUB }} DOCKERHUB_KEY=${{ secrets.DOCKERHUB_KEY }} DOCKERHUB_REPO=${{ secrets.DOCKERHUB_REPO }} DOCKERHUB_USER=${{ secrets.DOCKERHUB_USER }} ./docker-publish.sh publish
 
       - name: Creating Release
         if: steps.check_tag.outputs.exists == 'false' && steps.get_branch.outputs.branch == 'main'
