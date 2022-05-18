@@ -89,14 +89,12 @@ publish() {
     GITHUB_IMAGE="ghcr.io/open-traffic-generator/ixia-c-grpc-server:${TAG}"
     docker tag ixia-c-grpc-server "${GITHUB_IMAGE}"
 
-    echo "${GITHUB_IMAGE} does not exist..."
-    push_github_docker_image ${GITHUB_IMAGE}
-    # if github_docker_image_exists ${GITHUB_IMAGE}; then
-    #     echo "${GITHUB_IMAGE} already exists..."
-    # else
-    #     echo "${GITHUB_IMAGE} does not exist..."
-    #     push_github_docker_image ${GITHUB_IMAGE}
-    # fi
+    if github_docker_image_exists ${GITHUB_IMAGE}; then
+        echo "${GITHUB_IMAGE} already exists..."
+    else
+        echo "${GITHUB_IMAGE} does not exist..."
+        push_github_docker_image ${GITHUB_IMAGE}
+    fi
 
     echo "Deleting local docker images..."
     docker rmi -f "ixia-c-grpc-server" "${DOCKERHUB_IMAGE}" "${GITHUB_IMAGE}"> /dev/null 2>&1 || true
