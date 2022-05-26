@@ -2,7 +2,7 @@ import os
 import datetime
 import logging
 import re
-from logging.handlers import RotatingFileHandler
+from logging.handlers import RotatingFileHandler, WatchedFileHandler
 
 
 class CustomFormatter(logging.Formatter):
@@ -28,6 +28,17 @@ def get_current_time():
     return current_utc
 
 
+class WatchedRotatingFileHandler(RotatingFileHandler, WatchedFileHandler):
+    def __init__(self, filename, **kwargs):
+        super().__init__(filename, **kwargs)
+        self.dev, self.ino = -1, -1
+        self._statstream()
+
+    def emit(self, record):
+        self.reopenIfNeeded()
+        super().emit(record)
+
+
 def init_logging(
         ctx,
         scope,
@@ -51,7 +62,7 @@ def init_logging(
         else:
             log_format = '{"level":"%(levelname)s","ctx":"' + ctx + '","scope":"' + scope + '","api":"%(funcName)s","ts":"%(asctime)s.%(msecs)03dZ","msg":"%(message)s"}' # noqa
     formatter = CustomFormatter(log_format, "%Y-%m-%dT%H:%M:%S")
-    fileHandler = RotatingFileHandler(
+    fileHandler = WatchedRotatingFileHandler(
         logfile,
         mode='a',
         maxBytes=25*1024*1024,

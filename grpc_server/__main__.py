@@ -303,13 +303,14 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             )
 
     def SetLinkState(self, request, context):
+        state = 'None'
         grpc_api_start = datetime.datetime.now()
         try:
             jsonObj = json_format.MessageToJson(
                 request.link_state,
                 preserving_proto_field_name=True
             )
-
+            state = json.loads(jsonObj)['state']
             self.payload_logger.debug(
                 "Received request.linkstate (JSON)",
                 extra={
@@ -326,6 +327,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                     "snappi-SetLinkState completed!", extra={
                         'api': "snappi-SetLinkState",
+                        'choice': state,
                         'nanoseconds':  get_time_elapsed(snappi_api_start)
                     }
                 )
@@ -354,6 +356,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                     "snappi-SetLinkState completed!", extra={
                         'api': "snappi-SetLinkState",
+                        'choice': state,
                         'nanoseconds':  get_time_elapsed(snappi_api_start)
                     }
                 )
@@ -398,17 +401,20 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             self.profile_logger.info(
                 "gRPC-SetLinkState completed!", extra={
                     'api': "SetLinkState",
+                    'choice': state,
                     'nanoseconds':  get_time_elapsed(grpc_api_start)
                 }
             )
 
     def SetTransmitState(self, request, context):
+        state = 'None'
         grpc_api_start = datetime.datetime.now()
         try:
             jsonObj = json_format.MessageToJson(
                 request.transmit_state,
                 preserving_proto_field_name=True
             )
+            state = json.loads(jsonObj)['state']
 
             self.payload_logger.debug(
                 "Received request.transmitstate (JSON)(default=False)",
@@ -425,6 +431,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                     "snappi-SetTransmitState completed!", extra={
                         'api': "snappi-SetTransmitState",
+                        'choice': state,
                         'nanoseconds':  get_time_elapsed(snappi_api_start)
                     }
                 )
@@ -454,6 +461,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                     "snappi-SetTransmitState completed!", extra={
                         'api': "snappi-SetTransmitState",
+                        'choice': state,
                         'nanoseconds':  get_time_elapsed(snappi_api_start)
                     }
                 )
@@ -499,17 +507,20 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             self.profile_logger.info(
                 "gRPC-SetTransmitState completed!", extra={
                     'api': "SetTransmitState",
+                    'choice': state,
                     'nanoseconds':  get_time_elapsed(grpc_api_start)
                 }
             )
 
     def SetRouteState(self, request, context):
+        state = 'None'
         grpc_api_start = datetime.datetime.now()
         try:
             jsonObj = json_format.MessageToJson(
                 request.route_state,
                 preserving_proto_field_name=True
             )
+            state = json.loads(jsonObj)['state']
 
             self.payload_logger.debug(
                 "Received request.routestate (JSON)(default=False)",
@@ -527,6 +538,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                     "snappi-SetRouteState completed!", extra={
                         'api': "snappi-SetRouteState",
+                        'choice': state,
                         'nanoseconds':  get_time_elapsed(snappi_api_start)
                     }
                 )
@@ -555,6 +567,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                     "snappi-SetRouteState completed!", extra={
                         'api': "snappi-SetRouteState",
+                        'choice': state,
                         'nanoseconds':  get_time_elapsed(snappi_api_start)
                     }
                 )
@@ -600,17 +613,20 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             self.profile_logger.info(
                 "gRPC-SetRouteState completed!", extra={
                     'api': "SetRouteState",
+                    'choice': state,
                     'nanoseconds':  get_time_elapsed(grpc_api_start)
                 }
             )
 
     def SetProtocolState(self, request, context):
+        state = 'None'
         grpc_api_start = datetime.datetime.now()
         try:
             jsonObj = json_format.MessageToJson(
                 request.protocol_state,
                 preserving_proto_field_name=True
             )
+            state = json.loads(jsonObj)['state']
 
             self.payload_logger.debug(
                 "Received request.protocolstate (JSON)(default=False)",
@@ -628,6 +644,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                     "snappi-SetProtocolState completed!", extra={
                         'api': "snappi-SetProtocolState",
+                        'choice': state,
                         'nanoseconds':  get_time_elapsed(snappi_api_start)
                     }
                 )
@@ -656,6 +673,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                     "snappi-SetProtocolState completed!", extra={
                         'api': "snappi-SetProtocolState",
+                        'choice': state,
                         'nanoseconds':  get_time_elapsed(snappi_api_start)
                     }
                 )
@@ -700,17 +718,20 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             self.profile_logger.info(
                 "gRPC-SetProtocolState completed!", extra={
                     'api': "SetProtocolState",
+                    'choice': state,
                     'nanoseconds':  get_time_elapsed(grpc_api_start)
                 }
             )
 
     def SetCaptureState(self, request, context):
+        state = 'None'
         grpc_api_start = datetime.datetime.now()
         try:
             jsonObj = json_format.MessageToJson(
                 request.capture_state,
                 preserving_proto_field_name=True
             )
+            state = json.loads(jsonObj)['state']
 
             self.payload_logger.debug(
                 "Received request.capture_state (JSON)(default=False)",
@@ -728,6 +749,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                     "snappi-SetCaptureState completed!", extra={
                         'api': "snappi-SetCaptureState",
+                        'choice': state,
                         'nanoseconds':  get_time_elapsed(snappi_api_start)
                     }
                 )
@@ -756,6 +778,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                     "snappi-SetCaptureState completed!", extra={
                         'api': "snappi-SetCaptureState",
+                        'choice': state,
                         'nanoseconds':  get_time_elapsed(snappi_api_start)
                     }
                 )
@@ -801,6 +824,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             self.profile_logger.info(
                 "gRPC-SetCaptureState completed!", extra={
                     'api': "SetCaptureState",
+                    'choice': state,
                     'nanoseconds':  get_time_elapsed(grpc_api_start)
                 }
             )
@@ -911,12 +935,14 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             )
 
     def UpdateFlows(self, request, context):
+        property_names = ''
         grpc_api_start = datetime.datetime.now()
         try:
             jsonObj = json_format.MessageToJson(
                 request.flows_update,
                 preserving_proto_field_name=True
             )
+            property_names = ','.join(json.loads(jsonObj)['property_names'])
 
             self.payload_logger.debug(
                 "Received request.flows_update (JSON)(default=False)",
@@ -934,6 +960,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                             "snappi-UpdateFlows completed!", extra={
                                 'api': "snappi-UpdateFlows",
+                                'choice': property_names,
                                 'nanoseconds':  get_time_elapsed(
                                     snappi_api_start
                                 )
@@ -963,6 +990,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                         "snappi-UpdateFlows completed!", extra={
                             'api': "snappi-UpdateFlows",
+                            'choice': property_names,
                             'nanoseconds':  get_time_elapsed(snappi_api_start)
                         }
                     )
@@ -1008,17 +1036,20 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             self.profile_logger.info(
                 "gRPC-UpdateFlows completed!", extra={
                     'api': "UpdateFlows",
+                    'choice': property_names,
                     'nanoseconds':  get_time_elapsed(grpc_api_start)
                 }
             )
 
     def GetMetrics(self, request, context):
+        choice = 'None'
         grpc_api_start = datetime.datetime.now()
         try:
             jsonObj = json_format.MessageToJson(
                 request.metrics_request,
                 preserving_proto_field_name=True
             )
+            choice = json.loads(jsonObj)['choice']
 
             self.payload_logger.debug(
                 "Received request.metrics_request (JSON)(default=False)",
@@ -1036,6 +1067,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                             "snappi-GetMetrics completed!", extra={
                                 'api': "snappi-GetMetrics",
+                                'choice': choice,
                                 'nanoseconds':  get_time_elapsed(
                                     snappi_api_start
                                 )
@@ -1063,6 +1095,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                         "snappi-GetMetrics completed!", extra={
                             'api': "snappi-GetMetrics",
+                            'choice': choice,
                             'nanoseconds':  get_time_elapsed(snappi_api_start)
                         }
                     )
@@ -1108,6 +1141,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             self.profile_logger.info(
                 "gRPC-GetMetrics completed!", extra={
                     'api': "GetMetrics",
+                    'choice': choice,
                     'nanoseconds':  get_time_elapsed(grpc_api_start)
                 }
             )
@@ -1204,12 +1238,14 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             )
 
     def GetStates(self, request, context):
+        choice = 'None'
         grpc_api_start = datetime.datetime.now()
         try:
             jsonObj = json_format.MessageToJson(
                 request.states_request,
                 preserving_proto_field_name=True
             )
+            choice = json.loads(jsonObj)['choice']
 
             self.payload_logger.debug(
                 "Received request.states_request (JSON)(default=False)",
@@ -1227,6 +1263,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                             "snappi-GetStates completed!", extra={
                                 'api': "snappi-GetStates",
+                                'choice': choice,
                                 'nanoseconds':  get_time_elapsed(
                                     snappi_api_start
                                 )
@@ -1254,6 +1291,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 self.profile_logger.info(
                         "snappi-GetStates completed!", extra={
                             'api': "snappi-GetStates",
+                            'choice': choice,
                             'nanoseconds':  get_time_elapsed(snappi_api_start)
                         }
                     )
@@ -1299,6 +1337,7 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
             self.profile_logger.info(
                 "gRPC-GetStates completed!", extra={
                     'api': "GetStates",
+                    'choice': choice,
                     'nanoseconds':  get_time_elapsed(grpc_api_start)
                 }
             )
