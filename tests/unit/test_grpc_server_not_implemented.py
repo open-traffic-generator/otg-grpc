@@ -76,6 +76,29 @@ def test_grpc_server_set_link_state_with_501(snappiserver,
     assert found_err, 'Exception should be raised'
 
 
+def test_grpc_server_set_device_state_with_501(snappiserver,
+                                               serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
+
+    state = {
+        "choice": "lacp_member_state",
+        "lacp_member_state": {
+            "lag_member_port_names": [
+                "string"
+            ],
+            "state": "up"
+        }
+    }
+
+    found_err = False
+    try:
+        utils.set_device_state(grpc_api, state)
+    except Exception:
+        found_err = True
+
+    assert found_err, 'Exception should be raised'
+
+
 def test_grpc_server_get_metrics_with_501(snappiserver,
                                           serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)

@@ -152,6 +152,46 @@ def set_transmit_state():
                         headers={'Content-Type': 'application/json'})
 
 
+@app.route('/control/devices', methods=['POST'])
+def set_device_state():
+    global CONFIG
+    status = utils.get_mockserver_status()
+    if status == "200":
+        return Response(status=200,
+                        response=json.dumps({'warnings': []}),
+                        headers={'Content-Type': 'application/json'})
+    elif status == "200-warning":
+        return Response(status=200,
+                        response=json.dumps(
+                            {
+                                'warnings': [
+                                    'mock 200 set_device_state warning'
+                                ]
+                            }
+                        ),
+                        headers={'Content-Type': 'application/json'})
+    elif status == "400":
+        return Response(status=400,
+                        response=json.dumps(
+                            {'errors': ['mock 400 set_device_state error']}),
+                        headers={'Content-Type': 'application/json'})
+    elif status == "500":
+        return Response(status=500,
+                        response=json.dumps(
+                            {'errors': ['mock 500 set_device_state error']}),
+                        headers={'Content-Type': 'application/json'})
+    else:
+        return Response(status=501,
+                        response=json.dumps(
+                            {
+                                'errors': [
+                                    'set_device_state is not implemented'
+                                ]
+                            }
+                        ),
+                        headers={'Content-Type': 'application/json'})
+
+
 @app.route('/control/protocols', methods=['POST'])
 def set_protocol_state():
     global CONFIG
@@ -418,6 +458,18 @@ def get_states():
                 link_layer_address="00:00:01:01:01:01"
             )
 
+        elif states_request.choice == 'bgp_prefixes':
+            states_response.choice = "bgp_prefixes"
+            bgp_prefix_state = states_response.bgp_prefixes.state(
+                bgp_peer_name="peer1")[0]
+            bgp_prefix_state.ipv4_unicast_prefixes.state(
+                ipv4_address="0.0.0.0",
+                prefix_length=32,
+                origin="egp",
+                path_id=1,
+                ipv4_next_hop="0.1.1.1",
+                ipv6_next_hop="a:a:a:a:a:a:a:a"
+            )
         return Response(states_response.serialize(),
                         mimetype='application/json',
                         status=200)

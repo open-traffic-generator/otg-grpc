@@ -69,6 +69,31 @@ def test_grpc_server_set_link_state_with_200_warning(snappiserver,
     assert json_res == exp_res
 
 
+def test_grpc_server_set_device_state_with_200_warning(snappiserver,
+                                                       serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200, True)
+
+    state = {
+        "choice": "lacp_member_state",
+        "lacp_member_state": {
+            "lag_member_port_names": [
+                "string"
+            ],
+            "state": "up"
+        }
+    }
+    json_res = utils.set_device_state(grpc_api, state)
+
+    exp_res = {
+        'status_code_200': {
+            'warnings': [
+                'mock 200 set_device_state warning'
+            ]
+        }
+    }
+    assert json_res == exp_res
+
+
 def test_grpc_server_set_capture_state_with_200_warning(snappiserver,
                                                         serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200, True)

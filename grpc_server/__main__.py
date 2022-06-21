@@ -1041,6 +1041,112 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 }
             )
 
+    def SetDeviceState(self, request, context):
+        state = 'None'
+        grpc_api_start = datetime.datetime.now()
+        try:
+            jsonObj = json_format.MessageToJson(
+                request.device_state,
+                preserving_proto_field_name=True
+            )
+            state = json.loads(jsonObj)['lacp_member_state']['state']
+
+            self.payload_logger.debug(
+                "Received request.device_state (JSON)(default=False)",
+                extra={
+                    'payload': json.dumps(jsonObj)
+                }
+            )
+
+            self.InitSanppi()
+
+            self.logger.info("Requesting SetDeviceState ...")
+            try:
+                snappi_api_start = datetime.datetime.now()
+                response = self.api.set_device_state(jsonObj)
+                self.profile_logger.info(
+                    "snappi-SetDeviceState completed!", extra={
+                        'api': "snappi-SetDeviceState",
+                        'choice': state,
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
+                )
+                response_200 = """
+                {
+                    "status_code_200" : {
+                        "warnings" : []
+                    }
+                }
+                """
+                device_response = json_format.Parse(
+                    response_200,
+                    otg_pb2.SetDeviceStateResponse()
+                )
+                if len(response.warnings) > 0:
+                    device_response.status_code_200.warnings.extend(response.warnings) # noqa
+                    self.logger.debug(
+                        "Snappi_api SetDeviceState Returned Warnings: {}".format( # noqa
+                            response.warnings
+                        )
+                    )
+                self.logger.debug("Returning status_code_200 to client ...")
+                return device_response
+
+            except Exception as e:
+                self.profile_logger.info(
+                    "snappi-SetDeviceState completed!", extra={
+                        'api': "snappi-SetDeviceState",
+                        'choice': state,
+                        'nanoseconds':  get_time_elapsed(snappi_api_start)
+                    }
+                )
+                response_400 = """
+                {
+                    "status_code_400" : {
+                        "errors" : []
+                    }
+                }
+                """
+                response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+
+                error_code, error_details = get_error_details(e)
+                self.logger.error(
+                    "Snappi_api SetDeviceState Returned "
+                    "Exception with {} errors: {}".format(
+                        error_code, str(error_details).replace('"', ''))
+                    )
+                if error_code == 400:
+                    device_response = json_format.Parse(
+                        response_400,
+                        otg_pb2.SetDeviceStateResponse()
+                    )
+                    device_response.status_code_400.errors.extend(error_details) # noqa
+                    return device_response
+                elif error_code == 500:
+                    device_response = json_format.Parse(
+                        response_500,
+                        otg_pb2.SetDeviceStateResponse()
+                    )
+                    device_response.status_code_500.errors.extend(error_details) # noqa
+                    return device_response
+                else:
+                    raise NotImplementedError()
+
+        finally:
+            self.profile_logger.info(
+                "gRPC-SetDeviceState completed!", extra={
+                    'api': "SetDeviceState",
+                    'choice': state,
+                    'nanoseconds':  get_time_elapsed(grpc_api_start)
+                }
+            )
+
     def GetMetrics(self, request, context):
         choice = 'None'
         grpc_api_start = datetime.datetime.now()

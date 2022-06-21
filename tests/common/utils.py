@@ -176,6 +176,19 @@ def set_transmit_state(api, payload):
     return json_res
 
 
+def set_device_state(api, payload):
+    print('Setting Device State......')
+    if not isinstance(payload, str):
+        # accept both string and dict
+        payload = json.dumps(payload, indent=4)
+    proto_state_req = json_format.Parse(payload, otg_pb2.DeviceState())
+    req_obj = otg_pb2.SetDeviceStateRequest(
+        device_state=proto_state_req)
+    proto_res = api.SetDeviceState(req_obj, MOCK_GRPC_SERVER_CONTEXT)
+    json_res = convert_proto_to_json(proto_res)
+    return json_res
+
+
 def set_protocol_state(api, payload):
     print('Setting Protocol State......')
     if not isinstance(payload, str):

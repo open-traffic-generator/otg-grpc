@@ -96,6 +96,27 @@ def test_grpc_server_set_link_state_with_200(snappiserver,
     assert json_res == exp_res
 
 
+def test_grpc_server_set_device_state_with_200(snappiserver,
+                                               serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
+
+    state = {
+        "choice": "lacp_member_state",
+        "lacp_member_state": {
+            "lag_member_port_names": [
+                "string"
+            ],
+            "state": "up"
+        }
+    }
+    json_res = utils.set_device_state(grpc_api, state)
+
+    exp_res = {
+        "status_code_200": {}
+    }
+    assert json_res == exp_res
+
+
 def test_grpc_server_get_port_metrics_with_200(snappiserver,
                                                serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
@@ -346,6 +367,60 @@ def test_grpc_server_get_ipv6_neighbors_states_with_200(snappiserver,
                     'ethernet_name': 'ipv6_neighbor_eth_1',
                     'ipv6_address': "a:a:a:a:a:a:a:a",
                     'link_layer_address': '00:00:01:01:01:01'
+                }
+            ]
+        }
+    }
+    assert json_res == exp_res
+
+
+def test_grpc_server_get_bgp_prefixes_states_with_200(snappiserver,
+                                                      serverlogfile):
+    grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 200)
+
+    config = {
+        "ports": [
+            {
+                "name": "tx",
+                "location": "localhost:5555"
+            }
+        ]
+    }
+    json_res = utils.set_config(grpc_api, config)
+
+    exp_res = {
+        "status_code_200": {}
+    }
+    assert json_res == exp_res
+
+    states_req = {
+        "choice": "bgp_prefixes",
+        "bgp_prefixes": {
+            "bgp_peer_names": [
+                "peer1"
+            ]
+        }
+    }
+
+    json_res = utils.get_states(grpc_api, states_req)
+
+    exp_res = {
+        'status_code_200': {
+            'choice': 'bgp_prefixes',
+            'bgp_prefixes': [
+                {
+                    'bgp_peer_name': 'peer1',
+                    'ipv4_unicast_prefixes': [
+                        {
+                            'ipv4_address': '0.0.0.0',
+                            'prefix_length': 32,
+                            'origin': 'egp',
+                            'path_id': 1,
+                            'ipv4_next_hop':
+                            '0.1.1.1',
+                            'ipv6_next_hop': 'a:a:a:a:a:a:a:a'
+                        }
+                    ]
                 }
             ]
         }
