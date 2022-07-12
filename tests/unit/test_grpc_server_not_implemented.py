@@ -14,26 +14,22 @@ def test_grpc_server_set_config_with_501(snappiserver,
         ]
     }
 
-    found_err = False
-    try:
-        utils.set_config(grpc_api, config)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.set_config(grpc_api, config)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_get_config_with_501(snappiserver,
                                          serverlogfile):
     grpc_api = utils.init_grpc_with_mock_server(serverlogfile, 501)
 
-    found_err = False
-    try:
-        utils.get_config(grpc_api)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.get_config(grpc_api)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_set_transmit_state_with_501(snappiserver,
@@ -47,13 +43,11 @@ def test_grpc_server_set_transmit_state_with_501(snappiserver,
         "state": "start"
     }
 
-    found_err = False
-    try:
-        utils.set_transmit_state(grpc_api, state)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.set_transmit_state(grpc_api, state)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_set_link_state_with_501(snappiserver,
@@ -67,13 +61,11 @@ def test_grpc_server_set_link_state_with_501(snappiserver,
         "state": "up"
     }
 
-    found_err = False
-    try:
-        utils.set_link_state(grpc_api, state)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.set_link_state(grpc_api, state)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_set_device_state_with_501(snappiserver,
@@ -90,13 +82,11 @@ def test_grpc_server_set_device_state_with_501(snappiserver,
         }
     }
 
-    found_err = False
-    try:
-        utils.set_device_state(grpc_api, state)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.set_device_state(grpc_api, state)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_get_metrics_with_501(snappiserver,
@@ -112,13 +102,11 @@ def test_grpc_server_get_metrics_with_501(snappiserver,
         }
     }
 
-    found_err = False
-    try:
-        utils.get_metrics(grpc_api, metrc_req)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.get_metrics(grpc_api, metrc_req)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_get_port_metrics_with_501(snappiserver,
@@ -134,13 +122,11 @@ def test_grpc_server_get_port_metrics_with_501(snappiserver,
         }
     }
 
-    found_err = False
-    try:
-        utils.get_metrics(grpc_api, metric_req)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.get_metrics(grpc_api, metric_req)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_set_capture_state_with_501(snappiserver,
@@ -154,13 +140,11 @@ def test_grpc_server_set_capture_state_with_501(snappiserver,
         "state": "start"
     }
 
-    found_err = False
-    try:
-        utils.set_capture_state(grpc_api, state)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.set_capture_state(grpc_api, state)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_get_capture_with_501(snappiserver,
@@ -171,13 +155,11 @@ def test_grpc_server_get_capture_with_501(snappiserver,
         "port_name": "rx"
     }
 
-    found_err = False
-    try:
-        utils.get_capture(grpc_api, capture_req)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.get_capture(grpc_api, capture_req)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_set_protocol_state_with_501(snappiserver,
@@ -188,13 +170,11 @@ def test_grpc_server_set_protocol_state_with_501(snappiserver,
         "state": "start"
     }
 
-    found_err = False
-    try:
-        utils.set_protocol_state(grpc_api, state)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.set_protocol_state(grpc_api, state)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_set_route_state_with_501(snappiserver,
@@ -208,13 +188,11 @@ def test_grpc_server_set_route_state_with_501(snappiserver,
         "state": "withdraw"
     }
 
-    found_err = False
-    try:
-        utils.set_route_state(grpc_api, state)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.set_route_state(grpc_api, state)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_get_ipv4_neighbors_states_with_501(snappiserver,
@@ -230,13 +208,11 @@ def test_grpc_server_get_ipv4_neighbors_states_with_501(snappiserver,
         }
     }
 
-    found_err = False
-    try:
-        utils.get_states(grpc_api, states_req)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.get_states(grpc_api, states_req)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_get_ipv6_neighbors_states_with_501(snappiserver,
@@ -252,13 +228,11 @@ def test_grpc_server_get_ipv6_neighbors_states_with_501(snappiserver,
         }
     }
 
-    found_err = False
-    try:
-        utils.get_states(grpc_api, states_req)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.get_states(grpc_api, states_req)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_send_ipv4_ping_with_501(snappiserver,
@@ -277,13 +251,11 @@ def test_grpc_server_send_ipv4_ping_with_501(snappiserver,
         ],
     }
 
-    found_err = False
-    try:
-        utils.send_ping(grpc_api, ping_req)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.send_ping(grpc_api, ping_req)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_send_ipv6_ping_with_501(snappiserver,
@@ -302,13 +274,11 @@ def test_grpc_server_send_ipv6_ping_with_501(snappiserver,
         ],
     }
 
-    found_err = False
-    try:
-        utils.send_ping(grpc_api, ping_req)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.send_ping(grpc_api, ping_req)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res
 
 
 def test_grpc_server_update_flows_with_501(snappiserver,
@@ -366,10 +336,8 @@ def test_grpc_server_update_flows_with_501(snappiserver,
         ]
     }
 
-    found_err = False
-    try:
-        utils.update_flows(grpc_api, update_flow_req)
-    except Exception:
-        found_err = True
-
-    assert found_err, 'Exception should be raised'
+    json_res = utils.update_flows(grpc_api, update_flow_req)
+    exp_res = {
+        'status_code_500': {}
+    }
+    assert json_res == exp_res

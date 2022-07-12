@@ -209,6 +209,26 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     return config_response
                 else:
                     raise NotImplementedError()
+        except Exception as e:
+            self.logger.error(
+                "gRPC-Setconfig Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            config_response = json_format.Parse(
+                response_500, otg_pb2.SetConfigResponse())
+            config_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return config_response
+
         finally:
             self.profile_logger.info(
                 "gRPC-Setconfig completed!", extra={
@@ -294,10 +314,30 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 else:
                     raise NotImplementedError()
 
+        except Exception as e:
+            self.logger.error(
+                "gRPC-GetConfig Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            config_response = json_format.Parse(
+                response_500, otg_pb2.GetConfigResponse())
+            config_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return config_response
+
         finally:
             self.profile_logger.info(
                 "gRPC-GetConfig completed!", extra={
-                    'api': "GetCapture",
+                    'api': "GetConfig",
                     'nanoseconds':  get_time_elapsed(grpc_api_start)
                 }
             )
@@ -397,6 +437,26 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     return link_state_response
                 else:
                     raise NotImplementedError()
+
+        except Exception as e:
+            self.logger.error(
+                "gRPC-SetLinkState Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            link_state_response = json_format.Parse(
+                response_500, otg_pb2.SetLinkStateResponse())
+            link_state_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return link_state_response
         finally:
             self.profile_logger.info(
                 "gRPC-SetLinkState completed!", extra={
@@ -502,6 +562,26 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     return transmit_response
                 else:
                     raise NotImplementedError()
+
+        except Exception as e:
+            self.logger.error(
+                "gRPC-SetTransmitState Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            transmit_response = json_format.Parse(
+                response_500, otg_pb2.SetTransmitStateResponse())
+            transmit_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return transmit_response
 
         finally:
             self.profile_logger.info(
@@ -609,6 +689,26 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 else:
                     raise NotImplementedError()
 
+        except Exception as e:
+            self.logger.error(
+                "gRPC-SetRouteState Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            route_response = json_format.Parse(
+                response_500, otg_pb2.SetRouteStateResponse())
+            route_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return route_response
+
         finally:
             self.profile_logger.info(
                 "gRPC-SetRouteState completed!", extra={
@@ -714,6 +814,26 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     return protocol_response
                 else:
                     raise NotImplementedError()
+
+        except Exception as e:
+            self.logger.error(
+                "gRPC-SetProtocolState Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            protocol_response = json_format.Parse(
+                response_500, otg_pb2.SetProtocolStateResponse())
+            protocol_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return protocol_response
         finally:
             self.profile_logger.info(
                 "gRPC-SetProtocolState completed!", extra={
@@ -819,6 +939,26 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     return capture_response
                 else:
                     raise NotImplementedError()
+
+        except Exception as e:
+            self.logger.error(
+                "gRPC-SetCaptureState Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            capture_response = json_format.Parse(
+                response_500, otg_pb2.SetCaptureStateResponse())
+            capture_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return capture_response
 
         finally:
             self.profile_logger.info(
@@ -926,6 +1066,26 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 else:
                     raise NotImplementedError()
 
+        except Exception as e:
+            self.logger.error(
+                "gRPC-SendPing Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            ping_response = json_format.Parse(
+                response_500, otg_pb2.SendPingResponse())
+            ping_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return ping_response
+
         finally:
             self.profile_logger.info(
                 "gRPC-SendPing completed!", extra={
@@ -1031,6 +1191,26 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     return update_flow_response
                 else:
                     raise NotImplementedError()
+
+        except Exception as e:
+            self.logger.error(
+                "gRPC-UpdateFlows Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            update_flow_response = json_format.Parse(
+                response_500, otg_pb2.UpdateFlowsResponse())
+            update_flow_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return update_flow_response
 
         finally:
             self.profile_logger.info(
@@ -1138,6 +1318,26 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 else:
                     raise NotImplementedError()
 
+        except Exception as e:
+            self.logger.error(
+                "gRPC-SetDeviceState Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            device_response = json_format.Parse(
+                response_500, otg_pb2.SetDeviceStateResponse())
+            device_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return device_response
+
         finally:
             self.profile_logger.info(
                 "gRPC-SetDeviceState completed!", extra={
@@ -1242,6 +1442,25 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     return metric_response
                 else:
                     raise NotImplementedError()
+        except Exception as e:
+            self.logger.error(
+                "gRPC-GetMetrics Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            metric_response = json_format.Parse(
+                response_500, otg_pb2.GetMetricsResponse())
+            metric_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return metric_response
 
         finally:
             self.profile_logger.info(
@@ -1334,6 +1553,25 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     return capture_response
                 else:
                     raise NotImplementedError()
+        except Exception as e:
+            self.logger.error(
+                "gRPC-GetCapture Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            capture_response = json_format.Parse(
+                response_500, otg_pb2.GetCaptureResponse())
+            capture_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return capture_response
 
         finally:
             self.profile_logger.info(
@@ -1438,6 +1676,25 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     return state_response
                 else:
                     raise NotImplementedError()
+        except Exception as e:
+            self.logger.error(
+                "gRPC-GetStates Returned "
+                "Exception with {} errors: {}".format(
+                    500, str(e))
+                )
+            response_500 = """
+                {
+                    "status_code_500" : {
+                        "errors" : []
+                    }
+                }
+                """
+            state_response = json_format.Parse(
+                response_500, otg_pb2.GetStatesResponse())
+            state_response.status_code_500.errors.extend(str(e)) # noqa
+            self.logger.debug(
+                "Returning status_code_500 to client ...")
+            return state_response
 
         finally:
             self.profile_logger.info(
