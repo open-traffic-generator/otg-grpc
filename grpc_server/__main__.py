@@ -350,13 +350,17 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 request.link_state,
                 preserving_proto_field_name=True
             )
-            state = json.loads(jsonObj)['state']
+            
             self.payload_logger.debug(
                 "Received request.linkstate (JSON)",
                 extra={
                     'payload': json.dumps(jsonObj)
                 }
             )
+
+            state = "None"
+            if 'state' in list(json.loads(jsonObj).keys()):
+                state = json.loads(jsonObj)['state']
 
             self.InitSanppi()
 
@@ -474,7 +478,6 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 request.transmit_state,
                 preserving_proto_field_name=True
             )
-            state = json.loads(jsonObj)['state']
 
             self.payload_logger.debug(
                 "Received request.transmitstate (JSON)(default=False)",
@@ -482,6 +485,10 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     'payload': json.dumps(jsonObj)
                 }
             )
+
+            state = "None"
+            if 'state' in list(json.loads(jsonObj).keys()):
+                state = json.loads(jsonObj)['state']
 
             self.InitSanppi()
 
@@ -600,7 +607,6 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 request.route_state,
                 preserving_proto_field_name=True
             )
-            state = json.loads(jsonObj)['state']
 
             self.payload_logger.debug(
                 "Received request.routestate (JSON)(default=False)",
@@ -608,6 +614,10 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     'payload': json.dumps(jsonObj)
                 }
             )
+
+            state = "None"
+            if 'state' in list(json.loads(jsonObj).keys()):
+                state = json.loads(jsonObj)['state']
 
             self.InitSanppi()
 
@@ -726,7 +736,6 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 request.protocol_state,
                 preserving_proto_field_name=True
             )
-            state = json.loads(jsonObj)['state']
 
             self.payload_logger.debug(
                 "Received request.protocolstate (JSON)(default=False)",
@@ -734,6 +743,10 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     'payload': json.dumps(jsonObj)
                 }
             )
+
+            state = "None"
+            if 'state' in list(json.loads(jsonObj).keys()):
+                state = json.loads(jsonObj)['state']
 
             self.InitSanppi()
 
@@ -851,7 +864,6 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 request.capture_state,
                 preserving_proto_field_name=True
             )
-            state = json.loads(jsonObj)['state']
 
             self.payload_logger.debug(
                 "Received request.capture_state (JSON)(default=False)",
@@ -859,6 +871,10 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     'payload': json.dumps(jsonObj)
                 }
             )
+
+            state = "None"
+            if 'state' in list(json.loads(jsonObj).keys()):
+                state = json.loads(jsonObj)['state']
 
             self.InitSanppi()
 
@@ -1355,7 +1371,6 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 request.metrics_request,
                 preserving_proto_field_name=True
             )
-            choice = json.loads(jsonObj)['choice']
 
             self.payload_logger.debug(
                 "Received request.metrics_request (JSON)(default=False)",
@@ -1363,6 +1378,10 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     'payload': json.dumps(jsonObj)
                 }
             )
+
+            choice = "None"
+            if 'choice' in list(json.loads(jsonObj).keys()):
+                choice = json.loads(jsonObj)['choice']
 
             self.InitSanppi()
 
@@ -1589,7 +1608,6 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                 request.states_request,
                 preserving_proto_field_name=True
             )
-            choice = json.loads(jsonObj)['choice']
 
             self.payload_logger.debug(
                 "Received request.states_request (JSON)(default=False)",
@@ -1597,6 +1615,10 @@ class Openapi(otg_pb2_grpc.OpenapiServicer):
                     'payload': json.dumps(jsonObj)
                 }
             )
+
+            choice = "None"
+            if 'choice' in list(json.loads(jsonObj).keys()):
+                choice = json.loads(jsonObj)['choice']
 
             self.InitSanppi()
 
