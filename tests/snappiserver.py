@@ -468,8 +468,12 @@ def get_states():
                 origin="egp",
                 path_id=1,
                 ipv4_next_hop="0.1.1.1",
-                ipv6_next_hop="a:a:a:a:a:a:a:a"
+                ipv6_next_hop="a:a:a:a:a:a:a:a",
             )
+            communities = bgp_prefix_state.ipv4_unicast_prefixes[0].communities.add() # noqa
+            communities.type = "llgr_stale"
+            communities.as_number = 0
+            communities.as_custom = 65535
         return Response(states_response.serialize(),
                         mimetype='application/json',
                         status=200)

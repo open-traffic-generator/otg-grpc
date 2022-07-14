@@ -418,7 +418,14 @@ def test_grpc_server_get_bgp_prefixes_states_with_200(snappiserver,
                             'path_id': 1,
                             'ipv4_next_hop':
                             '0.1.1.1',
-                            'ipv6_next_hop': 'a:a:a:a:a:a:a:a'
+                            'ipv6_next_hop': 'a:a:a:a:a:a:a:a',
+                            'communities': [
+                                {
+                                    'type': 'llgr_stale',
+                                    'as_number': 0,
+                                    'as_custom': 65535
+                                }
+                            ]
                         }
                     ]
                 }
