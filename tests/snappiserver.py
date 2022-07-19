@@ -474,6 +474,10 @@ def get_states():
             communities.type = "llgr_stale"
             communities.as_number = 0
             communities.as_custom = 65535
+
+            segment = bgp_prefix_state.ipv4_unicast_prefixes[0].as_path.segments.add() # noqa
+            segment.type = "as_seq"
+            segment.as_numbers = [2]
         return Response(states_response.serialize(),
                         mimetype='application/json',
                         status=200)

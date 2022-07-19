@@ -425,7 +425,18 @@ def test_grpc_server_get_bgp_prefixes_states_with_200(snappiserver,
                                     'as_number': 0,
                                     'as_custom': 65535
                                 }
-                            ]
+                            ],
+                            'as_path': {
+                                'segments': [
+                                    {
+                                        'type': 'as_seq',
+                                        'as_numbers': 
+                                        [
+                                            '2'
+                                        ]
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
