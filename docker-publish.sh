@@ -87,21 +87,25 @@ publish() {
     echo "${DOCKERHUB_IMAGE} published in DockerHub..."
 
     GITHUB_IMAGE="ghcr.io/open-traffic-generator/ixia-c-grpc-server:${TAG}"
+    GITHUB_IMAGE_LATEST="ghcr.io/open-traffic-generator/ixia-c-grpc-server:latest"
     docker tag ixia-c-grpc-server "${GITHUB_IMAGE}"
+    docker tag "${GITHUB_IMAGE}" "${GITHUB_IMAGE_LATEST}"
 
     if github_docker_image_exists ${GITHUB_IMAGE}; then
         echo "${GITHUB_IMAGE} already exists..."
     else
         echo "${GITHUB_IMAGE} does not exist..."
         push_github_docker_image ${GITHUB_IMAGE}
+        push_github_docker_image ${GITHUB_IMAGE_LATEST}
     fi
 
     echo "Deleting local docker images..."
-    docker rmi -f "ixia-c-grpc-server" "${DOCKERHUB_IMAGE}" "${GITHUB_IMAGE}"> /dev/null 2>&1 || true
+    docker rmi -f "ixia-c-grpc-server" "${DOCKERHUB_IMAGE}" "${GITHUB_IMAGE}" "${GITHUB_IMAGE_LATEST}" > /dev/null 2>&1 || true
 
     echo "Verifying image from Docker & Git Hub..."
     verify_dockerhub_images "${DOCKERHUB_IMAGE}"
     verify_github_images ${GITHUB_IMAGE}
+    verify_github_images ${GITHUB_IMAGE_LATEST}
     docker rmi -f "ixia-c-grpc-server"> /dev/null 2>&1 || true
 }
 
