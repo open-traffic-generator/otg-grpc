@@ -1,11 +1,13 @@
 # OTG gRPC
 
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Project Status: Inactive – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](https://en.wikipedia.org/wiki/MIT_License)
 [![release)](https://img.shields.io/github/v/release/open-traffic-generator/otg-grpc)](https://github.com/open-traffic-generator/otg-grpc/releases/latest)
 [![Build](https://github.com/open-traffic-generator/otg-grpc/actions/workflows/publish.yaml/badge.svg)](https://github.com/open-traffic-generator/otg-grpc/actions/workflows/publish.yaml)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/open-traffic-generator/otg-grpc.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/open-traffic-generator/otg-grpc/alerts/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/open-traffic-generator/otg-grpc.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/open-traffic-generator/otg-grpc/context:python)
+
+*Update: This repo is no longer being actively developed.  The gRPC-to-REST proxy for OTG is no longer required, as the functionality has been directly incorporated into the [Ixia-c controller](https://github.com/open-traffic-generator/ixia-c/releases/tag/v0.0.1-3182).*
 
 gRPC interface to configure and run Ixia-C traffic generator
 
